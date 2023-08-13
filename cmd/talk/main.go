@@ -23,8 +23,8 @@ func main() {
 	if err != nil {
 		logger.Sugar().Panicf("failed to create a talker: %+v", err)
 	}
-	if conf.Server.EagerCheckProviders {
-		t.MustCheckProviders()
+	if conf.Server.ProvidersMustFunction {
+		t.ProvidersMustFunction()
 	}
 
 	logger.Info("initialise web server...")
