@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set CURRENT_SECOND as env
-        run: echo "CURRENT_SECOND=$(TZ=Etc/GMT-8 date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
+        run: echo "CURRENT_SECOND=$(TZ=Etc/GMT-8 date +'%Y-%m-%dT%H-%M-%SGMT-8')" >> $GITHUB_ENV
 
       -
         name: Check out the repo
