@@ -3,7 +3,8 @@
 
 name: publish dev image
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
 
 env:
   # github.repository as <account>/<repo>
