@@ -1,7 +1,7 @@
 # "secondly-xxxx" tagged images, used by developers for quick tests, are extremely unstable.
 # Whenever any branch is updated, images are automatically built and pushed to image registry.
 
-name: Publish Docker image
+name: publish dev image
 
 on: [push, pull_request]
 
