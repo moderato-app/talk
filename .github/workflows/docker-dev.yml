@@ -15,9 +15,8 @@ jobs:
     name: AMD64
     runs-on: ubuntu-latest
     steps:
-      - name: Get current second
-        id: second
-        run: echo "::set-output name=SECOND::$(date +'%Y-%m-%dT%H-%M-%S')"
+      - name: Set CURRENT_SECOND as env
+        run: echo "CURRENT_SECOND=$(TZ=Etc/GMT-8 date +'%Y-%m-%dT%H-%M-%SGMT-8')" >> $GITHUB_ENV
 
       -
         name: Check out the repo
@@ -41,6 +40,6 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ env.IMAGE_NAME }}:dev-${{ env.SECOND }}
+          tags: ${{ env.IMAGE_NAME }}:dev-${{ env.CURRENT_SECOND }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
