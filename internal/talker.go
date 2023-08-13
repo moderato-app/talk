@@ -2,8 +2,9 @@ package internal
 
 import (
 	"context"
-	"github.com/bubblelight/talk/internal/conf"
-	client2 "github.com/bubblelight/talk/pkg/client"
+	resource "github.com/bubblelight/talk"
+	"github.com/bubblelight/talk/internal/config"
+	"github.com/bubblelight/talk/pkg/providers"
 	"github.com/haguro/elevenlabs-go"
 	"github.com/pkg/errors"
 	"github.com/sashabaranov/go-openai"
@@ -13,25 +14,25 @@ import (
 )
 
 type Talker struct {
-	client2.LLM
-	client2.ToText
-	client2.ToSpeech
+	providers.LLM
+	providers.ToText
+	providers.ToSpeech
 	Logger *zap.Logger
 }
 
-func NewTalker(ctx context.Context, config conf.Config, logger *zap.Logger) (*Talker, error) {
-	var llm client2.LLM
-	var toText client2.ToText
-	var toSpeech client2.ToSpeech
+func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*Talker, error) {
+	var llm providers.LLM
+	var toText providers.ToText
+	var toSpeech providers.ToSpeech
 
 	// choose an llm provider
-	if gconf := config.Llm.OpenAIChatGPT; gconf.APIKey != "" {
+	if c := tc.Llm.OpenAIChatGPT; c.APIKey != "" {
 		// the underlying http.Client uses proxy from environment by default
-		client := openai.NewClient(gconf.APIKey)
-		llm = &client2.ChatGPT{
+		client := openai.NewClient(c.APIKey)
+		llm = &providers.ChatGPT{
 			Client:             client,
-			Model:              gconf.Model,
-			MaxGenerationToken: gconf.MaxGenerationToken,
+			Model:              c.Model,
+			MaxGenerationToken: c.MaxGenerationToken,
 			Logger:             logger,
 		}
 	} else {
@@ -39,14 +40,14 @@ func NewTalker(ctx context.Context, config conf.Config, logger *zap.Logger) (*Ta
 	}
 
 	// choose a text-to-speech provider
-	if econf := config.TextToSpeech.ElevenLabs; econf.APIKey != "" {
+	if c := tc.TextToSpeech.ElevenLabs; c.APIKey != "" {
 		// elevenlabs.Client create a new http.Client everytime it makes a request
 		// it uses proxy from environment by default
-		client := elevenlabs.NewClient(ctx, econf.APIKey, 30*time.Second)
-		toSpeech = &client2.ElevenLabs{
+		client := elevenlabs.NewClient(ctx, c.APIKey, 30*time.Second)
+		toSpeech = &providers.ElevenLabs{
 			Client:     client,
-			Expressive: econf.Expressive,
-			Clarity:    econf.Clarity,
+			Expressive: c.Expressive,
+			Clarity:    c.Clarity,
 			Logger:     logger,
 		}
 	} else {
@@ -54,10 +55,10 @@ func NewTalker(ctx context.Context, config conf.Config, logger *zap.Logger) (*Ta
 	}
 
 	// choose a speech-to-text provider
-	if wconf := config.SpeechToText.OpenAIWhisper; wconf.APIKey != "" {
+	if c := tc.SpeechToText.OpenAIWhisper; c.APIKey != "" {
 		// the underlying http.Client uses proxy from environment by default
-		client := openai.NewClient(wconf.APIKey)
-		toText = &client2.Whisper{Client: client, Logger: logger}
+		client := openai.NewClient(c.APIKey)
+		toText = &providers.Whisper{Client: client, Logger: logger}
 	} else {
 		return nil, errors.New("no speech-to-text provider was found")
 	}
@@ -73,11 +74,11 @@ func NewTalker(ctx context.Context, config conf.Config, logger *zap.Logger) (*Ta
 //	These requests consume a minimal amount of quota or even no quota.
 func (t *Talker) MustCheckProviders() {
 
-	m := client2.Message{
+	m := providers.Message{
 		Role:    "user",
 		Content: "Hello!",
 	}
-	content, err := t.LLM.Complete(context.Background(), []client2.Message{m}, nil)
+	content, err := t.LLM.Complete(context.Background(), []providers.Message{m}, nil)
 	if err != nil {
 		t.Logger.Sugar().Panicf("failed to get response from LLM server: %+v", err)
 	}
@@ -96,7 +97,7 @@ func (t *Talker) MustCheckProviders() {
 	}
 	t.Logger.Info("text-to-speech is healthy")
 
-	voice, _, err := HelloVoice()
+	voice, _, err := resource.HelloVoice()
 
 	trans, err := t.ToText.Transcribe(context.Background(), voice)
 	if err != nil {

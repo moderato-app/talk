@@ -2,27 +2,14 @@ package internal
 
 import (
 	"fmt"
-	"github.com/bubblelight/talk/pkg/client"
-	"github.com/google/uuid"
+	"github.com/bubblelight/talk/pkg/providers"
 	"github.com/labstack/echo/v4"
-	"github.com/patrickmn/go-cache"
 	"net/http"
-	"time"
 )
 
-var speechCache *cache.Cache
-
-func init() {
-	speechCache = cache.New(10*time.Minute, time.Minute)
-}
-
-func (t *Talker) Stat(c echo.Context) error {
-	used, total, err := t.ToSpeech.Quota(c.Request().Context())
-	if err != nil {
-		return err
-	}
-	stat := fmt.Sprintf("text-to-speech quota used: %d/%d", used, total)
-	return c.String(http.StatusOK, stat)
+func ErrorHandler(err error, c echo.Context) {
+	fmt.Printf(" %+v", err)
+	c.Echo().DefaultHTTPErrorHandler(err, c)
 }
 
 func (t *Talker) Transcribe(c echo.Context) error {
@@ -66,9 +53,7 @@ func (t *Talker) Ask(c echo.Context) error {
 		return err
 	}
 
-	id := uuid.New().String()
-	speechCache.Set(id, bytes, 10*time.Minute)
-	c.Logger().Info("put speech into cache, speechId:", id)
+	id := TalkCache.PutSpeech(bytes)
 	m := map[string]string{
 		"text":     content,
 		"speechId": id,
@@ -77,16 +62,24 @@ func (t *Talker) Ask(c echo.Context) error {
 }
 
 type Ask struct {
-	Ms []client.Message `json:"conversation"`
+	Ms []providers.Message `json:"conversation"`
 }
 
 func (t *Talker) Speech(c echo.Context) error {
 	id := c.Param("id")
-	v, ok := speechCache.Get(id)
+	data, ok := TalkCache.GetSpeech(id)
 	if !ok {
 		c.Logger().Info("failed to find speech from cache, speechId:", id)
 		return c.NoContent(http.StatusNotFound)
 	}
-	bytes := v.([]byte)
-	return c.Blob(http.StatusOK, "audio/mp3", bytes)
+	return c.Blob(http.StatusOK, "audio/mp3", data)
+}
+
+func (t *Talker) Stat(c echo.Context) error {
+	used, total, err := t.ToSpeech.Quota(c.Request().Context())
+	if err != nil {
+		return err
+	}
+	stat := fmt.Sprintf("text-to-speech quota used: %d/%d", used, total)
+	return c.String(http.StatusOK, stat)
 }

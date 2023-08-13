@@ -1,4 +1,4 @@
-package client
+package providers
 
 import (
 	"context"
@@ -105,7 +105,7 @@ func (e *ElevenLabs) voiceSettings(o *VOption) *elevenlabs.VoiceSettings {
 	}
 }
 
-// toGeneralVoice convert elevenlabs.Voice to client.Voice
+// toGeneralVoice convert elevenlabs.Voice to providers.Voice
 func toGeneralVoice(v elevenlabs.Voice) Voice {
 	if v.Labels == nil {
 		v.Labels = map[string]string{}
