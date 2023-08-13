@@ -1,14 +1,25 @@
 # Build step
 FROM golang:1.20-alpine AS builder
-ENV GOPROXY=https://goproxy.cn,direct
-RUN mkdir -p /build
-WORKDIR /build
-COPY . .
-RUN go build -o app .
+
+COPY ${PWD} /app
+WORKDIR /app
+
+RUN go build -o appbin cmd/talk/main.go
 
 # Final step
 FROM alpine
-EXPOSE 8080
-EXPOSE 8081
-COPY --from=builder /build/app /bin/app
-ENTRYPOINT ["/bin/app"]
+
+# Following commands are for installing CA certs (for proper functioning of HTTPS and other TLS)
+RUN apk --update add ca-certificates && \
+    rm -rf /var/cache/apk/*
+
+RUN adduser -D appuser
+USER appuser
+
+COPY --from=builder /app /home/appuser/app
+
+WORKDIR /home/appuser/app
+
+EXPOSE 8000
+
+CMD ["./appbin"]
