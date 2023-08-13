@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Get current second
         id: second
-        run: echo "::set-output name=second::$(date +'%Y-%m-%dT%H-%M-%S')"
+        run: echo "::set-output name=SECOND::$(date +'%Y-%m-%dT%H-%M-%S')"
 
       -
         name: Check out the repo
@@ -41,6 +41,6 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ env.IMAGE_NAME }}:dev-${{ env.second }}
+          tags: ${{ env.IMAGE_NAME }}:dev-${{ env.SECOND }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
