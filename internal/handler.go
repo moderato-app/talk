@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"github.com/bubblelight/talk/pkg/client"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -13,6 +14,15 @@ var speechCache *cache.Cache
 
 func init() {
 	speechCache = cache.New(10*time.Minute, time.Minute)
+}
+
+func (t *Talker) Stat(c echo.Context) error {
+	used, total, err := t.ToSpeech.Quota(c.Request().Context())
+	if err != nil {
+		return err
+	}
+	stat := fmt.Sprintf("text-to-speech quota used: %d/%d", used, total)
+	return c.String(http.StatusOK, stat)
 }
 
 func (t *Talker) Transcribe(c echo.Context) error {

@@ -45,6 +45,7 @@ func main() {
 		}))
 	}
 	// Routes
+	e.GET("/stat", t.Stat)
 	e.POST("/transcribe", t.Transcribe)
 	e.POST("/ask", t.Ask)
 	e.GET("/speech/:id", t.Speech)
