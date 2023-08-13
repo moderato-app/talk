@@ -29,8 +29,9 @@ func readFile() error {
 	viper.SetConfigName("config")     // name of config file (without extension)
 	viper.SetConfigType("yaml")       // REQUIRED if the config file does not have the extension in the name
 	viper.AddConfigPath("/etc/talk/") // path to look for the config file in
-	viper.AddConfigPath("$HOME/.talk")
 	viper.AddConfigPath("$HOME/.config/talk")
+	viper.AddConfigPath("$HOME/.talk")
+	viper.AddConfigPath("$HOME/")
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig() // Find and read the config file
 	return errors.Wrap(err, "")
