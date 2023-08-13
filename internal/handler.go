@@ -21,7 +21,7 @@ func (t *Talker) Transcribe(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	transcribe, err := t.ToText.Transcribe(c.Request().Context(), reader)
+	transcribe, err := t.SpeechToText.SpeechToText(c.Request().Context(), reader)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,20 @@ func (t *Talker) Ask(c echo.Context) error {
 		return c.NoContent(http.StatusNoContent)
 	}
 
-	bytes, err := t.ToSpeech.TextToSpeech(c.Request().Context(), content, nil, nil)
+	// there is no place to set vOption on web page, use hard coded vOption in the moment
+	vOption := providers.VOption{
+		LanguageCode: "en-GB",
+		Gender:       "female",
+		SpeakingRate: 1.0,
+		Pitch:        0,
+		VolumeGainDb: 0,
+		Stability:    0.3,
+		Clarity:      0.5,
+	}
+
+	// there is no place to set voiceId on web page, use pre-defined voiceId in the moment
+
+	bytes, err := t.TextToSpeech.TextToSpeech(c.Request().Context(), content, "", vOption)
 	if err != nil {
 		return err
 	}
@@ -76,7 +89,7 @@ func (t *Talker) Speech(c echo.Context) error {
 }
 
 func (t *Talker) Stat(c echo.Context) error {
-	used, total, err := t.ToSpeech.Quota(c.Request().Context())
+	used, total, err := t.TextToSpeech.Quota(c.Request().Context())
 	if err != nil {
 		return err
 	}

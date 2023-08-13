@@ -12,11 +12,23 @@ const (
 )
 
 type ElevenLabs struct {
-	Client     *elevenlabs.Client
-	VoiceId    *string
-	Expressive int
-	Clarity    int
-	Logger     *zap.Logger
+	Client    *elevenlabs.Client
+	VoiceId   *string
+	Stability float32
+	Clarity   float32
+	Logger    *zap.Logger
+}
+
+func (e *ElevenLabs) MustFunction(_ context.Context) {
+	used, total, err := e.Quota(context.Background())
+	if err != nil {
+		e.Logger.Sugar().Panicf("failed to get response from ElevenLabs server: %+v", err)
+	}
+	e.Logger.Sugar().Debugf("ElevenLabs quota: %d/%d used", used, total)
+	if total == 0 || used >= total {
+		e.Logger.Warn(`bad smell: ElevenLabs quota may has been exhausted`)
+	}
+	e.Logger.Info("ElevenLabs is healthy")
 }
 
 func (e *ElevenLabs) Quota(_ context.Context) (used, total int, err error) {
@@ -36,19 +48,22 @@ func (e *ElevenLabs) Voices(_ context.Context) ([]Voice, error) {
 		return nil, errors.Wrap(err, "")
 	}
 	e.Logger.Sugar().Debug("result", voices)
-	generalVoices := make([]Voice, len(voices))
-	for i, voice := range voices {
-		generalVoices[i] = toGeneralVoice(voice)
+	gvs := make([]Voice, len(voices))
+	for i, v := range voices {
+		gvs[i] = elevenlabsVoiceToGeneralVoice(v)
 	}
-	return generalVoices, nil
+	return gvs, nil
 }
 
-func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, voiceId *string, o *VOption) ([]byte, error) {
+func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, voiceId string, o VOption) ([]byte, error) {
 	e.Logger.Info("text to speech...")
 	req := elevenlabs.TextToSpeechRequest{
-		Text:          text,
-		ModelID:       defaultModelID,
-		VoiceSettings: e.voiceSettings(o),
+		Text:    text,
+		ModelID: defaultModelID,
+		VoiceSettings: &elevenlabs.VoiceSettings{
+			Stability:       o.Stability,
+			SimilarityBoost: o.Clarity,
+		},
 	}
 	id, err := e.chooseVoiceId(ctx, voiceId)
 	if err != nil {
@@ -58,7 +73,7 @@ func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, voiceId *str
 	if err != nil {
 		return nil, errors.Wrap(err, "")
 	}
-	e.Logger.Sugar().Debug("text to speech result, media bytes length:", len(bytes))
+	e.Logger.Sugar().Debug("text to speech result, audio bytes length:", len(bytes))
 	return bytes, nil
 }
 
@@ -66,9 +81,9 @@ func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, voiceId *str
 // 1. voiceId parameter
 // 2. predefined ElevenLabs.VoiceId
 // 3. choose a voiceId from voice list. In such case, set ElevenLabs.VoiceId to the chosen voiceId for future usage
-func (e *ElevenLabs) chooseVoiceId(ctx context.Context, voiceId *string) (string, error) {
-	if voiceId != nil && *voiceId != "" {
-		return *voiceId, nil
+func (e *ElevenLabs) chooseVoiceId(ctx context.Context, voiceId string) (string, error) {
+	if voiceId != "" {
+		return voiceId, nil
 	}
 	if e.VoiceId != nil && *e.VoiceId != "" {
 		return *e.VoiceId, nil
@@ -88,25 +103,25 @@ func (e *ElevenLabs) chooseVoiceId(ctx context.Context, voiceId *string) (string
 }
 
 func (e *ElevenLabs) voiceSettings(o *VOption) *elevenlabs.VoiceSettings {
-	expressive := e.Expressive
+	stability := e.Stability
 	clarity := e.Clarity
 	// VOption has high priority
 	if o != nil {
-		if o.Expressive != 0 {
-			expressive = o.Expressive
+		if o.Stability != 0 {
+			stability = o.Stability
 		}
 		if o.Clarity != 0 {
 			clarity = o.Clarity
 		}
 	}
 	return &elevenlabs.VoiceSettings{
-		Stability:       float32(100-expressive) / 100,
-		SimilarityBoost: float32(clarity) / 100,
+		Stability:       stability,
+		SimilarityBoost: clarity,
 	}
 }
 
-// toGeneralVoice convert elevenlabs.Voice to providers.Voice
-func toGeneralVoice(v elevenlabs.Voice) Voice {
+// elevenlabsVoiceToGeneralVoice convert elevenlabs.Voice to providers.Voice
+func elevenlabsVoiceToGeneralVoice(v elevenlabs.Voice) Voice {
 	if v.Labels == nil {
 		v.Labels = map[string]string{}
 	}

@@ -18,6 +18,21 @@ type ChatGPT struct {
 	Logger             *zap.Logger
 }
 
+func (c *ChatGPT) MustFunction(_ context.Context) {
+	m := Message{
+		Role:    "user",
+		Content: "Hello!",
+	}
+	content, err := c.Complete(context.Background(), []Message{m}, nil)
+	if err != nil {
+		c.Logger.Sugar().Panicf("failed to get response from ChatGPT server: %+v", err)
+	}
+	if len(content) == 0 {
+		c.Logger.Warn(`bad smell: got empty content from ChatGPT server`)
+	}
+	c.Logger.Info("ChatGPT is healthy")
+}
+
 func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {
 	// openai.Client doesn't support billing query
 	return 0, 0, nil

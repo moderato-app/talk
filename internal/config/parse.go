@@ -10,23 +10,38 @@ import (
 const (
 	DefaultServerPort                = 8000
 	DefaultServerEagerCheckProviders = true
-	DefaultElevenLabsExpressive      = 50
-	DefaultElevenLabsClarity         = 50
+	DefaultElevenLabsStability       = 0.5
+	DefaultElevenLabsClarity         = 0.5
+	DefaultGoogleTTSPathToKeyfile    = "./google_credentials.json"
+	DefaultGoogleTTSLanguageCode     = "en-US"
+	DefaultGoogleTTSGender           = "female"
+	DefaultGoogleTTSSpeakingRate     = 1
+	DefaultGoogleTTSPitch            = 0
+	DefaultGoogleTTSVolumeGainDb     = 0
 	DefaultChatGPTModel              = "gpt-3.5-turbo"
 	DefaultChatGPTMaxGenerationToken = 2000
 )
 
 func setDefaultValue() {
 	viper.SetDefault("server.port", DefaultServerPort)
-	viper.SetDefault("server.eager-check-providers", DefaultServerEagerCheckProviders)
-	viper.SetDefault("text-to-speech.elevenlabs.expressive", DefaultElevenLabsExpressive)
+	viper.SetDefault("server.providers-must-function", DefaultServerEagerCheckProviders)
+
+	viper.SetDefault("text-to-speech.elevenlabs.stability", DefaultElevenLabsStability)
 	viper.SetDefault("text-to-speech.elevenlabs.clarity", DefaultElevenLabsClarity)
+
+	viper.SetDefault("text-to-speech.google-text-to-speech.path-to-keyfile", DefaultGoogleTTSPathToKeyfile)
+	viper.SetDefault("text-to-speech.google-text-to-speech.gender", DefaultGoogleTTSGender)
+	viper.SetDefault("text-to-speech.google-text-to-speech.language-code", DefaultGoogleTTSLanguageCode)
+	viper.SetDefault("text-to-speech.google-text-to-speech.speaking-rate", DefaultGoogleTTSSpeakingRate)
+	viper.SetDefault("text-to-speech.google-text-to-speech.pitch", DefaultGoogleTTSPitch)
+	viper.SetDefault("text-to-speech.google-text-to-speech.volume-gain-db", DefaultGoogleTTSVolumeGainDb)
+
 	viper.SetDefault("llm.open-ai-chat-gpt.model", DefaultChatGPTModel)
 	viper.SetDefault("llm.open-ai-chat-gpt.max-generation-token", DefaultChatGPTMaxGenerationToken)
 }
 
 func readFile() error {
-	viper.SetConfigName("config")     // name of config file (without extension)
+	viper.SetConfigName("talk")       // name of config file (without extension)
 	viper.SetConfigType("yaml")       // REQUIRED if the config file does not have the extension in the name
 	viper.AddConfigPath("/etc/talk/") // path to look for the config file in
 	viper.AddConfigPath("$HOME/.config/talk")
@@ -45,11 +60,6 @@ func parseFlag() error {
 
 func bindEnv() {
 	viper.AutomaticEnv()
-	//viper.BindEnv("server.port", "SERVER_PORT")
-	//viper.BindEnv("speech-to-text.open-ai-whisper.api-key", "OPENAI_WHISPER_API_KEY")
-	//viper.BindEnv("text-to-speech.elevenlabs.api-key", "ELEVENLABS_API_KEY")
-	//viper.BindEnv("text-to-speech.elevenlabs.voice-id", "ELEVENLABS_VOICE_ID")
-	//viper.BindEnv("llm.open-ai-chat-gpt.api-key", "OPENAI_CHATGPT_API_KEY")
 }
 
 func LoadConfig(logger *zap.Logger) (*TalkConfig, error) {
