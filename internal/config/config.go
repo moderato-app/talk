@@ -8,9 +8,9 @@ type TalkConfig struct {
 }
 
 type ServerConfig struct {
-	Port                int               `mapstructure:"port"`
-	EagerCheckProviders bool              `mapstructure:"eager-check-providers"`
-	BasicAuth           map[string]string `mapstructure:"basic-auth"`
+	Port                  int               `mapstructure:"port"`
+	ProvidersMustFunction bool              `mapstructure:"providers-must-function"`
+	BasicAuth             map[string]string `mapstructure:"basic-auth"`
 }
 
 type SpeechToTextConfig struct {
@@ -22,14 +22,25 @@ type OpenAIWhisperConfig struct {
 }
 
 type TextToSpeechConfig struct {
-	ElevenLabs ElevenLabsConfig `mapstructure:"elevenlabs"`
+	ElevenLabs         ElevenLabsConfig         `mapstructure:"elevenlabs"`
+	GoogleTextTOSpeech GoogleTextTOSpeechConfig `mapstructure:"google-text-to-speech"`
 }
 
 type ElevenLabsConfig struct {
-	APIKey     string `mapstructure:"api-key"`
-	VoiceID    string `mapstructure:"voice-id"`
-	Expressive int    `mapstructure:"expressive"`
-	Clarity    int    `mapstructure:"clarity"`
+	APIKey    string  `mapstructure:"api-key"`
+	VoiceID   string  `mapstructure:"voice-id"`
+	Stability float32 `mapstructure:"stability"`
+	Clarity   float32 `mapstructure:"clarity"`
+}
+
+type GoogleTextTOSpeechConfig struct {
+	PathToServiceAccountKeyFile string  `mapstructure:"path-to-service-account-key-file"`
+	LanguageCode                string  `mapstructure:"language-code"`
+	VoiceID                     string  `mapstructure:"voice-id"`
+	Gender                      string  `mapstructure:"gender"`
+	SpeakingRate                float32 `mapstructure:"speaking-rate"`
+	Pitch                       float32 `mapstructure:"pitch"`
+	VolumeGainDb                float32 `mapstructure:"volume-gain-db"`
 }
 
 type LlmConfig struct {
