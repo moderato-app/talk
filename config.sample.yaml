@@ -7,6 +7,10 @@ server:
   # Log a warning if there are any issues, such as quota exhaustion or incorrect transcriptions, indicating a potential problem
   # These requests consume a minimal amount of quota or even no quota.
   eager-check-providers: true
+  # Optional. Enable basic auth only when there is at least one pair of username and password.
+  basic-auth:
+    - username1: password1
+    - username2: password2
 
 speech-to-text:
   open-ai-whisper:
