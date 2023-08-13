@@ -1,4 +1,4 @@
-package conf
+package config
 
 import (
 	"github.com/pkg/errors"
@@ -51,8 +51,8 @@ func bindEnv() {
 	//viper.BindEnv("llm.open-ai-chat-gpt.api-key", "OPENAI_CHATGPT_API_KEY")
 }
 
-func LoadConfig(logger *zap.Logger) (*Config, error) {
-	logger.Info("reloading file...")
+func LoadConfig(logger *zap.Logger) (*TalkConfig, error) {
+	logger.Info("read config...")
 	setDefaultValue()
 	err := readFile()
 	if err != nil {
@@ -63,7 +63,7 @@ func LoadConfig(logger *zap.Logger) (*Config, error) {
 		return nil, errors.Wrap(err, "cannot parseFlag")
 	}
 	bindEnv()
-	c := Config{}
+	c := TalkConfig{}
 	err = viper.UnmarshalExact(&c)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot unmarshal into config")
@@ -71,7 +71,7 @@ func LoadConfig(logger *zap.Logger) (*Config, error) {
 	return &c, nil
 }
 
-func MustLoadConfig(logger *zap.Logger) *Config {
+func MustLoadConfig(logger *zap.Logger) *TalkConfig {
 	c, err := LoadConfig(logger)
 	if err != nil {
 		logger.Sugar().Panicf("%+v", err)

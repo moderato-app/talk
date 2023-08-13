@@ -1,6 +1,6 @@
-package conf
+package config
 
-type Config struct {
+type TalkConfig struct {
 	Server       ServerConfig       `mapstructure:"server"`
 	SpeechToText SpeechToTextConfig `mapstructure:"speech-to-text"`
 	TextToSpeech TextToSpeechConfig `mapstructure:"text-to-speech"`

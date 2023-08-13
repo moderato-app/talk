@@ -1,4 +1,4 @@
-package internal
+package resource
 
 import (
 	"bytes"
@@ -9,11 +9,11 @@ import (
 
 const helloVoiceFilePath = "assets/hello_en_gb_1.mp3"
 
-//go:embed assets/*
+//go:embed assets
 var assets embed.FS
 
-//go:embed public/*
-var Public embed.FS
+//go:embed web
+var Web embed.FS
 
 // HelloVoice return the voice of "hello" as io.Reader and file name
 func HelloVoice() (io.Reader, string, error) {
