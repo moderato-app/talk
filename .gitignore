@@ -21,6 +21,5 @@
 go.work
 .idea
 config.yaml
-talk
 main
 build+push.sh
