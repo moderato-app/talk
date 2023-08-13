@@ -38,7 +38,7 @@ func main() {
 	// enable basic auth only when there is at least one pair of username and password
 	if len(conf.Server.BasicAuth) > 0 {
 		e.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
-			if p := conf.Server.BasicAuth[username]; p != "" && p == password {
+			if p, ok := conf.Server.BasicAuth[username]; ok && (p == "*" || p == password) {
 				return true, nil
 			}
 			return false, nil

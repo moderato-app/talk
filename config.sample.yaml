@@ -11,6 +11,8 @@ server:
   basic-auth:
     - username1: password1
     - username2: password2
+    - username3:            # match only empty password
+    - username4: "*"        # match any password, including empty password
 
 speech-to-text:
   open-ai-whisper:
