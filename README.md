@@ -5,6 +5,8 @@
 - [ ] Google STT, OpenAI Whisper STT
 - [ ] Setting language, speed, stability, etc
 - [ ] Choose voice
-- [ ] More models other than ChatGPT
+- [ ] Websocket
+- [ ] Helm template
+- [ ] More LLMs other than ChatGPT
 - [ ] Download and import text history 
 - [ ] Download conversation MP3
