@@ -50,10 +50,12 @@ func (t *Talker) Ask(c echo.Context) error {
 	if len(content) == 0 {
 		return c.NoContent(http.StatusNoContent)
 	}
+
 	bytes, err := t.ToSpeech.TextToSpeech(c.Request().Context(), content, nil, nil)
 	if err != nil {
 		return err
 	}
+
 	id := uuid.New().String()
 	speechCache.Set(id, bytes, 10*time.Minute)
 	c.Logger().Info("put speech into cache, speechId:", id)
