@@ -18,7 +18,7 @@
 <div class="container text-center mt-5">
     <div class="row">
         <div class="col-12 col-md-6 col-xl-4 mx-auto">
-            <img class="mb-3" src="/static/hugh.png" alt="" style="height:250px">
+            <img class="mb-3" src="static/hugh.png" alt="" style="height:250px">
             <h1 class="mb-4">Talk</h1>
             <form>
                 <div class="form-group mb-3">
@@ -73,7 +73,7 @@
             const textData = {conversation: conversation};
             $.ajax({
                 type: 'POST',
-                url: '/ask',
+                url: 'ask',
                 data: JSON.stringify(textData),
                 contentType: 'application/json',
                 success: (data) => {
@@ -86,7 +86,7 @@
                         waitUntilVisible: false,
                         cursorChar: "▊",
                     }).go();
-                    audioElement.src = "/speech/" + speechId;
+                    audioElement.src = "speech/" + speechId;
                     audioElement.controls = true;
                     audioElement.play();
                     enableButton(recordButton);
@@ -114,7 +114,7 @@
                 formData.append('file', audioData, 'audio.wav');
                 $.ajax({
                     type: 'POST',
-                    url: '/transcribe',
+                    url: 'transcribe',
                     data: formData,
                     contentType: false,
                     processData: false,

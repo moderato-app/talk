@@ -8,8 +8,9 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Port                int  `mapstructure:"port"`
-	EagerCheckProviders bool `mapstructure:"eager-check-providers"`
+	Port                int               `mapstructure:"port"`
+	EagerCheckProviders bool              `mapstructure:"eager-check-providers"`
+	BasicAuth           map[string]string `mapstructure:"basic-auth"`
 }
 
 type SpeechToTextConfig struct {

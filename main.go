@@ -17,14 +17,14 @@ import (
 func main() {
 	logger := DefaultLogger()
 
-	c := conf.MustLoadConfig(logger)
+	conf := conf.MustLoadConfig(logger)
 
 	// initialise Talker
-	t, err := internal.NewTalker(context.Background(), *c, logger)
+	t, err := internal.NewTalker(context.Background(), *conf, logger)
 	if err != nil {
 		logger.Sugar().Panicf("failed to create a talker: %+v", err)
 	}
-	if c.Server.EagerCheckProviders {
+	if conf.Server.EagerCheckProviders {
 		t.MustCheckProviders()
 	}
 
@@ -35,6 +35,15 @@ func main() {
 	e.Use(echozap.ZapLogger(logger))
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	// enable basic auth only when there is at least one pair of username and password
+	if len(conf.Server.BasicAuth) > 0 {
+		e.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+			if p := conf.Server.BasicAuth[username]; p != "" && p == password {
+				return true, nil
+			}
+			return false, nil
+		}))
+	}
 	// Routes
 	e.POST("/transcribe", t.Transcribe)
 	e.POST("/ask", t.Ask)
@@ -54,7 +63,7 @@ func main() {
 		e.DefaultHTTPErrorHandler(err, c)
 	}
 
-	addr := fmt.Sprintf(":%d", c.Server.Port)
+	addr := fmt.Sprintf(":%d", conf.Server.Port)
 	e.Logger.Fatal(e.Start(addr))
 }
 
