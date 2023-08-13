@@ -20,7 +20,7 @@
 # Do not touch the flowing 3 lines
 config.yaml
 talk.yaml
-google_credentials.json
+google-service-account-key.json
 
 # Go workspace file
 go.work

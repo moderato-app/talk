@@ -8,18 +8,18 @@ import (
 )
 
 const (
-	DefaultServerPort                = 8000
-	DefaultServerEagerCheckProviders = true
-	DefaultElevenLabsStability       = 0.5
-	DefaultElevenLabsClarity         = 0.5
-	DefaultGoogleTTSPathToKeyfile    = "./google_credentials.json"
-	DefaultGoogleTTSLanguageCode     = "en-US"
-	DefaultGoogleTTSGender           = "female"
-	DefaultGoogleTTSSpeakingRate     = 1
-	DefaultGoogleTTSPitch            = 0
-	DefaultGoogleTTSVolumeGainDb     = 0
-	DefaultChatGPTModel              = "gpt-3.5-turbo"
-	DefaultChatGPTMaxGenerationToken = 2000
+	DefaultServerPort                           = 8000
+	DefaultServerEagerCheckProviders            = true
+	DefaultElevenLabsStability                  = 0.5
+	DefaultElevenLabsClarity                    = 0.5
+	DefaultGoogleTTSPathToServiceAccountKeyFile = "./google-service-account-key.json"
+	DefaultGoogleTTSLanguageCode                = "en-US"
+	DefaultGoogleTTSGender                      = "female"
+	DefaultGoogleTTSSpeakingRate                = 1
+	DefaultGoogleTTSPitch                       = 0
+	DefaultGoogleTTSVolumeGainDb                = 0
+	DefaultChatGPTModel                         = "gpt-3.5-turbo"
+	DefaultChatGPTMaxGenerationToken            = 2000
 )
 
 func setDefaultValue() {
@@ -29,7 +29,7 @@ func setDefaultValue() {
 	viper.SetDefault("text-to-speech.elevenlabs.stability", DefaultElevenLabsStability)
 	viper.SetDefault("text-to-speech.elevenlabs.clarity", DefaultElevenLabsClarity)
 
-	viper.SetDefault("text-to-speech.google-text-to-speech.path-to-keyfile", DefaultGoogleTTSPathToKeyfile)
+	viper.SetDefault("text-to-speech.google-text-to-speech.path-to-service-account-key-file", DefaultGoogleTTSPathToServiceAccountKeyFile)
 	viper.SetDefault("text-to-speech.google-text-to-speech.gender", DefaultGoogleTTSGender)
 	viper.SetDefault("text-to-speech.google-text-to-speech.language-code", DefaultGoogleTTSLanguageCode)
 	viper.SetDefault("text-to-speech.google-text-to-speech.speaking-rate", DefaultGoogleTTSSpeakingRate)

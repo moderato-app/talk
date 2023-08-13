@@ -50,9 +50,9 @@ func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*
 			Clarity:   c.Clarity,
 			Logger:    logger,
 		}
-	} else if c := tc.TextToSpeech.GoogleTextTOSpeech; c.PathToKeyfile != "" {
+	} else if c := tc.TextToSpeech.GoogleTextTOSpeech; c.PathToServiceAccountKeyFile != "" {
 		// todo if proxy is not supported, use http client instead
-		client, err := texttospeech.NewClient(ctx, option.WithCredentialsFile(c.PathToKeyfile))
+		client, err := texttospeech.NewClient(ctx, option.WithCredentialsFile(c.PathToServiceAccountKeyFile))
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to initialise Google text-to-speech client")
 		}

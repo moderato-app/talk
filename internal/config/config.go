@@ -34,13 +34,13 @@ type ElevenLabsConfig struct {
 }
 
 type GoogleTextTOSpeechConfig struct {
-	PathToKeyfile string  `mapstructure:"path-to-keyfile"`
-	LanguageCode  string  `mapstructure:"language-code"`
-	VoiceID       string  `mapstructure:"voice-id"`
-	Gender        string  `mapstructure:"gender"`
-	SpeakingRate  float32 `mapstructure:"speaking-rate"`
-	Pitch         float32 `mapstructure:"pitch"`
-	VolumeGainDb  float32 `mapstructure:"volume-gain-db"`
+	PathToServiceAccountKeyFile string  `mapstructure:"path-to-service-account-key-file"`
+	LanguageCode                string  `mapstructure:"language-code"`
+	VoiceID                     string  `mapstructure:"voice-id"`
+	Gender                      string  `mapstructure:"gender"`
+	SpeakingRate                float32 `mapstructure:"speaking-rate"`
+	Pitch                       float32 `mapstructure:"pitch"`
+	VolumeGainDb                float32 `mapstructure:"volume-gain-db"`
 }
 
 type LlmConfig struct {

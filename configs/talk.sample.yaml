@@ -29,7 +29,7 @@ text-to-speech:
     clarity: 0.5
   google-text-to-speech:
     # Download a key file from Google Cloud. see https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console
-    path-to-keyfile: ./google_credentials.json
+    path-to-service-account-key-file: ./google-service-account-key.json
     # Optional. Use en-US if not specified. Choose a language-code from  https://www.rfc-editor.org/rfc/bcp/bcp47.txt
     language-code: en-US
     # Optional. Use this voice whenever available, or randomly select a voice from the voice list
