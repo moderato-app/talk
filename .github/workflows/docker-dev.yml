@@ -18,11 +18,6 @@ jobs:
         id: second
         run: echo "::set-output name=second::$(date +'%Y-%m-%dT%H-%M-%S')"
 
-      - name: Show TAG_NAME
-        run: echo $TAG_NAME
-        env:
-          TAG_NAME: dev-${{ steps.second.outputs.second }}
-
       -
         name: Check out the repo
         uses: actions/checkout@v3
@@ -45,6 +40,6 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
+          tags: ${{ env.IMAGE_NAME }}:dev-${{ env.second }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
