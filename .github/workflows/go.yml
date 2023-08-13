@@ -5,7 +5,7 @@ name: go build and test
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
