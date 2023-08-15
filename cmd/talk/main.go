@@ -30,6 +30,7 @@ func main() {
 	logger.Info("initialise web server...")
 	// Echo instance
 	e := echo.New()
+
 	e.HideBanner = true
 
 	// Middleware
@@ -46,11 +47,13 @@ func main() {
 		}))
 	}
 
+	g := e.Group("/api")
+
 	// Routes
-	e.POST("/transcribe", t.Transcribe)
-	e.POST("/ask", t.Ask)
-	e.GET("/speech/:id", t.Speech)
-	e.GET("/stat", t.Stat)
+	g.POST("/transcribe", t.Transcribe)
+	g.POST("/ask", t.Ask)
+	g.GET("/speech/:id", t.Speech)
+	g.GET("/stat", t.Stat)
 
 	//serve static files
 	w, err := fs.Sub(resource.Web, "web")
