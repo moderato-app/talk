@@ -52,7 +52,7 @@ func (t *Talker) Ask(c echo.Context) error {
 	vOption := providers.VOption{
 		LanguageCode: "en-GB",
 		Gender:       "female",
-		SpeakingRate: 1.0,
+		SpeakingRate: 0.8,
 		Pitch:        0,
 		VolumeGainDb: 0,
 		Stability:    0.3,
