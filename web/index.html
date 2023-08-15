@@ -73,7 +73,7 @@
             const textData = {conversation: conversation};
             $.ajax({
                 type: 'POST',
-                url: 'ask',
+                url: 'api/ask',
                 data: JSON.stringify(textData),
                 contentType: 'application/json',
                 success: (data) => {
@@ -86,7 +86,7 @@
                         waitUntilVisible: false,
                         cursorChar: "▊",
                     }).go();
-                    audioElement.src = "speech/" + speechId;
+                    audioElement.src = "api/speech/" + speechId;
                     audioElement.controls = true;
                     audioElement.play();
                     enableButton(recordButton);
@@ -114,7 +114,7 @@
                 formData.append('file', audioData, 'audio.wav');
                 $.ajax({
                     type: 'POST',
-                    url: 'transcribe',
+                    url: 'api/transcribe',
                     data: formData,
                     contentType: false,
                     processData: false,
