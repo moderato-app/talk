@@ -5,11 +5,12 @@
 </h1>
 
 # Roadmap
-- [ ] Google TTS
-- [ ] Google STT, OpenAI Whisper STT
+- [x] Google TTS
+- [ ] Google STT
+- [x] OpenAI Whisper STT
 - [ ] Setting language, speed, stability, etc
 - [ ] Choose voice
-- [ ] Websocket
+- [x] Websocket
 - [ ] Helm template
 - [ ] More LLMs other than ChatGPT
 - [ ] Download and import text history 
