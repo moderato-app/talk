@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"github.com/bubblelight/talk/internal/api"
 	"github.com/bubblelight/talk/pkg/providers"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -25,22 +26,19 @@ func (t *Talker) Transcribe(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	m := map[string]string{
-		"text": transcribe,
-	}
-	return c.JSON(http.StatusOK, m)
+	return c.JSON(http.StatusOK, api.TranscribeResp{Text: transcribe})
 }
 
 func (t *Talker) Ask(c echo.Context) error {
-	ask := new(Ask)
-	err := c.Bind(&ask)
+	askReq := new(api.AskReq)
+	err := c.Bind(&askReq)
 	if err != nil {
 		return err
 	}
-	if len(ask.Ms) == 0 {
+	if len(askReq.Ms) == 0 {
 		return c.String(http.StatusBadRequest, "conversation is empty")
 	}
-	content, err := t.LLM.Complete(c.Request().Context(), ask.Ms, nil)
+	content, err := t.LLM.Complete(c.Request().Context(), askReq.Ms, nil)
 	if err != nil {
 		return err
 	}
@@ -67,15 +65,7 @@ func (t *Talker) Ask(c echo.Context) error {
 	}
 
 	id := TalkCache.PutSpeech(bytes)
-	m := map[string]string{
-		"text":     content,
-		"speechId": id,
-	}
-	return c.JSON(http.StatusOK, m)
-}
-
-type Ask struct {
-	Ms []providers.Message `json:"conversation"`
+	return c.JSON(http.StatusOK, api.AskResp{Text: content, SpeechId: id})
 }
 
 func (t *Talker) Speech(c echo.Context) error {
