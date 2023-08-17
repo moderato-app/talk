@@ -4,6 +4,7 @@ import (
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 	"context"
 	"github.com/bubblelight/talk/internal/config"
+	"github.com/bubblelight/talk/pkg/client"
 	"github.com/bubblelight/talk/pkg/providers"
 	"github.com/haguro/elevenlabs-go"
 	"github.com/pkg/errors"
@@ -14,16 +15,16 @@ import (
 )
 
 type Talker struct {
-	providers.LLM
-	providers.SpeechToText
-	providers.TextToSpeech
+	client.LLM
+	client.SpeechToText
+	client.TextToSpeech
 	Logger *zap.Logger
 }
 
 func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*Talker, error) {
-	var llm providers.LLM
-	var stt providers.SpeechToText
-	var tts providers.TextToSpeech
+	var llm client.LLM
+	var stt client.SpeechToText
+	var tts client.TextToSpeech
 
 	// choose an llm provider
 	if c := tc.Llm.OpenAIChatGPT; c.APIKey != "" {

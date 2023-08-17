@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/bubblelight/talk/pkg/providers"
+	"github.com/bubblelight/talk/pkg/client"
 )
 
 const (
@@ -16,14 +16,14 @@ type InMeta struct {
 
 type InConversation struct {
 	InMeta
-	Conversation []providers.Message `json:"conversation"`
+	Conversation []client.Message `json:"conversation"`
 }
 
 type InAudio struct {
 	InMeta
-	Audio        []byte              `json:"audio"`
-	FileName     string              `json:"fileName"`
-	Conversation []providers.Message `json:"conversation"`
+	Audio        []byte           `json:"audio"`
+	FileName     string           `json:"fileName"`
+	Conversation []client.Message `json:"conversation"`
 }
 
 const (
@@ -42,7 +42,7 @@ type OutMeta struct {
 
 type OutMessage struct {
 	OutMeta
-	Message providers.Message `json:"message"`
+	Message client.Message `json:"message"`
 }
 
 type OutAudio struct {

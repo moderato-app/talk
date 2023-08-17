@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	. "github.com/bubblelight/talk/internal/api"
-	"github.com/bubblelight/talk/pkg/providers"
+	"github.com/bubblelight/talk/pkg/client"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
@@ -113,7 +113,7 @@ func (h *EventHandler) HandleConv(ctx context.Context, e *InConversation) {
 			ReplyToId: e.Id,
 			EOF:       true,
 		},
-		Message: providers.Message{Role: "assistant", Content: content},
+		Message: client.Message{Role: "assistant", Content: content},
 	}
 	// 2. Sends the answer to the client in a separate goroutine (concurrent execution)
 	go func() {
@@ -121,7 +121,7 @@ func (h *EventHandler) HandleConv(ctx context.Context, e *InConversation) {
 	}()
 
 	// there is no place to set vOption on web page, use hardcoded vOption in the moment
-	vOption := providers.VOption{
+	vOption := client.VOption{
 		LanguageCode: "en-GB",
 		Gender:       "female",
 		SpeakingRate: 0.8,
@@ -192,7 +192,7 @@ func (h *EventHandler) HandleAudio(ctx context.Context, e *InAudio) {
 			Type: InEventTypeConversation,
 		},
 		Conversation: append(e.Conversation,
-			providers.Message{
+			client.Message{
 				Role:    "user",
 				Content: text,
 			},
