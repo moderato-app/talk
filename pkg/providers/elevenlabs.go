@@ -2,6 +2,7 @@ package providers
 
 import (
 	"context"
+	"github.com/bubblelight/talk/pkg/client"
 	"github.com/haguro/elevenlabs-go"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -41,21 +42,21 @@ func (e *ElevenLabs) Quota(_ context.Context) (used, total int, err error) {
 	return subscription.CharacterCount, subscription.CharacterLimit, nil
 }
 
-func (e *ElevenLabs) Voices(_ context.Context) ([]Voice, error) {
+func (e *ElevenLabs) Voices(_ context.Context) ([]client.Voice, error) {
 	e.Logger.Info("get voices...")
 	voices, err := e.Client.GetVoices()
 	if err != nil {
 		return nil, errors.Wrap(err, "")
 	}
 	e.Logger.Sugar().Debug("result", voices)
-	gvs := make([]Voice, len(voices))
+	gvs := make([]client.Voice, len(voices))
 	for i, v := range voices {
 		gvs[i] = elevenlabsVoiceToGeneralVoice(v)
 	}
 	return gvs, nil
 }
 
-func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, voiceId string, o VOption) ([]byte, error) {
+func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, voiceId string, o client.VOption) ([]byte, error) {
 	e.Logger.Info("text to speech...")
 	req := elevenlabs.TextToSpeechRequest{
 		Text:    text,
@@ -102,7 +103,7 @@ func (e *ElevenLabs) chooseVoiceId(ctx context.Context, voiceId string) (string,
 	return id, nil
 }
 
-func (e *ElevenLabs) voiceSettings(o *VOption) *elevenlabs.VoiceSettings {
+func (e *ElevenLabs) voiceSettings(o *client.VOption) *elevenlabs.VoiceSettings {
 	stability := e.Stability
 	clarity := e.Clarity
 	// VOption has high priority
@@ -120,12 +121,12 @@ func (e *ElevenLabs) voiceSettings(o *VOption) *elevenlabs.VoiceSettings {
 	}
 }
 
-// elevenlabsVoiceToGeneralVoice convert elevenlabs.Voice to providers.Voice
-func elevenlabsVoiceToGeneralVoice(v elevenlabs.Voice) Voice {
+// elevenlabsVoiceToGeneralVoice convert elevenlabs.Voice to client.Voice
+func elevenlabsVoiceToGeneralVoice(v elevenlabs.Voice) client.Voice {
 	if v.Labels == nil {
 		v.Labels = map[string]string{}
 	}
-	return Voice{
+	return client.Voice{
 		Id:         v.VoiceId,
 		Name:       v.Name,
 		Lang:       "English", // ElevenLabs focuses only on English in the moment

@@ -1,9 +1,9 @@
 package api
 
-import "github.com/bubblelight/talk/pkg/providers"
+import "github.com/bubblelight/talk/pkg/client"
 
 type AskReq struct {
-	Ms []providers.Message `json:"conversation"`
+	Ms []client.Message `json:"conversation"`
 }
 
 type AskResp struct {
