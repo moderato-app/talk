@@ -2,6 +2,7 @@ package providers
 
 import (
 	"context"
+	"github.com/bubblelight/talk/pkg/client"
 	"github.com/pkg/errors"
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
@@ -19,11 +20,11 @@ type ChatGPT struct {
 }
 
 func (c *ChatGPT) MustFunction(_ context.Context) {
-	m := Message{
+	m := client.Message{
 		Role:    "user",
 		Content: "Hello!",
 	}
-	content, err := c.Complete(context.Background(), []Message{m}, nil)
+	content, err := c.Complete(context.Background(), []client.Message{m}, nil)
 	if err != nil {
 		c.Logger.Sugar().Panicf("failed to get response from ChatGPT server: %+v", err)
 	}
@@ -38,7 +39,7 @@ func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {
 	return 0, 0, nil
 }
 
-func (c *ChatGPT) Complete(ctx context.Context, ms []Message, o *COption) (string, error) {
+func (c *ChatGPT) Complete(ctx context.Context, ms []client.Message, o *client.COption) (string, error) {
 	c.Logger.Info("complete...")
 
 	messages := messageOfComplete(ms)
@@ -61,7 +62,7 @@ func (c *ChatGPT) Complete(ctx context.Context, ms []Message, o *COption) (strin
 	return content, nil
 }
 
-func messageOfComplete(ms []Message) []openai.ChatCompletionMessage {
+func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {
 	messages := []openai.ChatCompletionMessage{
 		{
 			Role:    openai.ChatMessageRoleSystem,
@@ -77,7 +78,7 @@ func messageOfComplete(ms []Message) []openai.ChatCompletionMessage {
 	return messages
 }
 
-func applyCOption(req *openai.ChatCompletionRequest, o *COption) {
+func applyCOption(req *openai.ChatCompletionRequest, o *client.COption) {
 	if o == nil {
 		return
 	}

@@ -5,6 +5,7 @@ import (
 	"cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	"context"
 	"fmt"
+	"github.com/bubblelight/talk/pkg/client"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -15,7 +16,7 @@ type GoogleTTS struct {
 }
 
 func (g *GoogleTTS) MustFunction(ctx context.Context) {
-	vOption := VOption{
+	vOption := client.VOption{
 		LanguageCode: "en-GB",
 		Gender:       "female",
 		SpeakingRate: 1.0,
@@ -46,7 +47,7 @@ func (g *GoogleTTS) Quota(_ context.Context) (used, total int, err error) {
 // Voices list available voices
 //
 // pass empty langCode or choose one from https://www.rfc-editor.org/rfc/bcp/bcp47.txt,
-func (g *GoogleTTS) Voices(ctx context.Context, langCode string) ([]Voice, error) {
+func (g *GoogleTTS) Voices(ctx context.Context, langCode string) ([]client.Voice, error) {
 	g.Logger.Info("get voices...")
 	resp, err := g.Client.ListVoices(ctx,
 		&texttospeechpb.ListVoicesRequest{
@@ -58,14 +59,14 @@ func (g *GoogleTTS) Voices(ctx context.Context, langCode string) ([]Voice, error
 	}
 	g.Logger.Sugar().Debug("result", resp)
 	voices := resp.GetVoices()
-	gvs := make([]Voice, len(voices))
+	gvs := make([]client.Voice, len(voices))
 	for i, v := range voices {
 		gvs[i] = googleVoiceToGeneralVoice(v)
 	}
 	return gvs, nil
 }
 
-func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId string, o VOption) ([]byte, error) {
+func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId string, o client.VOption) ([]byte, error) {
 	g.Logger.Info("text to speech...")
 
 	req := texttospeechpb.SynthesizeSpeechRequest{
@@ -93,15 +94,15 @@ func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId strin
 	return resp.AudioContent, nil
 }
 
-// elevenlabsVoiceToGeneralVoice convert texttospeechpb.Voice to providers.Voice
-func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) Voice {
+// elevenlabsVoiceToGeneralVoice convert texttospeechpb.Voice to client.Voice
+func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) client.Voice {
 	// Voice.LanguageCodes contains only one code; keep Voice.Lang as string type for simplicity
 	langCode := ""
 	if len(v.LanguageCodes) > 0 {
 		langCode = v.LanguageCodes[0]
 	}
 	gender := convertGender(v.SsmlGender)
-	return Voice{
+	return client.Voice{
 		Id:     v.Name,
 		Name:   v.Name,
 		Lang:   langCode,

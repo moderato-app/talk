@@ -3,7 +3,7 @@ package internal
 import (
 	"fmt"
 	"github.com/bubblelight/talk/internal/api"
-	"github.com/bubblelight/talk/pkg/providers"
+	"github.com/bubblelight/talk/pkg/client"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -47,7 +47,7 @@ func (t *Talker) Ask(c echo.Context) error {
 	}
 
 	// there is no place to set vOption on web page, use hard coded vOption in the moment
-	vOption := providers.VOption{
+	vOption := client.VOption{
 		LanguageCode: "en-GB",
 		Gender:       "female",
 		SpeakingRate: 0.8,
