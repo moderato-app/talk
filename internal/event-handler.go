@@ -7,7 +7,6 @@ import (
 	"fmt"
 	. "github.com/bubblelight/talk/internal/api"
 	"github.com/bubblelight/talk/pkg/client"
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -94,26 +93,26 @@ func (h *EventHandler) dispatch(message []byte) {
 // 4. Sends the audio to the client
 func (h *EventHandler) HandleConv(ctx context.Context, e *InConversation) {
 	if len(e.Conversation) == 0 {
-		h.writeEvent(OutMeta{Type: OutEventTypeMessage, ReplyToId: e.Id, Err: "conversation is empty"})
+		h.writeEvent(OutMeta{Type: OutEventTypeMessage, Id: e.Id, Err: "conversation is empty"})
 		return
 	}
 	// 1. Requests the answer from LLM (Language Model)
 	content, err := h.talker.LLM.Complete(ctx, e.Conversation, nil)
 	if err != nil {
-		h.writeEvent(OutMeta{Type: OutEventTypeMessage, ReplyToId: e.Id, Err: "got an error from LLM sever"})
+		h.writeEvent(OutMeta{Type: OutEventTypeMessage, Id: e.Id, Err: "got an error from LLM sever"})
 		return
 	}
 	if len(content) == 0 {
-		h.writeEvent(OutMeta{Type: OutEventTypeMessage, ReplyToId: e.Id, Err: "got empty content from LLM sever"})
+		h.writeEvent(OutMeta{Type: OutEventTypeMessage, Id: e.Id, Err: "got empty content from LLM sever"})
 		return
 	}
 	textEvent := OutMessage{
 		OutMeta: OutMeta{
-			Type:      OutEventTypeMessage,
-			ReplyToId: e.Id,
-			EOF:       true,
+			Type: OutEventTypeMessage,
+			Id:   e.Id,
+			EOF:  true,
 		},
-		Message: client.Message{Role: "assistant", Content: content},
+		Content: content,
 	}
 	// 2. Sends the answer to the client in a separate goroutine (concurrent execution)
 	go func() {
@@ -134,16 +133,16 @@ func (h *EventHandler) HandleConv(ctx context.Context, e *InConversation) {
 	// 3. Sends the answer to a text-to-speech server and obtains the corresponding audio
 	audio, err := h.talker.TextToSpeech.TextToSpeech(ctx, content, "", vOption)
 	if err != nil {
-		h.writeEvent(OutMeta{Type: OutEventTypeAudio, ReplyToId: e.Id, Err: "got empty content from text-to-speech sever"})
+		h.writeEvent(OutMeta{Type: OutEventTypeAudio, Id: e.Id, Err: "got empty content from text-to-speech sever"})
 		return
 	}
 
 	audioEvent := OutAudio{
 		OutMeta: OutMeta{
-			Type:      OutEventTypeAudio,
-			ReplyToId: e.Id,
-			Err:       "",
-			EOF:       true,
+			Type: OutEventTypeAudio,
+			Id:   e.Id,
+			Err:  "",
+			EOF:  true,
 		},
 		Audio:  audio,
 		Format: "audio/mp3",
@@ -172,11 +171,10 @@ func (h *EventHandler) HandleAudio(ctx context.Context, e *InAudio) {
 	}
 	transcriptionEvent := OutTranscription{
 		OutMeta: OutMeta{
-			Type:      OutEventTypeTranscription,
-			Id:        newEventId(),
-			ReplyToId: e.Id,
-			Err:       "",
-			EOF:       true,
+			Type: OutEventTypeTranscription,
+			Id:   e.Id,
+			Err:  "",
+			EOF:  true,
 		},
 		Text: text,
 	}
@@ -201,10 +199,6 @@ func (h *EventHandler) HandleAudio(ctx context.Context, e *InAudio) {
 	go func() {
 		h.HandleConv(ctx, &inConv)
 	}()
-}
-
-func newEventId() string {
-	return uuid.New().String()
 }
 
 // writeEvent
