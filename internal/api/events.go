@@ -33,16 +33,15 @@ const (
 )
 
 type OutMeta struct {
-	Type      string `json:"type"`
-	Id        string `json:"id"` // unique ID for every event
-	ReplyToId string `json:"replyToId"`
-	Err       string `json:"err"`
-	EOF       bool   `json:"eof"` // Indicates whether it is the last text in the assistant of SSE when set to true
+	Type string `json:"type"`
+	Id   string `json:"id"` // unique ID for every event
+	Err  string `json:"err"`
+	EOF  bool   `json:"eof"` // Indicates whether it is the last text in the assistant of SSE when set to true
 }
 
 type OutMessage struct {
 	OutMeta
-	Message client.Message `json:"message"`
+	Content string `json:"content"`
 }
 
 type OutAudio struct {
