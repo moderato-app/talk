@@ -87,37 +87,57 @@ func (h *EventHandler) dispatch(message []byte) {
 
 // HandleConv
 //
-// 1. Requests the answer from LLM (Language Model)
-// 2. Sends the answer to the client in a separate goroutine (concurrent execution)
-// 3. Sends the answer to a text-to-speech server and obtains the corresponding audio
-// 4. Sends the audio to the client
+// 1. Ask for an answer from LLM (Large Language Model)
+// 2. Send the answer to the client in a separate goroutine (concurrent execution)
+// 3. Send the answer to a text-to-speech server and obtains the corresponding audio
+// 4. Send the audio to the client
 func (h *EventHandler) HandleConv(ctx context.Context, e *InConversation) {
 	if len(e.Conversation) == 0 {
 		h.writeEvent(OutMeta{Type: OutEventTypeMessage, Id: e.Id, Err: "conversation is empty"})
 		return
 	}
-	// 1. Requests the answer from LLM (Language Model)
-	content, err := h.talker.LLM.Complete(ctx, e.Conversation, nil)
-	if err != nil {
-		h.writeEvent(OutMeta{Type: OutEventTypeMessage, Id: e.Id, Err: "got an error from LLM sever"})
+	// 1. Ask for an answer from LLM (Large Language Model)
+	ch := h.talker.LLM.CompletionStream(ctx, e.Conversation, nil)
+	content := ""
+	for {
+		chunk, ok := <-ch
+		h.logger.Sugar().Debug(chunk)
+		if ok {
+			if chunk.Err != nil {
+				// fixme: this may block a little while, refactor this when writing SSE
+				h.writeEvent(OutMeta{Type: OutEventTypeMessage, Id: e.Id, Err: "got an error from LLM sever"})
+				return
+			}
+			textEvent := OutMessage{
+				OutMeta: OutMeta{
+					Type: OutEventTypeMessage,
+					Id:   e.Id,
+					EOF:  false,
+				},
+				Content: chunk.Message,
+			}
+			content += chunk.Message
+			// fixme: this may block a little while, refactor this when writing SSE
+			h.writeEvent(textEvent)
+		} else {
+			// if ch is closed
+			textEvent := OutMessage{
+				OutMeta: OutMeta{
+					Type: OutEventTypeMessage,
+					Id:   e.Id,
+					EOF:  true,
+				},
+				Content: "",
+			}
+			// fixme: this may block a little while, refactor this when writing SSE
+			h.writeEvent(textEvent)
+			break
+		}
+	}
+	if content == "" {
+		h.logger.Sugar().Error("content should not be empty")
 		return
 	}
-	if len(content) == 0 {
-		h.writeEvent(OutMeta{Type: OutEventTypeMessage, Id: e.Id, Err: "got empty content from LLM sever"})
-		return
-	}
-	textEvent := OutMessage{
-		OutMeta: OutMeta{
-			Type: OutEventTypeMessage,
-			Id:   e.Id,
-			EOF:  true,
-		},
-		Content: content,
-	}
-	// 2. Sends the answer to the client in a separate goroutine (concurrent execution)
-	go func() {
-		h.writeEvent(textEvent)
-	}()
 
 	// there is no place to set vOption on web page, use hardcoded vOption in the moment
 	vOption := client.VOption{
@@ -130,7 +150,7 @@ func (h *EventHandler) HandleConv(ctx context.Context, e *InConversation) {
 		Clarity:      0.5,
 	}
 
-	// 3. Sends the answer to a text-to-speech server and obtains the corresponding audio
+	// 3. Send the answer to a text-to-speech server and obtains the corresponding audio
 	audio, err := h.talker.TextToSpeech.TextToSpeech(ctx, content, "", vOption)
 	if err != nil {
 		h.writeEvent(OutMeta{Type: OutEventTypeAudio, Id: e.Id, Err: "got empty content from text-to-speech sever"})
@@ -147,7 +167,7 @@ func (h *EventHandler) HandleConv(ctx context.Context, e *InConversation) {
 		Audio:  audio,
 		Format: "audio/mp3",
 	}
-	// 4. Sends the audio to the client
+	// 4. Send the audio to the client
 	h.writeEvent(audioEvent)
 }
 
@@ -210,7 +230,7 @@ func (h *EventHandler) writeEvent(event interface{}) {
 	if err != nil {
 		h.logger.Sugar().Error(err)
 	}
-	h.logger.Sugar().Debug("write event to socket", "len", len(marshal))
+	h.logger.Sugar().Debugw("write event to socket", "len", len(marshal))
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	err = h.conn.WriteMessage(websocket.TextMessage, marshal)

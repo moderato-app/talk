@@ -54,6 +54,9 @@ func (c *Whisper) SpeechToText(ctx context.Context, r io.Reader) (string, error)
 		return "", errors.Wrap(err, "")
 	}
 	c.Logger.Sugar().Debug("transcribe result", resp)
+	if len(resp.Text) == 0 {
+		return "", errors.Wrap(err, "content of transcription is empty ")
+	}
 	transcription := resp.Text
 	c.Logger.Sugar().Info("transcription text:", transcription)
 	return transcription, nil

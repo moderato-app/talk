@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
+	"io"
 )
 
 const (
@@ -24,7 +25,7 @@ func (c *ChatGPT) MustFunction(_ context.Context) {
 		Role:    "user",
 		Content: "Hello!",
 	}
-	content, err := c.Complete(context.Background(), []client.Message{m}, nil)
+	content, err := c.Completion(context.Background(), []client.Message{m}, nil)
 	if err != nil {
 		c.Logger.Sugar().Panicf("failed to get response from ChatGPT server: %+v", err)
 	}
@@ -39,8 +40,8 @@ func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {
 	return 0, 0, nil
 }
 
-func (c *ChatGPT) Complete(ctx context.Context, ms []client.Message, o *client.COption) (string, error) {
-	c.Logger.Info("complete...")
+func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, o *client.COption) (string, error) {
+	c.Logger.Info("completion...")
 
 	messages := messageOfComplete(ms)
 
@@ -60,6 +61,51 @@ func (c *ChatGPT) Complete(ctx context.Context, ms []client.Message, o *client.C
 	content := resp.Choices[0].Message.Content
 	c.Logger.Sugar().Info("content:", content)
 	return content, nil
+}
+
+// CompletionStream
+//
+// Return only one chunk that contains the whole content if stream is not supported.
+// To make sure the chan closes eventually, caller should either read the last chunk from chan
+// or got a chunk whose Err != nil
+func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, o *client.COption) <-chan client.Chunk {
+	c.Logger.Info("completion stream...")
+
+	messages := messageOfComplete(ms)
+
+	req := openai.ChatCompletionRequest{
+		Model:     c.Model,
+		MaxTokens: c.MaxGenerationToken,
+		Messages:  messages,
+	}
+	applyCOption(&req, o)
+
+	ch := make(chan client.Chunk, 10)
+
+	go func() {
+		stream, err := c.Client.CreateChatCompletionStream(ctx, req)
+		if err != nil {
+			ch <- client.Chunk{Message: "", Err: err}
+			return
+		}
+		defer stream.Close()
+
+		for {
+			response, err := stream.Recv()
+			if errors.Is(err, io.EOF) {
+				close(ch)
+				return
+			}
+
+			if err != nil {
+				ch <- client.Chunk{Message: "", Err: err}
+				return
+			}
+
+			ch <- client.Chunk{Message: response.Choices[0].Delta.Content, Err: nil}
+		}
+	}()
+	return ch
 }
 
 func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {

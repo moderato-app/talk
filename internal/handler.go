@@ -38,7 +38,7 @@ func (t *Talker) Ask(c echo.Context) error {
 	if len(askReq.Ms) == 0 {
 		return c.String(http.StatusBadRequest, "conversation is empty")
 	}
-	content, err := t.LLM.Complete(c.Request().Context(), askReq.Ms, nil)
+	content, err := t.LLM.Completion(c.Request().Context(), askReq.Ms, nil)
 	if err != nil {
 		return err
 	}
