@@ -4,14 +4,23 @@
   <br>
 </h1>
 
+# Feature
+
+- Voice focused chatting
+- Modern UI
+- Mobile-first, desktop-friendly
+- Single binary
+
 # Roadmap
+
 - [x] Google TTS
 - [ ] Google STT
 - [x] OpenAI Whisper STT
 - [ ] Setting language, speed, stability, etc
 - [ ] Choose voice
 - [x] Websocket
+- [ ] Server Side Events(SSE)
 - [ ] Helm template
 - [ ] More LLMs other than ChatGPT
-- [ ] Download and import text history 
+- [ ] Download and import text history
 - [ ] Download conversation MP3
