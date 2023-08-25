@@ -7,7 +7,11 @@ import (
 type LLM interface {
 	MustFunction
 	Quota
-	Complete(ctx context.Context, ms []Message, o *COption) (string, error)
+	Completion(ctx context.Context, ms []Message, o *COption) (string, error)
+	// CompletionStream
+	//
+	// return an error if stream is not supported
+	CompletionStream(ctx context.Context, ms []Message, o *COption) <-chan Chunk
 }
 
 type Message struct {
@@ -18,4 +22,13 @@ type Message struct {
 type COption struct {
 	Model              string // optional
 	MaxGenerationToken int    // optional
+}
+
+type Model struct {
+	Name string `json:"name"`
+}
+
+type Chunk struct {
+	Message string
+	Err     error
 }
