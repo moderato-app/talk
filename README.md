@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="https://socialify.git.ci/proxoar/talk/image?description=1&font=Raleway&language=1&name=1&owner=1&pattern=Diagonal%20Stripes&theme=Light" alt="Markdownify" width="500">
+  <img src="https://socialify.git.ci/proxoar/talk/image?description=1&name=1&owner=1&pattern=Diagonal%20Stripes&theme=Light" alt="Markdownify" width="500">
   <br>
 </h1>
 
