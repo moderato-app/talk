@@ -22,7 +22,7 @@ const (
 )
 
 // supported params by client
-// todo 发送的时候用这个类，接收的时候用结构化的类unmarshal
+// todo
 type SupportedParamResp struct {
 	LLMParam []Param
 	STTParam []Param

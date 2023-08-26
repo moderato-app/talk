@@ -13,7 +13,6 @@ type WebsocketHandler struct {
 }
 
 func (w *WebsocketHandler) HandleWebSocket(c echo.Context) error {
-	// 将HTTP连接升级为WebSocket连接
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
