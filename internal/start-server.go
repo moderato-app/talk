@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/brpaz/echozap"
-	resource "github.com/bubblelight/talk"
+	talk "github.com/bubblelight/talk"
 	"github.com/bubblelight/talk/internal/config"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"golang.org/x/crypto/acme/autocert"
+	_ "golang.org/x/crypto/acme/autocert"
 	"io/fs"
 	"os"
 )
@@ -31,10 +33,8 @@ func StartServer() {
 	logger.Info("initialise web server...")
 	// Echo instance
 	e := echo.New()
-	// 设置日志输出到标准输出
 	e.Logger.SetOutput(os.Stdout)
 
-	// 设置日志级别为 debug
 	e.Logger.SetLevel(log.DEBUG)
 
 	e.HideBanner = true
@@ -61,7 +61,7 @@ func StartServer() {
 	apiGroup.GET("/stat", talker.Stat)
 
 	//route static files
-	w, err := fs.Sub(resource.Web, "web")
+	w, err := fs.Sub(talk.Web, "web")
 	if err != nil {
 		logger.Sugar().Panicf("%+v", err)
 	}
@@ -73,6 +73,12 @@ func StartServer() {
 	wh := &WebsocketHandler{talker: talker, logger: logger}
 	// route websocket
 	e.GET("/ws", wh.HandleWebSocket)
+
+	e.AutoTLSManager = autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("localhost"),
+		Cache:      autocert.DirCache("certs"),
+	}
 
 	addr := fmt.Sprintf(":%d", conf.Server.Port)
 	e.Logger.Fatal(e.Start(addr))
