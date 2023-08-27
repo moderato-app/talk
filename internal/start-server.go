@@ -3,6 +3,9 @@ package internal
 import (
 	"context"
 	"fmt"
+	"io/fs"
+	"os"
+
 	"github.com/brpaz/echozap"
 	talk "github.com/bubblelight/talk"
 	"github.com/bubblelight/talk/internal/config"
@@ -11,8 +14,6 @@ import (
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/acme/autocert"
 	_ "golang.org/x/crypto/acme/autocert"
-	"io/fs"
-	"os"
 )
 
 func StartServer() {
@@ -24,7 +25,7 @@ func StartServer() {
 	// initialise Talker
 	talker, err := NewTalker(context.Background(), *conf, logger)
 	if err != nil {
-		logger.Sugar().Panicf("failed to create a talker: %+v", err)
+		logger.Sugar().Panic("failed to create a talker:", err)
 	}
 	if conf.Server.ProvidersMustFunction {
 		talker.ProvidersMustFunction()
@@ -63,12 +64,9 @@ func StartServer() {
 	//route static files
 	w, err := fs.Sub(talk.Web, "web")
 	if err != nil {
-		logger.Sugar().Panicf("%+v", err)
+		logger.Sugar().Panic(err)
 	}
 	e.StaticFS("/", w)
-
-	// Custom HTTP error handler
-	e.HTTPErrorHandler = ErrorHandler
 
 	wh := &WebsocketHandler{talker: talker, logger: logger}
 	// route websocket

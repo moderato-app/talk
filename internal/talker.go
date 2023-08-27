@@ -1,17 +1,19 @@
 package internal
 
 import (
-	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 	"context"
+	"errors"
+	"fmt"
+	"time"
+
+	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 	"github.com/bubblelight/talk/internal/config"
 	"github.com/bubblelight/talk/pkg/client"
 	"github.com/bubblelight/talk/pkg/providers"
 	"github.com/haguro/elevenlabs-go"
-	"github.com/pkg/errors"
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
 	"google.golang.org/api/option"
-	"time"
 )
 
 type Talker struct {
@@ -26,14 +28,14 @@ func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*
 	var stt client.SpeechToText
 	var tts client.TextToSpeech
 
-	// choose an llm provider
-	if c := tc.Llm.OpenAIChatGPT; c.APIKey != "" {
-		// the underlying http.Client uses proxy from environment by default
-		client := openai.NewClient(c.APIKey)
+	// choose an LLM provider
+	if cfg := tc.Llm.OpenAIChatGPT; cfg.APIKey != "" {
+		// by default, the underlying http.Client utilizes the proxy from the environment.
+		c := openai.NewClient(cfg.APIKey)
 		llm = &providers.ChatGPT{
-			Client:             client,
-			Model:              c.Model,
-			MaxGenerationToken: c.MaxGenerationToken,
+			Client:             c,
+			Model:              cfg.Model,
+			MaxGenerationToken: cfg.MaxGenerationToken,
 			Logger:             logger,
 		}
 	} else {
@@ -41,32 +43,32 @@ func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*
 	}
 
 	// choose a text-to-speech provider
-	if c := tc.TextToSpeech.ElevenLabs; c.APIKey != "" {
+	if cfg := tc.TextToSpeech.ElevenLabs; cfg.APIKey != "" {
 		// elevenlabs.Client create a new http.Client everytime it makes a request
-		// it uses proxy from environment by default
-		client := elevenlabs.NewClient(ctx, c.APIKey, 30*time.Second)
+		// by default, the underlying http.Client utilizes the proxy from the environment.
+		c := elevenlabs.NewClient(ctx, cfg.APIKey, 30*time.Second)
 		tts = &providers.ElevenLabs{
-			Client:    client,
-			Stability: c.Stability,
-			Clarity:   c.Clarity,
+			Client:    c,
+			Stability: cfg.Stability,
+			Clarity:   cfg.Clarity,
 			Logger:    logger,
 		}
-	} else if c := tc.TextToSpeech.GoogleTextTOSpeech; c.PathToServiceAccountKeyFile != "" {
-		// todo if proxy is not supported, use http client instead
-		client, err := texttospeech.NewClient(ctx, option.WithCredentialsFile(c.PathToServiceAccountKeyFile))
+	} else if cfg := tc.TextToSpeech.GoogleTextTOSpeech; cfg.PathToServiceAccountKeyFile != "" {
+		// by default, the underlying http.Client utilizes the proxy from the environment.
+		c, err := texttospeech.NewClient(ctx, option.WithCredentialsFile(cfg.PathToServiceAccountKeyFile))
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to initialise Google text-to-speech client")
+			return nil, fmt.Errorf("failed to initialise Google text-to-speech client: %v", err)
 		}
-		tts = &providers.GoogleTTS{Client: client, Logger: logger}
+		tts = &providers.GoogleTTS{Client: c, Logger: logger}
 	} else {
 		return nil, errors.New("no text-to-speech provider was found")
 	}
 
 	// choose a speech-to-text provider
-	if c := tc.SpeechToText.OpenAIWhisper; c.APIKey != "" {
-		// the underlying http.Client uses proxy from environment by default
-		client := openai.NewClient(c.APIKey)
-		stt = &providers.Whisper{Client: client, Logger: logger}
+	if cfg := tc.SpeechToText.OpenAIWhisper; cfg.APIKey != "" {
+		// by default, the underlying http.Client utilizes the proxy from the environment.
+		c := openai.NewClient(cfg.APIKey)
+		stt = &providers.Whisper{Client: c, Logger: logger}
 	} else {
 		return nil, errors.New("no speech-to-text provider was found")
 	}
