@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -48,8 +47,7 @@ func readFile() error {
 	viper.AddConfigPath("$HOME/.talk")
 	viper.AddConfigPath("$HOME/")
 	viper.AddConfigPath(".")
-	err := viper.ReadInConfig() // Find and read the config file
-	return errors.Wrap(err, "")
+	return viper.ReadInConfig() // Find and read the config file
 }
 
 func parseFlag() error {
@@ -67,17 +65,17 @@ func LoadConfig(logger *zap.Logger) (*TalkConfig, error) {
 	setDefaultValue()
 	err := readFile()
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot readFile")
+		return nil, err
 	}
 	err = parseFlag()
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot parseFlag")
+		return nil, err
 	}
 	bindEnv()
 	c := TalkConfig{}
 	err = viper.UnmarshalExact(&c)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot unmarshal into config")
+		return nil, err
 	}
 	return &c, nil
 }
@@ -85,7 +83,7 @@ func LoadConfig(logger *zap.Logger) (*TalkConfig, error) {
 func MustLoadConfig(logger *zap.Logger) *TalkConfig {
 	c, err := LoadConfig(logger)
 	if err != nil {
-		logger.Sugar().Panicf("%+v", err)
+		logger.Sugar().Panic(err)
 	}
 	return c
 }

@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"sync"
+
 	. "github.com/bubblelight/talk/internal/api"
 	"github.com/bubblelight/talk/pkg/client"
 	"github.com/gorilla/websocket"
-	"github.com/pkg/errors"
+
 	"go.uber.org/zap"
-	"sync"
 )
 
 // EventHandler handle all events from a websocket.Conn

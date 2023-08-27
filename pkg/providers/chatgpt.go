@@ -2,11 +2,14 @@ package providers
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"io"
+
 	"github.com/bubblelight/talk/pkg/client"
-	"github.com/pkg/errors"
+
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
-	"io"
 )
 
 const (
@@ -27,7 +30,7 @@ func (c *ChatGPT) MustFunction(_ context.Context) {
 	}
 	content, err := c.Completion(context.Background(), []client.Message{m}, nil)
 	if err != nil {
-		c.Logger.Sugar().Panicf("failed to get response from ChatGPT server: %+v", err)
+		c.Logger.Sugar().Panic("failed to get response from ChatGPT server: ", err)
 	}
 	if len(content) == 0 {
 		c.Logger.Warn(`bad smell: got empty content from ChatGPT server`)
@@ -54,7 +57,7 @@ func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, o *client
 
 	resp, err := c.Client.CreateChatCompletion(ctx, req)
 	if err != nil {
-		return "", errors.Wrap(err, "")
+		return "", fmt.Errorf("CreateChatCompletion %+v: %v", *o, err)
 	}
 
 	c.Logger.Sugar().Debug("complete result", resp)

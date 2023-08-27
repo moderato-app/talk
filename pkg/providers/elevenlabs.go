@@ -2,9 +2,12 @@ package providers
 
 import (
 	"context"
+	"errors"
+	"fmt"
+
 	"github.com/bubblelight/talk/pkg/client"
 	"github.com/haguro/elevenlabs-go"
-	"github.com/pkg/errors"
+
 	"go.uber.org/zap"
 )
 
@@ -36,7 +39,7 @@ func (e *ElevenLabs) Quota(_ context.Context) (used, total int, err error) {
 	e.Logger.Info("get subscription...")
 	subscription, err := e.Client.GetSubscription()
 	if err != nil {
-		return 0, 0, errors.Wrap(err, "")
+		return 0, 0, err
 	}
 	e.Logger.Sugar().Debug("get subscription result", subscription)
 	return subscription.CharacterCount, subscription.CharacterLimit, nil
@@ -46,7 +49,7 @@ func (e *ElevenLabs) Voices(_ context.Context) ([]client.Voice, error) {
 	e.Logger.Info("get voices...")
 	voices, err := e.Client.GetVoices()
 	if err != nil {
-		return nil, errors.Wrap(err, "")
+		return nil, err
 	}
 	e.Logger.Sugar().Debug("result", voices)
 	gvs := make([]client.Voice, len(voices))
@@ -68,11 +71,11 @@ func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, voiceId stri
 	}
 	id, err := e.chooseVoiceId(ctx, voiceId)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("chooseVoiceId %s %v", voiceId, err)
 	}
 	bytes, err := e.Client.TextToSpeech(id, req)
 	if err != nil {
-		return nil, errors.Wrap(err, "")
+		return nil, fmt.Errorf("TextToSpeech %s %v", id, err)
 	}
 	e.Logger.Sugar().Debug("text to speech result, audio bytes length:", len(bytes))
 	return bytes, nil

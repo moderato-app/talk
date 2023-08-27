@@ -2,12 +2,14 @@ package providers
 
 import (
 	"context"
-	resource "github.com/bubblelight/talk"
-	"github.com/pkg/errors"
-	"github.com/sashabaranov/go-openai"
-	"go.uber.org/zap"
+	"errors"
 	"io"
 	"strings"
+
+	resource "github.com/bubblelight/talk"
+
+	"github.com/sashabaranov/go-openai"
+	"go.uber.org/zap"
 )
 
 const (
@@ -51,11 +53,11 @@ func (c *Whisper) SpeechToText(ctx context.Context, r io.Reader) (string, error)
 	)
 
 	if err != nil {
-		return "", errors.Wrap(err, "")
+		return "", err
 	}
 	c.Logger.Sugar().Debug("transcribe result", resp)
 	if len(resp.Text) == 0 {
-		return "", errors.Wrap(err, "content of transcription is empty ")
+		return "", errors.New("content of transcription is empty: " + err.Error())
 	}
 	transcription := resp.Text
 	c.Logger.Sugar().Info("transcription text:", transcription)
