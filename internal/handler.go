@@ -2,16 +2,12 @@ package internal
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/bubblelight/talk/internal/api"
 	"github.com/bubblelight/talk/pkg/client"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
-
-func ErrorHandler(err error, c echo.Context) {
-	fmt.Printf(" %+v", err)
-	c.Echo().DefaultHTTPErrorHandler(err, c)
-}
 
 func (t *Talker) Transcribe(c echo.Context) error {
 	fh, err := c.FormFile("file")

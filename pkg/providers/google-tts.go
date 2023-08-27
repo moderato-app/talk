@@ -1,12 +1,13 @@
 package providers
 
 import (
-	texttospeech "cloud.google.com/go/texttospeech/apiv1"
-	"cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	"context"
 	"fmt"
+
+	texttospeech "cloud.google.com/go/texttospeech/apiv1"
+	"cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	"github.com/bubblelight/talk/pkg/client"
-	"github.com/pkg/errors"
+
 	"go.uber.org/zap"
 )
 
@@ -55,7 +56,7 @@ func (g *GoogleTTS) Voices(ctx context.Context, langCode string) ([]client.Voice
 		},
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "")
+		return nil, fmt.Errorf("ListVoices %s %v", langCode, err)
 	}
 	g.Logger.Sugar().Debug("result", resp)
 	voices := resp.GetVoices()
@@ -68,7 +69,7 @@ func (g *GoogleTTS) Voices(ctx context.Context, langCode string) ([]client.Voice
 
 func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId string, o client.VOption) ([]byte, error) {
 	g.Logger.Info("text to speech...")
-
+	g.Logger.Sugar().Debugf("TextToSpeech %s %s %+v", text, voiceId, o)
 	req := texttospeechpb.SynthesizeSpeechRequest{
 		Input: &texttospeechpb.SynthesisInput{
 			InputSource: &texttospeechpb.SynthesisInput_Text{Text: text},
@@ -76,7 +77,7 @@ func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId strin
 		Voice: &texttospeechpb.VoiceSelectionParams{
 			LanguageCode: o.LanguageCode,
 			Name:         voiceId,
-			SsmlGender:   convertGender2(o.Gender),
+			SsmlGender:   mustConvertGender2(o.Gender),
 		},
 		AudioConfig: &texttospeechpb.AudioConfig{
 			SpeakingRate:  o.SpeakingRate,
@@ -88,7 +89,7 @@ func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId strin
 
 	resp, err := g.Client.SynthesizeSpeech(ctx, &req)
 	if err != nil {
-		return nil, errors.Wrap(err, "")
+		return nil, fmt.Errorf("SynthesizeSpeech: %v", err)
 	}
 	g.Logger.Sugar().Debug("text to speech result, audio bytes length:", len(resp.AudioContent))
 	return resp.AudioContent, nil
@@ -101,7 +102,7 @@ func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) client.Voice {
 	if len(v.LanguageCodes) > 0 {
 		langCode = v.LanguageCodes[0]
 	}
-	gender := convertGender(v.SsmlGender)
+	gender := mustConvertGender(v.SsmlGender)
 	return client.Voice{
 		Id:     v.Name,
 		Name:   v.Name,
@@ -111,7 +112,7 @@ func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) client.Voice {
 	}
 }
 
-func convertGender(g texttospeechpb.SsmlVoiceGender) string {
+func mustConvertGender(g texttospeechpb.SsmlVoiceGender) string {
 	switch g {
 	case texttospeechpb.SsmlVoiceGender_SSML_VOICE_GENDER_UNSPECIFIED:
 		return "unspecified"
@@ -126,7 +127,7 @@ func convertGender(g texttospeechpb.SsmlVoiceGender) string {
 	}
 }
 
-func convertGender2(g string) texttospeechpb.SsmlVoiceGender {
+func mustConvertGender2(g string) texttospeechpb.SsmlVoiceGender {
 	switch g {
 	case "unspecified":
 		return texttospeechpb.SsmlVoiceGender_SSML_VOICE_GENDER_UNSPECIFIED
