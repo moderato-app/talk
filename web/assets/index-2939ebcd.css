@@ -922,6 +922,9 @@ video {
 .mr-2 {
   margin-right: 0.5rem;
 }
+.mr-auto {
+  margin-right: auto;
+}
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -972,6 +975,9 @@ video {
 }
 .w-screen {
   width: 100vw;
+}
+.max-w-1\/2 {
+  max-width: 300px;
 }
 .max-w-2xl {
   max-width: 42rem;
