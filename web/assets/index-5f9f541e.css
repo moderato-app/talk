@@ -895,6 +895,12 @@ video {
 .prose :where(.prose > :last-child):not(:where([class~="not-prose"] *)) {
   margin-bottom: 0;
 }
+.fixed {
+  position: fixed;
+}
+.inset-0 {
+  inset: 0px;
+}
 .bottom-0 {
   bottom: 0px;
 }
@@ -946,6 +952,9 @@ video {
 .h-20 {
   height: 5rem;
 }
+.h-4\/5 {
+  height: 80%;
+}
 .h-5 {
   height: 1.25rem;
 }
@@ -960,6 +969,9 @@ video {
 }
 .w-10 {
   width: 2.5rem;
+}
+.w-4\/5 {
+  width: 80%;
 }
 .w-5 {
   width: 1.25rem;
@@ -1078,6 +1090,9 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+.bg-opacity-50 {
+  --tw-bg-opacity: 0.5;
 }
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;

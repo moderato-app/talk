@@ -7891,13 +7891,16 @@ class r extends s$1 {
   }
 }
 class MyRecorder {
-  constructor() {
+  constructor(recordingMimeType) {
     __publicField(this, "r");
     __publicField(this, "recodingStatus");
     __publicField(this, "onStartF");
     __publicField(this, "onDoneF");
     __publicField(this, "onCancelF");
-    this.r = r.create();
+    this.r = r.create({
+      mimeType: recordingMimeType == null ? void 0 : recordingMimeType.mimeType,
+      audioBitsPerSecond: 1e5
+    });
     this.recodingStatus = "init-idle";
     this.onStartF = () => {
     };
@@ -7962,11 +7965,70 @@ class MyRecorder {
     }
   }
 }
+const base64ToBlob = (base64String, mimeType) => {
+  console.debug("decoding base64(truncated to 100 chars)", base64String.slice(0, 100));
+  const byteCharacters = atob(base64String);
+  const byteNumbers = [];
+  for (let i2 = 0; i2 < byteCharacters.length; i2++) {
+    byteNumbers.push(byteCharacters.charCodeAt(i2));
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: mimeType });
+};
+const timeElapsedMMSS = (duration) => {
+  const seconds = Math.floor(duration / 1e3);
+  const minutes = Math.floor(seconds % 3600 / 60);
+  return `${padZero(minutes)}:${padZero(seconds)}`;
+};
+const padZero = (num) => {
+  return num.toString().padStart(2, "0");
+};
+const historyMessages = (qaSlice, maxHistoryMessage) => {
+  if (maxHistoryMessage <= 0) {
+    return [];
+  }
+  let messages = [];
+  qaSlice.map((qa2) => qa2.que.text).filter((t3) => t3.status == "received").forEach((t3) => messages.push({ role: "user", content: t3.text }));
+  qaSlice.map((qa2) => qa2.ans.text).filter((t3) => t3.status == "received").forEach((t3) => messages.push({ role: "assistant", content: t3.text }));
+  messages = messages.slice(-maxHistoryMessage);
+  return messages;
+};
+function currentProtocolHostPortPath() {
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  const port = window.location.port;
+  const path = window.location.pathname;
+  return `${protocol}//${hostname}:${port}/${path}`;
+}
+function joinUrl(...parts) {
+  return parts.map((part) => part.replace(/^\/+|\/+$/g, "")).join("/");
+}
+function randomHash(length) {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let hash = "";
+  for (let i2 = 0; i2 < length; i2++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    hash += characters.charAt(randomIndex);
+  }
+  return hash;
+}
+const popularMimeTypes = [
+  { mimeType: "audio/webm; codecs=vp9", fileName: "audio.webm" },
+  { mimeType: "audio/webm; codecs=opus", fileName: "audio.webm" },
+  { mimeType: "audio/webm", fileName: "audio.webm" },
+  { mimeType: "audio/mp4", fileName: "audio.mp4" }
+];
+function chooseAudioMimeType() {
+  const find = popularMimeTypes.find((m2) => MediaRecorder.isTypeSupported(m2.mimeType));
+  console.debug("found mimeType: ", find);
+  return find;
+}
 const useRecorderStore = create(
   (set2) => ({
     isRecording: false,
     duration: 0,
-    recorder: new MyRecorder(),
+    recordingMimeType: chooseAudioMimeType(),
+    recorder: new MyRecorder(chooseAudioMimeType()),
     setIsRecording: (isRecording) => set2((state) => ({
       ...state,
       isRecording
@@ -10192,16 +10254,18 @@ const Audio = ({ audio, self: self2 }) => {
       return;
     }
     if (["sent", "received"].includes(audio.status)) {
-      getBlob(audio.audioId).then((r2) => {
-        if (r2) {
-          const url = URL.createObjectURL(r2.blob);
-          setAudioUrl(url);
-        } else {
-          console.error("audio blob not found");
-        }
-      }).catch((e2) => {
-        console.error("failed to get audio blob", audio.audioId, e2);
-      });
+      if (audio.audioId) {
+        getBlob(audio.audioId).then((r2) => {
+          if (r2) {
+            const url = URL.createObjectURL(r2.blob);
+            setAudioUrl(url);
+          } else {
+            console.error("audio blob not found");
+          }
+        }).catch((e2) => {
+          console.error("failed to get audio blob", audio.audioId, e2);
+        });
+      }
     }
   }, [audio]);
   if (!audio) {
@@ -10326,10 +10390,13 @@ const Wave = ({ url, audioIndex, self: self2 }) => {
 };
 const AssistantText = ({ text }) => {
   switch (text.status) {
+    case "sending":
     case "receiving":
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-auto px-2 py-1.5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Spin, {}) });
-    case "typing":
+    case "sent":
     case "received":
+    case "half-received":
+    case "typing":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -10344,7 +10411,7 @@ const AssistantText = ({ text }) => {
       ] });
     default:
       console.error("impossible text status", text.status);
-      break;
+      return null;
   }
 };
 const SelfText = ({ text }) => {
@@ -10354,6 +10421,8 @@ const SelfText = ({ text }) => {
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "self-end w-auto px-2 py-1.5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Spin, {}) });
     case "sent":
     case "received":
+    case "half-received":
+    case "typing":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -10368,7 +10437,7 @@ const SelfText = ({ text }) => {
       ] });
     default:
       console.error("impossible text status", text.status);
-      break;
+      return null;
   }
 };
 const MessageList = () => {
@@ -10395,53 +10464,6 @@ const MessageList = () => {
     ] }, qa2.id)
   ) }) });
 };
-const base64ToBlob = (base64String) => {
-  console.debug("decoding base64(truncated to 100 chars)", base64String.slice(0, 100));
-  const byteCharacters = atob(base64String);
-  const byteNumbers = [];
-  for (let i2 = 0; i2 < byteCharacters.length; i2++) {
-    byteNumbers.push(byteCharacters.charCodeAt(i2));
-  }
-  const byteArray = new Uint8Array(byteNumbers);
-  return new Blob([byteArray], { type: "application/octet-stream" });
-};
-const timeElapsedMMSS = (duration) => {
-  const seconds = Math.floor(duration / 1e3);
-  const minutes = Math.floor(seconds % 3600 / 60);
-  return `${padZero(minutes)}:${padZero(seconds)}`;
-};
-const padZero = (num) => {
-  return num.toString().padStart(2, "0");
-};
-const historyMessages = (qaSlice, maxHistoryMessage) => {
-  if (maxHistoryMessage <= 0) {
-    return [];
-  }
-  let messages = [];
-  qaSlice.map((qa2) => qa2.que.text).filter((t3) => t3.status == "received").forEach((t3) => messages.push({ role: "user", content: t3.text }));
-  qaSlice.map((qa2) => qa2.ans.text).filter((t3) => t3.status == "received").forEach((t3) => messages.push({ role: "assistant", content: t3.text }));
-  messages = messages.slice(-maxHistoryMessage);
-  return messages;
-};
-function currentProtocolHostPortPath() {
-  const protocol = window.location.protocol;
-  const hostname = window.location.hostname;
-  const port = window.location.port;
-  const path = window.location.pathname;
-  return `${protocol}//${hostname}:${port}/${path}`;
-}
-function joinUrl(...parts) {
-  return parts.map((part) => part.replace(/^\/+|\/+$/g, "")).join("/");
-}
-function randomHash(length) {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let hash = "";
-  for (let i2 = 0; i2 < length; i2++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    hash += characters.charAt(randomIndex);
-  }
-  return hash;
-}
 const TextArea = () => {
   const isRecording = useRecorderStore((state) => state.isRecording);
   const inputAreaIsLarge = useTextAreaStore((state) => state.inputAreaIsLarge);
@@ -10827,6 +10849,7 @@ const newQueAns = (id2, queText, audio) => {
   };
 };
 const streamIdLength = 32;
+const audioPlayerMimeType = "audio/mpeg";
 const useSSEStore = create()(
   devtools(
     persist(
@@ -12870,9 +12893,9 @@ const axiosInstance = axios$1.create({
 const postConv = async (conv) => {
   return axiosInstance.post("conversation", conv);
 };
-const postAudioConv = async (audio, conv) => {
+const postAudioConv = async (audio, fileName, conv) => {
   const formData = new FormData();
-  formData.append("audio", audio, "audio.wav");
+  formData.append("audio", audio, fileName);
   formData.append("conversation", JSON.stringify(conv));
   return axiosInstance.postForm("audio-conversation", formData);
 };
@@ -12889,6 +12912,7 @@ const SubscribeSendingAudio = () => {
   const sendingAudio = useSendingAudioStore((state) => state.sendingAudio);
   const recordDuration = useRecorderStore((state) => state.duration);
   const minSpeakTimeToSend = useSettingStore((state) => state.minSpeakTimeToSend);
+  const recordingMimeType = useRecorderStore((state) => state.recordingMimeType);
   reactExports.useEffect(() => {
     if (sendingAudio.length === 0) {
       console.warn("audio blob is empty");
@@ -12903,7 +12927,7 @@ const SubscribeSendingAudio = () => {
     messages = [systemMessage$1, ...messages];
     const qa2 = newQueAns(id2, newMyText("receiving", ""), newAudio("sending"));
     pushQueAns(qa2);
-    postAudioConv(sendingAudio, { id: id2, ms: messages }).then(
+    postAudioConv(sendingAudio, (recordingMimeType == null ? void 0 : recordingMimeType.fileName) ?? "audio.webm", { id: id2, ms: messages }).then(
       (r2) => {
         if (r2.status >= 200 && r2.status < 300) {
           updateQueAudio(id2, sent(getQueAudio(id2)));
@@ -13002,7 +13026,7 @@ const SSE = () => {
       if (audio.eMsg) {
         updateAnsAudio(audio.convId, error(getAnsAudio(audio.convId), audio.eMsg));
       } else {
-        const blob = base64ToBlob(audio.audio);
+        const blob = base64ToBlob(audio.audio, audioPlayerMimeType);
         const blobId = v4();
         addBlob({ id: blobId, blob }).then(() => {
           console.debug("saved audio, blobId:", blobId);
