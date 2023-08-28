@@ -83,7 +83,7 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, o *
 	}
 	applyCOption(&req, o)
 
-	ch := make(chan client.Chunk, 10)
+	ch := make(chan client.Chunk, 64)
 
 	go func() {
 		stream, err := c.Client.CreateChatCompletionStream(ctx, req)
@@ -92,19 +92,18 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, o *
 			return
 		}
 		defer stream.Close()
+		defer close(ch)
 
 		for {
 			response, err := stream.Recv()
 			if errors.Is(err, io.EOF) {
-				close(ch)
-				return
+				break
 			}
 
 			if err != nil {
 				ch <- client.Chunk{Message: "", Err: err}
-				return
+				break
 			}
-
 			ch <- client.Chunk{Message: response.Choices[0].Delta.Content, Err: nil}
 		}
 	}()

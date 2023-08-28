@@ -4,20 +4,19 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	"os"
 
 	"github.com/brpaz/echozap"
 	talk "github.com/bubblelight/talk"
 	"github.com/bubblelight/talk/internal/config"
+	middleware2 "github.com/bubblelight/talk/internal/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	"golang.org/x/crypto/acme/autocert"
-	_ "golang.org/x/crypto/acme/autocert"
+	"github.com/r3labs/sse/v2"
 )
 
 func StartServer() {
-	logger := SharedLogger()
+	logger := defaultLogger()
 
 	conf := config.MustLoadConfig(logger)
 
@@ -34,16 +33,25 @@ func StartServer() {
 	logger.Info("initialise web server...")
 	// Echo instance
 	e := echo.New()
-	e.Logger.SetOutput(os.Stdout)
-
 	e.Logger.SetLevel(log.DEBUG)
-
 	e.HideBanner = true
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		fmt.Printf(" %+v", err)
+		c.Echo().DefaultHTTPErrorHandler(err, c)
+	}
 
 	// Middleware
 	e.Use(echozap.ZapLogger(logger))
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:  []string{"*"},
+		AllowHeaders:  []string{"*"},
+		AllowMethods:  []string{"*"},
+		ExposeHeaders: []string{"*"},
+	}))
+	e.Use(middleware2.StreamId)
+
 	// enable basic auth only when there is at least one pair of username and password
 	if len(conf.Server.BasicAuth) > 0 {
 		e.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
@@ -54,12 +62,21 @@ func StartServer() {
 		}))
 	}
 
+	logger.Info("initialise SSE server...")
+	s := sse.New()
+	s.AutoReplay = false // AutoReplay is not mature. Enabling AutoReplay doesn't ensure idempotency
+	s.AutoStream = true  // create the stream when client connects
+	e.Any("/events", func(c echo.Context) error {
+		s.ServeHTTP(c.Response(), c.Request())
+		return nil
+	})
+
+	sh := NewSSEHandler(s, talker, logger)
+
 	// route API
-	apiGroup := e.Group("/api")
-	apiGroup.POST("/transcribe", talker.Transcribe)
-	apiGroup.POST("/ask", talker.Ask)
-	apiGroup.GET("/speech/:id", talker.Speech)
-	apiGroup.GET("/stat", talker.Stat)
+	api := e.Group("/api")
+	api.POST("/conversation", sh.HandleConv)
+	api.POST("/audio-conversation", sh.HandleAudioConv)
 
 	//route static files
 	w, err := fs.Sub(talk.Web, "web")
@@ -67,16 +84,6 @@ func StartServer() {
 		logger.Sugar().Panic(err)
 	}
 	e.StaticFS("/", w)
-
-	wh := &WebsocketHandler{talker: talker, logger: logger}
-	// route websocket
-	e.GET("/ws", wh.HandleWebSocket)
-
-	e.AutoTLSManager = autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("localhost"),
-		Cache:      autocert.DirCache("certs"),
-	}
 
 	addr := fmt.Sprintf(":%d", conf.Server.Port)
 	e.Logger.Fatal(e.Start(addr))
