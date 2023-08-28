@@ -19,5 +19,5 @@ type SpeechToText interface {
 	MustFunction
 	Quota
 	// SpeechToText transcribes voice into text
-	SpeechToText(ctx context.Context, r io.Reader) (string, error)
+	SpeechToText(ctx context.Context, audio io.Reader, fileName string) (string, error)
 }

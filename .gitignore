@@ -27,3 +27,6 @@ go.work
 .idea
 main
 build+push.sh
+
+#macOS
+**/.DS_Store

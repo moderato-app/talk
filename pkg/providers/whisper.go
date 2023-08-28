@@ -12,19 +12,15 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	defaultFileName = "audio.wav"
-)
-
 type Whisper struct {
 	Client *openai.Client
 	Logger *zap.Logger
 }
 
 func (c *Whisper) MustFunction(_ context.Context) {
-	voice, _, err := resource.HelloVoice()
+	voice, fileName, err := resource.HelloVoice()
 
-	trans, err := c.SpeechToText(context.Background(), voice)
+	trans, err := c.SpeechToText(context.Background(), voice, fileName)
 	if err != nil {
 		c.Logger.Sugar().Panicf("failed to get response Whisper server: %+v", err)
 	}
@@ -39,7 +35,7 @@ func (c *Whisper) Quota(_ context.Context) (used, total int, err error) {
 	return 0, 0, nil
 }
 
-func (c *Whisper) SpeechToText(ctx context.Context, r io.Reader) (string, error) {
+func (c *Whisper) SpeechToText(ctx context.Context, audio io.Reader, fileName string) (string, error) {
 	c.Logger.Info("transcribe...")
 	// File uploads are currently limited to 25 MB and the following input file types are supported: mp3, mp4, mpeg, mpga, m4a, wav, and webm.
 	// see https://platform.openai.com/docs/guides/speech-to-text/introduction
@@ -47,8 +43,8 @@ func (c *Whisper) SpeechToText(ctx context.Context, r io.Reader) (string, error)
 		ctx,
 		openai.AudioRequest{
 			Model:    openai.Whisper1,
-			FilePath: defaultFileName,
-			Reader:   r,
+			FilePath: fileName,
+			Reader:   audio,
 		},
 	)
 

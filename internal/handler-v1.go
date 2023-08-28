@@ -18,7 +18,7 @@ func (t *Talker) Transcribe(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	transcribe, err := t.SpeechToText.SpeechToText(c.Request().Context(), reader)
+	transcribe, err := t.SpeechToText.SpeechToText(c.Request().Context(), reader, fh.Filename)
 	if err != nil {
 		return err
 	}
