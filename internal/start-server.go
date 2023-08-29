@@ -6,12 +6,12 @@ import (
 	"io/fs"
 
 	"github.com/brpaz/echozap"
-	talk "github.com/bubblelight/talk"
-	"github.com/bubblelight/talk/internal/config"
-	middleware2 "github.com/bubblelight/talk/internal/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	talk "github.com/proxoar/talk"
+	"github.com/proxoar/talk/internal/config"
+	middleware2 "github.com/proxoar/talk/internal/middleware"
 	"github.com/r3labs/sse/v2"
 )
 

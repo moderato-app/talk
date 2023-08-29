@@ -1,6 +1,6 @@
 package main
 
-import "github.com/bubblelight/talk/internal"
+import "github.com/proxoar/talk/internal"
 
 func main() {
 	internal.StartServer()

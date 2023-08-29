@@ -1,6 +1,6 @@
 package api
 
-import "github.com/bubblelight/talk/pkg/client"
+import "github.com/proxoar/talk/pkg/client"
 
 type AskReq struct {
 	Ms []client.Message `json:"conversation"`

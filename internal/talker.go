@@ -7,10 +7,10 @@ import (
 	"time"
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
-	"github.com/bubblelight/talk/internal/config"
-	"github.com/bubblelight/talk/pkg/client"
-	"github.com/bubblelight/talk/pkg/providers"
 	"github.com/haguro/elevenlabs-go"
+	"github.com/proxoar/talk/internal/config"
+	"github.com/proxoar/talk/pkg/client"
+	"github.com/proxoar/talk/pkg/providers"
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
 	"google.golang.org/api/option"

@@ -1,4 +1,4 @@
-module github.com/bubblelight/talk
+module github.com/proxoar/talk
 
 go 1.20
 
