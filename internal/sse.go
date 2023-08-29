@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"io"
 
-	. "github.com/bubblelight/talk/internal/api"
-	v2 "github.com/bubblelight/talk/internal/api/v2"
-	"github.com/bubblelight/talk/pkg/client"
 	"github.com/bwmarrin/snowflake"
+	. "github.com/proxoar/talk/internal/api"
+	v2 "github.com/proxoar/talk/internal/api/v2"
+	"github.com/proxoar/talk/pkg/client"
 	"github.com/r3labs/sse/v2"
 	"go.uber.org/zap"
 )

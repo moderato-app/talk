@@ -6,7 +6,7 @@ import (
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 	"cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
-	"github.com/bubblelight/talk/pkg/client"
+	"github.com/proxoar/talk/pkg/client"
 
 	"go.uber.org/zap"
 )

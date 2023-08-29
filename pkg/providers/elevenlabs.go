@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/bubblelight/talk/pkg/client"
 	"github.com/haguro/elevenlabs-go"
+	"github.com/proxoar/talk/pkg/client"
 
 	"go.uber.org/zap"
 )

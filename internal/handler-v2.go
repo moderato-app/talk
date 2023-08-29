@@ -6,10 +6,10 @@ import (
 	"errors"
 	"net/http"
 
-	v2 "github.com/bubblelight/talk/internal/api/v2"
-	"github.com/bubblelight/talk/internal/middleware"
-	"github.com/bubblelight/talk/pkg/client"
 	"github.com/labstack/echo/v4"
+	v2 "github.com/proxoar/talk/internal/api/v2"
+	"github.com/proxoar/talk/internal/middleware"
+	"github.com/proxoar/talk/pkg/client"
 )
 
 // there is no place to set vOption on web page, use hardcoded vOption in the moment
