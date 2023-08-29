@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/bubblelight/talk/pkg/client"
+	"github.com/proxoar/talk/pkg/client"
 
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"

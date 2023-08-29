@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bubblelight/talk/internal/api"
-	"github.com/bubblelight/talk/pkg/client"
 	"github.com/labstack/echo/v4"
+	"github.com/proxoar/talk/internal/api"
+	"github.com/proxoar/talk/pkg/client"
 )
 
 func (t *Talker) Transcribe(c echo.Context) error {

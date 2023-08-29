@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	resource "github.com/bubblelight/talk"
+	resource "github.com/proxoar/talk"
 
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
