@@ -1,4 +1,4 @@
-package providers
+package chatgpt
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"github.com/proxoar/talk/pkg/client"
+	"github.com/proxoar/talk/pkg/client/tune"
 
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
@@ -17,10 +18,8 @@ const (
 )
 
 type ChatGPT struct {
-	Client             *openai.Client
-	Model              string
-	MaxGenerationToken int
-	Logger             *zap.Logger
+	Client *openai.Client
+	Logger *zap.Logger
 }
 
 func (c *ChatGPT) MustFunction(_ context.Context) {
@@ -28,7 +27,7 @@ func (c *ChatGPT) MustFunction(_ context.Context) {
 		Role:    "user",
 		Content: "Hello!",
 	}
-	content, err := c.Completion(context.Background(), []client.Message{m}, nil)
+	content, err := c.Completion(context.Background(), []client.Message{m}, DefaultChatGPTTuneOption)
 	if err != nil {
 		c.Logger.Sugar().Panic("failed to get response from ChatGPT server: ", err)
 	}
@@ -43,21 +42,19 @@ func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {
 	return 0, 0, nil
 }
 
-func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, o *client.COption) (string, error) {
+func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t tune.LLMTuneOption) (string, error) {
 	c.Logger.Info("completion...")
 
 	messages := messageOfComplete(ms)
 
 	req := openai.ChatCompletionRequest{
-		Model:     c.Model,
-		MaxTokens: c.MaxGenerationToken,
-		Messages:  messages,
+		Messages: messages,
 	}
-	applyCOption(&req, o)
+	applyCOption(&req, t)
 
 	resp, err := c.Client.CreateChatCompletion(ctx, req)
 	if err != nil {
-		return "", fmt.Errorf("CreateChatCompletion %+v: %v", *o, err)
+		return "", fmt.Errorf("CreateChatCompletion %+v: %v", t, err)
 	}
 
 	c.Logger.Sugar().Debug("complete result", resp)
@@ -71,17 +68,15 @@ func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, o *client
 // Return only one chunk that contains the whole content if stream is not supported.
 // To make sure the chan closes eventually, caller should either read the last chunk from chan
 // or got a chunk whose Err != nil
-func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, o *client.COption) <-chan client.Chunk {
+func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t tune.LLMTuneOption) <-chan client.Chunk {
 	c.Logger.Info("completion stream...")
 
 	messages := messageOfComplete(ms)
 
 	req := openai.ChatCompletionRequest{
-		Model:     c.Model,
-		MaxTokens: c.MaxGenerationToken,
-		Messages:  messages,
+		Messages: messages,
 	}
-	applyCOption(&req, o)
+	applyCOption(&req, t)
 
 	ch := make(chan client.Chunk, 64)
 
@@ -110,6 +105,11 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, o *
 	return ch
 }
 
+func (c *ChatGPT) Tunability(_ context.Context) (tune.LLMTunability, error) {
+	// todo get latest models from server
+	return DefaultChatGPTTunability, nil
+}
+
 func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {
 	messages := []openai.ChatCompletionMessage{
 		{
@@ -126,14 +126,18 @@ func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {
 	return messages
 }
 
-func applyCOption(req *openai.ChatCompletionRequest, o *client.COption) {
-	if o == nil {
-		return
+func applyCOption(req *openai.ChatCompletionRequest, t tune.LLMTuneOption) {
+	req.Model = t.Model
+	if t.MaxTokens != nil {
+		req.MaxTokens = *(t.MaxTokens)
 	}
-	if o.Model != "" {
-		req.Model = o.Model
+	if t.Temperature != nil {
+		req.Temperature = *(t.Temperature)
 	}
-	if o.MaxGenerationToken != 0 {
-		req.MaxTokens = o.MaxGenerationToken
+	if t.PresencePenalty != nil {
+		req.PresencePenalty = *(t.PresencePenalty)
+	}
+	if t.FrequencyPenalty != nil {
+		req.FrequencyPenalty = *(t.FrequencyPenalty)
 	}
 }

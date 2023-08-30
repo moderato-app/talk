@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	v2 "github.com/proxoar/talk/internal/api/v2"
+	"github.com/proxoar/talk/internal/api"
 	"github.com/proxoar/talk/internal/middleware"
 	"github.com/proxoar/talk/pkg/client"
+	"go.uber.org/zap"
 )
 
 // there is no place to set vOption on web page, use hardcoded vOption in the moment
@@ -34,13 +36,13 @@ var TTSZhCNOption = client.VOption{
 	Clarity:      0.5,
 }
 
-func (s *SSEHandler) HandleConv(c echo.Context) error {
-	conv := new(v2.Conversation)
+func (s *SSEHandler) PostConv(c echo.Context) error {
+	conv := new(api.Conversation)
 	err := c.Bind(conv)
 	if err != nil {
 		return err
 	}
-	err = v2.RestfulValidator.Struct(conv)
+	err = api.RestfulValidator.Struct(conv)
 	if err != nil {
 		return err
 	}
@@ -49,7 +51,7 @@ func (s *SSEHandler) HandleConv(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (s *SSEHandler) HandleAudioConv(c echo.Context) error {
+func (s *SSEHandler) PostAudioConv(c echo.Context) error {
 	// there are 2 files in the form: "conversation" and "file"
 	convStr := c.FormValue("conversation")
 	if len(convStr) == 0 {
@@ -57,12 +59,12 @@ func (s *SSEHandler) HandleAudioConv(c echo.Context) error {
 		return errors.New("conversation is empty")
 	}
 
-	conv := new(v2.Conversation)
+	conv := new(api.Conversation)
 	err := json.Unmarshal([]byte(convStr), conv)
 	if err != nil {
 		return err
 	}
-	err = v2.RestfulValidator.Struct(conv)
+	err = api.RestfulValidator.Struct(conv)
 	if err != nil {
 		return err
 	}
@@ -79,4 +81,22 @@ func (s *SSEHandler) HandleAudioConv(c echo.Context) error {
 	id := c.Get(middleware.StreamIdKey).(string)
 	go func() { s.audio(context.Background(), id, reader, filename, conv) }()
 	return c.NoContent(http.StatusOK)
+}
+
+func (s *SSEHandler) GetLLMTunability(c echo.Context) error {
+	tunability, err := s.talker.LLM.Tunability(c.Request().Context())
+	if err != nil {
+		s.logger.Error("failed to get tunability of LLM", zap.Error(err))
+		return err
+	}
+	return c.JSON(http.StatusOK, tunability)
+}
+
+func (s *SSEHandler) Stat(c echo.Context) error {
+	used, total, err := s.talker.TextToSpeech.Quota(c.Request().Context())
+	if err != nil {
+		return err
+	}
+	stat := fmt.Sprintf("text-to-speech quota used: %d/%d", used, total)
+	return c.String(http.StatusOK, stat)
 }

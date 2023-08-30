@@ -7,7 +7,6 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 	. "github.com/proxoar/talk/internal/api"
-	v2 "github.com/proxoar/talk/internal/api/v2"
 	"github.com/proxoar/talk/pkg/client"
 	"github.com/r3labs/sse/v2"
 	"go.uber.org/zap"
@@ -40,13 +39,13 @@ func NewSSEHandler(s *sse.Server, talker *Talker, logger *zap.Logger) *SSEHandle
 // 2. Send the answer to the client
 // 3. Send the answer to a text-to-speech server and obtains the corresponding audio
 // 4. Send the audio to the client
-func (s *SSEHandler) conv(ctx context.Context, streamId string, conv *v2.Conversation) {
+func (s *SSEHandler) conv(ctx context.Context, streamId string, conv *Conversation) {
 	ms := make([]client.Message, len(conv.Ms))
 	for i, m := range conv.Ms {
 		ms[i] = client.Message{Role: m.Role, Content: m.Content}
 	}
 	// 1. Ask LLM for an answer
-	ch := s.talker.LLM.CompletionStream(ctx, ms, nil)
+	ch := s.talker.LLM.CompletionStream(ctx, ms, conv.TuneOption.LLM)
 	content := ""
 	// 2. Send the answer to the client
 	for {
@@ -108,7 +107,7 @@ func (s *SSEHandler) conv(ctx context.Context, streamId string, conv *v2.Convers
 // 1. Ask speech-to-text server for text
 // 2. Sends the text to the client
 // 3. Append the text to conversation, and call conv
-func (s *SSEHandler) audio(ctx context.Context, streamId string, audio io.Reader, fileName string, conv *v2.Conversation) {
+func (s *SSEHandler) audio(ctx context.Context, streamId string, audio io.Reader, fileName string, conv *Conversation) {
 
 	// 1. Ask speech-to-text server for text
 	text, err := s.talker.SpeechToText.SpeechToText(ctx, audio, fileName)
@@ -128,7 +127,7 @@ func (s *SSEHandler) audio(ctx context.Context, streamId string, audio io.Reader
 	})
 
 	newConv := *conv
-	newConv.Ms = append(newConv.Ms, v2.Message{Role: "user", Content: text})
+	newConv.Ms = append(newConv.Ms, Message{Role: "user", Content: text})
 	// 3. Append the text to conversation, and call conv
 	s.conv(ctx, streamId, conv)
 }
