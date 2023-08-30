@@ -17,8 +17,6 @@ const (
 	DefaultGoogleTTSSpeakingRate                = 1
 	DefaultGoogleTTSPitch                       = 0
 	DefaultGoogleTTSVolumeGainDb                = 0
-	DefaultChatGPTModel                         = "gpt-3.5-turbo"
-	DefaultChatGPTMaxGenerationToken            = 2000
 )
 
 func setDefaultValue() {
@@ -34,9 +32,6 @@ func setDefaultValue() {
 	viper.SetDefault("text-to-speech.google-text-to-speech.speaking-rate", DefaultGoogleTTSSpeakingRate)
 	viper.SetDefault("text-to-speech.google-text-to-speech.pitch", DefaultGoogleTTSPitch)
 	viper.SetDefault("text-to-speech.google-text-to-speech.volume-gain-db", DefaultGoogleTTSVolumeGainDb)
-
-	viper.SetDefault("llm.open-ai-chat-gpt.model", DefaultChatGPTModel)
-	viper.SetDefault("llm.open-ai-chat-gpt.max-generation-token", DefaultChatGPTMaxGenerationToken)
 }
 
 func readFile() error {

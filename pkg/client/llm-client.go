@@ -2,30 +2,24 @@ package client
 
 import (
 	"context"
+
+	"github.com/proxoar/talk/pkg/client/tune"
 )
 
 type LLM interface {
 	MustFunction
 	Quota
-	Completion(ctx context.Context, ms []Message, o *COption) (string, error)
+	Completion(ctx context.Context, ms []Message, t tune.LLMTuneOption) (string, error)
 	// CompletionStream
 	//
-	// return an error if stream is not supported
-	CompletionStream(ctx context.Context, ms []Message, o *COption) <-chan Chunk
+	// return a chunk that contains an error if stream is not supported
+	CompletionStream(ctx context.Context, ms []Message, t tune.LLMTuneOption) <-chan Chunk
+	Tunability(ctx context.Context) (tune.LLMTunability, error)
 }
 
 type Message struct {
 	Role    string `json:"role"` // options: system, user, assistant and function
 	Content string `json:"content"`
-}
-
-type COption struct {
-	Model              string // optional
-	MaxGenerationToken int    // optional
-}
-
-type Model struct {
-	Name string `json:"name"`
 }
 
 type Chunk struct {

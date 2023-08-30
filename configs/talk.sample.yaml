@@ -56,7 +56,3 @@ llm:
   open-ai-chat-gpt:
     # typically, you would use the same API key as speech-to-text.open-ai-whisper
     api-key: sk-abc123abc123abc123abc123abc123abc123
-    # Optional. Use gpt-3.5-turbo if not specified. For model list, see https://platform.openai.com/docs/models/gpt-4
-    model: gpt-3.5-turbo
-    # Optional. Use 2000 if not specified
-    max-generation-token: 2000

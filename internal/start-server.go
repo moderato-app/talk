@@ -75,8 +75,9 @@ func StartServer() {
 
 	// route API
 	api := e.Group("/api")
-	api.POST("/conversation", sh.HandleConv)
-	api.POST("/audio-conversation", sh.HandleAudioConv)
+	api.POST("/conversation", sh.PostConv)
+	api.POST("/audio-conversation", sh.PostAudioConv)
+	api.GET("/llm/tunability", sh.GetLLMTunability)
 
 	//route static files
 	w, err := fs.Sub(talk.Web, "web")

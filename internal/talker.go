@@ -11,6 +11,7 @@ import (
 	"github.com/proxoar/talk/internal/config"
 	"github.com/proxoar/talk/pkg/client"
 	"github.com/proxoar/talk/pkg/providers"
+	"github.com/proxoar/talk/pkg/providers/chatgpt"
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
 	"google.golang.org/api/option"
@@ -32,11 +33,9 @@ func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*
 	if cfg := tc.Llm.OpenAIChatGPT; cfg.APIKey != "" {
 		// by default, the underlying http.Client utilizes the proxy from the environment.
 		c := openai.NewClient(cfg.APIKey)
-		llm = &providers.ChatGPT{
-			Client:             c,
-			Model:              cfg.Model,
-			MaxGenerationToken: cfg.MaxGenerationToken,
-			Logger:             logger,
+		llm = &chatgpt.ChatGPT{
+			Client: c,
+			Logger: logger,
 		}
 	} else {
 		return nil, errors.New("no LLM provider was found")
