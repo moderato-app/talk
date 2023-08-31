@@ -7,12 +7,11 @@ server:
   # Log a warning if there are any issues, such as quota exhaustion or incorrect transcriptions, indicating a potential problem
   # These requests consume a minimal amount of quota or even no quota.
   providers-must-function: true
-  # Optional. Enable basic auth only when there is at least one pair of username and password.
-  basic-auth:
-    - username1: password1
-    - username2: password2
-    - username3:            # match only empty password
-    - username4: "*"        # match any password, including empty password
+  # Optional. Enable auth only if there is at least one password
+  passwords:
+    - "pass1"
+    - "my-pass"
+    - "password"
 
 speech-to-text:
   open-ai-whisper:

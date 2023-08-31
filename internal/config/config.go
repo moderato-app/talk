@@ -8,9 +8,9 @@ type TalkConfig struct {
 }
 
 type ServerConfig struct {
-	Port                  int               `mapstructure:"port"`
-	ProvidersMustFunction bool              `mapstructure:"providers-must-function"`
-	BasicAuth             map[string]string `mapstructure:"basic-auth"`
+	Port                  int      `mapstructure:"port"`
+	ProvidersMustFunction bool     `mapstructure:"providers-must-function"`
+	Passwords             []string `mapstructure:"passwords"`
 }
 
 type SpeechToTextConfig struct {

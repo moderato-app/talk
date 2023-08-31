@@ -12,7 +12,6 @@ import (
 	talk "github.com/proxoar/talk"
 	"github.com/proxoar/talk/internal/config"
 	middleware2 "github.com/proxoar/talk/internal/middleware"
-	"github.com/r3labs/sse/v2"
 )
 
 func StartServer() {
@@ -44,40 +43,25 @@ func StartServer() {
 	e.Use(echozap.ZapLogger(logger))
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:  []string{"*"},
-		AllowHeaders:  []string{"*"},
-		AllowMethods:  []string{"*"},
-		ExposeHeaders: []string{"*"},
-	}))
-	e.Use(middleware2.StreamId)
-
-	// enable basic auth only when there is at least one pair of username and password
-	if len(conf.Server.BasicAuth) > 0 {
-		e.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
-			if p, ok := conf.Server.BasicAuth[username]; ok && (p == "*" || p == password) {
-				return true, nil
-			}
-			return false, nil
-		}))
-	}
+	e.Use(middleware2.AllowAllCors)
 
 	logger.Info("initialise SSE server...")
-	s := sse.New()
-	s.AutoReplay = false // AutoReplay is not mature. Enabling AutoReplay doesn't ensure idempotency
-	s.AutoStream = true  // create the stream when client connects
-	e.Any("/events", func(c echo.Context) error {
-		s.ServeHTTP(c.Response(), c.Request())
-		return nil
-	})
-
-	sh := NewSSEHandler(s, talker, logger)
+	sh := NewSSEHandler(talker, logger)
 
 	// route API
 	api := e.Group("/api")
+	if len(conf.Server.Passwords) != 0 {
+		api.Use(middleware2.SPAuth(conf.Server.Passwords))
+	}
+	api.Any("/events", func(c echo.Context) error {
+		sh.ServeHTTP(c.Response(), c.Request())
+		return nil
+	})
 	api.POST("/conversation", sh.PostConv)
 	api.POST("/audio-conversation", sh.PostAudioConv)
-	api.GET("/llm/tunability", sh.GetLLMTunability)
+	api.GET("/tunability/llm", sh.GetLLMTunability)
+	api.GET("/health", sh.Health)
+	api.Use(middleware2.StreamId)
 
 	//route static files
 	w, err := fs.Sub(talk.Web, "web")
