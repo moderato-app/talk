@@ -53,10 +53,13 @@ var DefaultChatGPTTunability = tune.LLMTunability{
 	},
 }
 
-var DefaultChatGPTTuneOption = tune.LLMTuneOption{
-	Model:            "gpt-3.5-turbo",
-	MaxTokens:        nil,
-	Temperature:      nil,
-	PresencePenalty:  nil,
-	FrequencyPenalty: nil,
+func DefaultChatGPTTuneOption() tune.LLMTuneOption {
+	model := "gpt-3.5-turbo"
+	return tune.LLMTuneOption{
+		Model:            &model,
+		MaxTokens:        nil,
+		Temperature:      nil,
+		PresencePenalty:  nil,
+		FrequencyPenalty: nil,
+	}
 }

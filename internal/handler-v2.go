@@ -100,3 +100,7 @@ func (s *SSEHandler) Stat(c echo.Context) error {
 	stat := fmt.Sprintf("text-to-speech quota used: %d/%d", used, total)
 	return c.String(http.StatusOK, stat)
 }
+
+func (s *SSEHandler) Health(c echo.Context) error {
+	return c.String(http.StatusOK, "healthy")
+}
