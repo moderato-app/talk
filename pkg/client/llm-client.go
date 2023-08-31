@@ -3,18 +3,18 @@ package client
 import (
 	"context"
 
-	"github.com/proxoar/talk/pkg/client/tune"
+	"github.com/proxoar/talk/pkg/client/ability"
 )
 
 type LLM interface {
 	MustFunction
 	Quota
-	Completion(ctx context.Context, ms []Message, t tune.LLMTuneOption) (string, error)
+	Completion(ctx context.Context, ms []Message, t ability.LLMTuneOption) (string, error)
 	// CompletionStream
 	//
 	// return a chunk that contains an error if stream is not supported
-	CompletionStream(ctx context.Context, ms []Message, t tune.LLMTuneOption) <-chan Chunk
-	Tunability(ctx context.Context) (tune.LLMTunability, error)
+	CompletionStream(ctx context.Context, ms []Message, t ability.LLMTuneOption) <-chan Chunk
+	Ability(ctx context.Context) (ability.LLM, error)
 }
 
 type Message struct {

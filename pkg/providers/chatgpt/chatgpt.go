@@ -7,7 +7,7 @@ import (
 	"io"
 
 	"github.com/proxoar/talk/pkg/client"
-	"github.com/proxoar/talk/pkg/client/tune"
+	"github.com/proxoar/talk/pkg/client/ability"
 
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
@@ -42,7 +42,7 @@ func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {
 	return 0, 0, nil
 }
 
-func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t tune.LLMTuneOption) (string, error) {
+func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t ability.LLMTuneOption) (string, error) {
 	c.Logger.Info("completion...")
 
 	messages := messageOfComplete(ms)
@@ -68,7 +68,7 @@ func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t tune.LL
 // Return only one chunk that contains the whole content if stream is not supported.
 // To make sure the chan closes eventually, caller should either read the last chunk from chan
 // or got a chunk whose Err != nil
-func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t tune.LLMTuneOption) <-chan client.Chunk {
+func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMTuneOption) <-chan client.Chunk {
 	c.Logger.Info("completion stream...")
 
 	messages := messageOfComplete(ms)
@@ -105,9 +105,9 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t t
 	return ch
 }
 
-func (c *ChatGPT) Tunability(_ context.Context) (tune.LLMTunability, error) {
+func (c *ChatGPT) Ability(_ context.Context) (ability.LLM, error) {
 	// todo get latest models from server
-	return DefaultChatGPTTunability, nil
+	return ability.LLM{ChatGPT: DefaultChatGPTLLM}, nil
 }
 
 func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {
@@ -126,7 +126,7 @@ func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {
 	return messages
 }
 
-func applyCOption(req *openai.ChatCompletionRequest, t tune.LLMTuneOption) {
+func applyCOption(req *openai.ChatCompletionRequest, t ability.LLMTuneOption) {
 	if t.Model == nil {
 		req.Model = *t.Model
 	}

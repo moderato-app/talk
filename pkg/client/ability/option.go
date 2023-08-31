@@ -1,4 +1,4 @@
-package tune
+package ability
 
 type TuneOption struct {
 	LLM LLMTuneOption `json:"LLM"`

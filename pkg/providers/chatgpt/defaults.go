@@ -1,61 +1,30 @@
 package chatgpt
 
 import (
-	"math"
-
-	"github.com/proxoar/talk/pkg/client/tune"
+	"github.com/proxoar/talk/pkg/client/ability"
 )
 
-// DefaultChatGPTTunability
+// DefaultChatGPTLLM
 // see https://platform.openai.com/docs/api-reference/chat/create
-var DefaultChatGPTTunability = tune.LLMTunability{
-	Model: tune.SingleChoice[string]{
-		Tunable: true,
-		Choices: []tune.Choice[string]{
-			{Value: "gpt-3.5-turbo"},
-			{Value: "gpt-3.5-turbo-0613"},
-			{Value: "gpt-3.5-turbo-0301"},
-			{Value: "gpt-3.5-turbo-16k"},
-			{Value: "gpt-3.5-turbo-16k-0613"},
-			{Value: "gpt-3.5-turbo-instruct"},
-			{Value: "gpt-4"},
-			{Value: "gpt-4-0613"},
-			{Value: "gpt-4-0314"},
-			{Value: "gpt-4-32k-0613"},
-			{Value: "gpt-4-32k-0314"},
-			{Value: "gpt-4-32k"},
-		},
-		Default: "gpt-3.5-turbo",
-	},
-	MaxTokens: tune.IntRange{
-		Tunable:    true,
-		RangeStart: 0,
-		RangeEnd:   math.MaxInt,
-		Default:    16,
-	},
-	Temperature: tune.FloatRange{
-		Tunable:    true,
-		RangeStart: 0,
-		RangeEnd:   2,
-		Default:    1,
-	},
-	PresencePenalty: tune.FloatRange{
-		Tunable:    true,
-		RangeStart: -2,
-		RangeEnd:   2,
-		Default:    0,
-	},
-	FrequencyPenalty: tune.FloatRange{
-		Tunable:    true,
-		RangeStart: -2,
-		RangeEnd:   2,
-		Default:    0,
-	},
+var DefaultChatGPTLLM = ability.ChatGPTLLM{
+	Available: true,
+	Models: []string{"gpt-3.5-turbo",
+		"gpt-3.5-turbo-0613",
+		"gpt-3.5-turbo-0301",
+		"gpt-3.5-turbo-16k",
+		"gpt-3.5-turbo-16k-0613",
+		"gpt-3.5-turbo-instruct",
+		"gpt-4",
+		"gpt-4-0613",
+		"gpt-4-0314",
+		"gpt-4-32k-0613",
+		"gpt-4-32k-0314",
+		"gpt-4-32k"},
 }
 
-func DefaultChatGPTTuneOption() tune.LLMTuneOption {
+func DefaultChatGPTTuneOption() ability.LLMTuneOption {
 	model := "gpt-3.5-turbo"
-	return tune.LLMTuneOption{
+	return ability.LLMTuneOption{
 		Model:            &model,
 		MaxTokens:        nil,
 		Temperature:      nil,

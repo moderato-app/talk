@@ -26,18 +26,18 @@ func NewSSEHandler(talker *Talker, logger *zap.Logger) *SSEHandler {
 		talker: talker,
 		logger: logger,
 	}
-	s.OnSubscribe = s.emitTunability
+	s.OnSubscribe = s.emitAbility
 	return &s
 }
 
-// emit a Tunability to on client subscription
-func (s *SSEHandler) emitTunability(streamID string, _ *sse.Subscriber) {
-	tunability, err := s.talker.Tunability(context.Background())
+// emit an Ability to on client subscription
+func (s *SSEHandler) emitAbility(streamID string, _ *sse.Subscriber) {
+	ab, err := s.talker.Ability(context.Background())
 	if err != nil {
-		s.logger.Sugar().Error("failed to get tunability", err)
+		s.logger.Sugar().Error("failed to get Ability", err)
 		return
 	}
-	s.publishData(streamID, EventTunability, tunability)
+	s.publishData(streamID, EventAbility, ab)
 }
 
 // conv
