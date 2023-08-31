@@ -1,10 +1,10 @@
 package api
 
 const (
-	EventAudio      = "audio"
-	EventAnswer     = "answer"
-	EventTrans      = "trans"
-	EventTunability = "tunability"
+	EventAudio   = "audio"
+	EventAnswer  = "answer"
+	EventTrans   = "trans"
+	EventAbility = "ability"
 )
 
 type EventMeta struct {

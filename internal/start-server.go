@@ -59,7 +59,7 @@ func StartServer() {
 	})
 	api.POST("/conversation", sh.PostConv)
 	api.POST("/audio-conversation", sh.PostAudioConv)
-	api.GET("/tunability/llm", sh.GetLLMTunability)
+	api.GET("/Ability/llm", sh.GetLLMAbility)
 	api.GET("/health", sh.Health)
 	api.Use(middleware2.StreamId)
 
