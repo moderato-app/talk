@@ -5,17 +5,16 @@ go 1.20
 require (
 	cloud.google.com/go/texttospeech v1.7.1
 	github.com/brpaz/echozap v1.1.3
-	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-playground/validator/v10 v10.15.1
-	github.com/google/uuid v1.3.1
 	github.com/haguro/elevenlabs-go v0.2.2
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/labstack/gommon v0.4.0
-	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/microcosm-cc/bluemonday v1.0.25
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sashabaranov/go-openai v1.14.2
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
+	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.21.0
 	google.golang.org/api v0.126.0
 )
@@ -25,6 +24,8 @@ require (
 	cloud.google.com/go/compute v1.19.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/longrunning v0.5.0 // indirect
+	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -36,6 +37,7 @@ require (
 	github.com/google/s2a-go v0.1.4 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.11.0 // indirect
+	github.com/gorilla/css v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -43,10 +45,10 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect

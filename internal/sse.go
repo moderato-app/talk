@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/bwmarrin/snowflake"
 	. "github.com/proxoar/talk/internal/api"
 	"github.com/proxoar/talk/pkg/client"
 	"github.com/r3labs/sse/v2"
@@ -16,21 +15,29 @@ type SSEHandler struct {
 	*sse.Server
 	talker *Talker
 	logger *zap.Logger
-	sf     *snowflake.Node
 }
 
-func NewSSEHandler(s *sse.Server, talker *Talker, logger *zap.Logger) *SSEHandler {
-	node, err := snowflake.NewNode(1)
-	if err != nil {
-		panic(err)
-	}
-
-	return &SSEHandler{
-		Server: s,
+func NewSSEHandler(talker *Talker, logger *zap.Logger) *SSEHandler {
+	sseServer := sse.New()
+	sseServer.AutoReplay = false // AutoReplay is not mature. Enabling AutoReplay doesn't ensure idempotency
+	sseServer.AutoStream = true  // create the stream when client connects
+	s := SSEHandler{
+		Server: sseServer,
 		talker: talker,
 		logger: logger,
-		sf:     node,
 	}
+	s.OnSubscribe = s.emitTunability
+	return &s
+}
+
+// emit a Tunability to on client subscription
+func (s *SSEHandler) emitTunability(streamID string, _ *sse.Subscriber) {
+	tunability, err := s.talker.Tunability(context.Background())
+	if err != nil {
+		s.logger.Sugar().Error("failed to get tunability", err)
+		return
+	}
+	s.publishData(streamID, EventTunability, tunability)
 }
 
 // conv

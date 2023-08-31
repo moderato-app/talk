@@ -27,7 +27,7 @@ func (c *ChatGPT) MustFunction(_ context.Context) {
 		Role:    "user",
 		Content: "Hello!",
 	}
-	content, err := c.Completion(context.Background(), []client.Message{m}, DefaultChatGPTTuneOption)
+	content, err := c.Completion(context.Background(), []client.Message{m}, DefaultChatGPTTuneOption())
 	if err != nil {
 		c.Logger.Sugar().Panic("failed to get response from ChatGPT server: ", err)
 	}
@@ -127,17 +127,19 @@ func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {
 }
 
 func applyCOption(req *openai.ChatCompletionRequest, t tune.LLMTuneOption) {
-	req.Model = t.Model
+	if t.Model == nil {
+		req.Model = *t.Model
+	}
 	if t.MaxTokens != nil {
-		req.MaxTokens = *(t.MaxTokens)
+		req.MaxTokens = *t.MaxTokens
 	}
 	if t.Temperature != nil {
-		req.Temperature = *(t.Temperature)
+		req.Temperature = *t.Temperature
 	}
 	if t.PresencePenalty != nil {
-		req.PresencePenalty = *(t.PresencePenalty)
+		req.PresencePenalty = *t.PresencePenalty
 	}
 	if t.FrequencyPenalty != nil {
-		req.FrequencyPenalty = *(t.FrequencyPenalty)
+		req.FrequencyPenalty = *t.FrequencyPenalty
 	}
 }

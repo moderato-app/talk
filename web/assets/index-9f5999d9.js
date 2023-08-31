@@ -68,6 +68,32 @@ var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof win
 function getDefaultExportFromCjs(x2) {
   return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
 }
+function getAugmentedNamespace(n2) {
+  if (n2.__esModule)
+    return n2;
+  var f2 = n2.default;
+  if (typeof f2 == "function") {
+    var a2 = function a3() {
+      if (this instanceof a3) {
+        return Reflect.construct(f2, arguments, this.constructor);
+      }
+      return f2.apply(this, arguments);
+    };
+    a2.prototype = f2.prototype;
+  } else
+    a2 = {};
+  Object.defineProperty(a2, "__esModule", { value: true });
+  Object.keys(n2).forEach(function(k2) {
+    var d2 = Object.getOwnPropertyDescriptor(n2, k2);
+    Object.defineProperty(a2, k2, d2.get ? d2 : {
+      enumerable: true,
+      get: function() {
+        return n2[k2];
+      }
+    });
+  });
+  return a2;
+}
 var jsxRuntime = { exports: {} };
 var reactJsxRuntime_production_min = {};
 var react = { exports: {} };
@@ -147,7 +173,7 @@ function N$3(a2, b2) {
 function O$1(a2) {
   return "object" === typeof a2 && null !== a2 && a2.$$typeof === l$5;
 }
-function escape(a2) {
+function escape$1(a2) {
   var b2 = { "=": "=0", ":": "=2" };
   return "$" + a2.replace(/[=:]/g, function(a3) {
     return b2[a3];
@@ -155,7 +181,7 @@ function escape(a2) {
 }
 var P$1 = /\/+/g;
 function Q$1(a2, b2) {
-  return "object" === typeof a2 && null !== a2 && null != a2.key ? escape("" + a2.key) : b2.toString(36);
+  return "object" === typeof a2 && null !== a2 && null != a2.key ? escape$1("" + a2.key) : b2.toString(36);
 }
 function R$2(a2, b2, e3, d2, c2) {
   var k2 = typeof a2;
@@ -899,7 +925,7 @@ function Pa(a2) {
       return "";
   }
 }
-function Qa(a2) {
+function Qa$1(a2) {
   if (null == a2)
     return null;
   if ("function" === typeof a2)
@@ -932,12 +958,12 @@ function Qa(a2) {
         a2 || (a2 = b2.displayName || b2.name || "", a2 = "" !== a2 ? "ForwardRef(" + a2 + ")" : "ForwardRef");
         return a2;
       case Ga:
-        return b2 = a2.displayName || null, null !== b2 ? b2 : Qa(a2.type) || "Memo";
+        return b2 = a2.displayName || null, null !== b2 ? b2 : Qa$1(a2.type) || "Memo";
       case Ha:
         b2 = a2._payload;
         a2 = a2._init;
         try {
-          return Qa(a2(b2));
+          return Qa$1(a2(b2));
         } catch (c2) {
         }
     }
@@ -967,7 +993,7 @@ function Ra(a2) {
     case 6:
       return "Text";
     case 16:
-      return Qa(b2);
+      return Qa$1(b2);
     case 8:
       return b2 === za ? "StrictMode" : "Mode";
     case 22:
@@ -1868,7 +1894,7 @@ function fd(a2, b2, c2, d2) {
   if (dd) {
     var e3 = Yc(a2, b2, c2, d2);
     if (null === e3)
-      hd(a2, b2, d2, id, c2), Sc(a2, d2);
+      hd(a2, b2, d2, id$2, c2), Sc(a2, d2);
     else if (Uc(e3, a2, b2, c2, d2))
       d2.stopPropagation();
     else if (Sc(a2, d2), b2 & 4 && -1 < Rc.indexOf(a2)) {
@@ -1876,7 +1902,7 @@ function fd(a2, b2, c2, d2) {
         var f2 = Cb(e3);
         null !== f2 && Ec(f2);
         f2 = Yc(a2, b2, c2, d2);
-        null === f2 && hd(a2, b2, d2, id, c2);
+        null === f2 && hd(a2, b2, d2, id$2, c2);
         if (f2 === e3)
           break;
         e3 = f2;
@@ -1886,9 +1912,9 @@ function fd(a2, b2, c2, d2) {
       hd(a2, b2, d2, null, c2);
   }
 }
-var id = null;
+var id$2 = null;
 function Yc(a2, b2, c2, d2) {
-  id = null;
+  id$2 = null;
   a2 = xb(d2);
   a2 = Wc(a2);
   if (null !== a2)
@@ -1905,7 +1931,7 @@ function Yc(a2, b2, c2, d2) {
       a2 = null;
     } else
       b2 !== a2 && (a2 = null);
-  id = a2;
+  id$2 = a2;
   return null;
 }
 function jd(a2) {
@@ -3446,7 +3472,7 @@ function uh(a2) {
   var b2 = a2._init;
   return b2(a2._payload);
 }
-function vh(a2) {
+function vh$1(a2) {
   function b2(b3, c3) {
     if (a2) {
       var d3 = b3.deletions;
@@ -3718,7 +3744,7 @@ function vh(a2) {
   }
   return J2;
 }
-var Bh = vh(true), Ch = vh(false), Dh = {}, Eh = Uf(Dh), Fh = Uf(Dh), Gh = Uf(Dh);
+var Bh = vh$1(true), Ch = vh$1(false), Dh = {}, Eh = Uf(Dh), Fh = Uf(Dh), Gh = Uf(Dh);
 function Hh(a2) {
   if (a2 === Dh)
     throw Error(p$5(174));
@@ -7615,7 +7641,7 @@ var m$1 = reactDomExports;
   client.hydrateRoot = m$1.hydrateRoot;
 }
 const index = "";
-const createStoreImpl = (createState) => {
+const createStoreImpl = (createState2) => {
   let state;
   const listeners = /* @__PURE__ */ new Set();
   const setState = (partial, replace) => {
@@ -7631,7 +7657,7 @@ const createStoreImpl = (createState) => {
     listeners.add(listener);
     return () => listeners.delete(listener);
   };
-  const destroy = () => {
+  const destroy2 = () => {
     if (({ "BASE_URL": "./", "MODE": "production", "DEV": false, "PROD": true, "SSR": false } ? "production" : void 0) !== "production") {
       console.warn(
         "[DEPRECATED] The `destroy` method will be unsupported in a future version. Instead use unsubscribe function returned by subscribe. Everything will be garbage-collected if store is garbage-collected."
@@ -7639,11 +7665,11 @@ const createStoreImpl = (createState) => {
     }
     listeners.clear();
   };
-  const api = { setState, getState, subscribe, destroy };
-  state = createState(setState, getState, api);
+  const api = { setState, getState, subscribe, destroy: destroy2 };
+  state = createState2(setState, getState, api);
   return api;
 };
-const createStore$1 = (createState) => createState ? createStoreImpl(createState) : createStoreImpl;
+const createStore$1 = (createState2) => createState2 ? createStoreImpl(createState2) : createStoreImpl;
 var withSelector = { exports: {} };
 var withSelector_production_min = {};
 var shim = { exports: {} };
@@ -7779,216 +7805,751 @@ function useStore(api, selector = api.getState, equalityFn) {
   reactExports.useDebugValue(slice);
   return slice;
 }
-const createImpl = (createState) => {
-  if (({ "BASE_URL": "./", "MODE": "production", "DEV": false, "PROD": true, "SSR": false } ? "production" : void 0) !== "production" && typeof createState !== "function") {
+const createImpl = (createState2) => {
+  if (({ "BASE_URL": "./", "MODE": "production", "DEV": false, "PROD": true, "SSR": false } ? "production" : void 0) !== "production" && typeof createState2 !== "function") {
     console.warn(
       "[DEPRECATED] Passing a vanilla store will be unsupported in a future version. Instead use `import { useStore } from 'zustand'`."
     );
   }
-  const api = typeof createState === "function" ? createStore$1(createState) : createState;
+  const api = typeof createState2 === "function" ? createStore$1(createState2) : createState2;
   const useBoundStore = (selector, equalityFn) => useStore(api, selector, equalityFn);
   Object.assign(useBoundStore, api);
   return useBoundStore;
 };
-const create = (createState) => createState ? createImpl(createState) : createImpl;
-function e$3(e3, t4, s3, i3) {
-  return new (s3 || (s3 = Promise))(function(r3, n2) {
-    function o3(e4) {
-      try {
-        c2(i3.next(e4));
-      } catch (e5) {
-        n2(e5);
+const create = (createState2) => createState2 ? createImpl(createState2) : createImpl;
+var sha256 = { exports: {} };
+function commonjsRequire(path) {
+  throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
+}
+var core = { exports: {} };
+const __viteBrowserExternal = {};
+const __viteBrowserExternal$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: __viteBrowserExternal
+}, Symbol.toStringTag, { value: "Module" }));
+const require$$0 = /* @__PURE__ */ getAugmentedNamespace(__viteBrowserExternal$1);
+var hasRequiredCore;
+function requireCore() {
+  if (hasRequiredCore)
+    return core.exports;
+  hasRequiredCore = 1;
+  (function(module, exports) {
+    (function(root, factory) {
+      {
+        module.exports = factory();
       }
+    })(commonjsGlobal, function() {
+      var CryptoJS = CryptoJS || function(Math2, undefined$1) {
+        var crypto2;
+        if (typeof window !== "undefined" && window.crypto) {
+          crypto2 = window.crypto;
+        }
+        if (typeof self !== "undefined" && self.crypto) {
+          crypto2 = self.crypto;
+        }
+        if (typeof globalThis !== "undefined" && globalThis.crypto) {
+          crypto2 = globalThis.crypto;
+        }
+        if (!crypto2 && typeof window !== "undefined" && window.msCrypto) {
+          crypto2 = window.msCrypto;
+        }
+        if (!crypto2 && typeof commonjsGlobal !== "undefined" && commonjsGlobal.crypto) {
+          crypto2 = commonjsGlobal.crypto;
+        }
+        if (!crypto2 && typeof commonjsRequire === "function") {
+          try {
+            crypto2 = require$$0;
+          } catch (err) {
+          }
+        }
+        var cryptoSecureRandomInt = function() {
+          if (crypto2) {
+            if (typeof crypto2.getRandomValues === "function") {
+              try {
+                return crypto2.getRandomValues(new Uint32Array(1))[0];
+              } catch (err) {
+              }
+            }
+            if (typeof crypto2.randomBytes === "function") {
+              try {
+                return crypto2.randomBytes(4).readInt32LE();
+              } catch (err) {
+              }
+            }
+          }
+          throw new Error("Native crypto module could not be used to get secure random number.");
+        };
+        var create2 = Object.create || function() {
+          function F2() {
+          }
+          return function(obj) {
+            var subtype;
+            F2.prototype = obj;
+            subtype = new F2();
+            F2.prototype = null;
+            return subtype;
+          };
+        }();
+        var C2 = {};
+        var C_lib = C2.lib = {};
+        var Base = C_lib.Base = function() {
+          return {
+            /**
+             * Creates a new object that inherits from this object.
+             *
+             * @param {Object} overrides Properties to copy into the new object.
+             *
+             * @return {Object} The new object.
+             *
+             * @static
+             *
+             * @example
+             *
+             *     var MyType = CryptoJS.lib.Base.extend({
+             *         field: 'value',
+             *
+             *         method: function () {
+             *         }
+             *     });
+             */
+            extend: function(overrides) {
+              var subtype = create2(this);
+              if (overrides) {
+                subtype.mixIn(overrides);
+              }
+              if (!subtype.hasOwnProperty("init") || this.init === subtype.init) {
+                subtype.init = function() {
+                  subtype.$super.init.apply(this, arguments);
+                };
+              }
+              subtype.init.prototype = subtype;
+              subtype.$super = this;
+              return subtype;
+            },
+            /**
+             * Extends this object and runs the init method.
+             * Arguments to create() will be passed to init().
+             *
+             * @return {Object} The new object.
+             *
+             * @static
+             *
+             * @example
+             *
+             *     var instance = MyType.create();
+             */
+            create: function() {
+              var instance = this.extend();
+              instance.init.apply(instance, arguments);
+              return instance;
+            },
+            /**
+             * Initializes a newly created object.
+             * Override this method to add some logic when your objects are created.
+             *
+             * @example
+             *
+             *     var MyType = CryptoJS.lib.Base.extend({
+             *         init: function () {
+             *             // ...
+             *         }
+             *     });
+             */
+            init: function() {
+            },
+            /**
+             * Copies properties into this object.
+             *
+             * @param {Object} properties The properties to mix in.
+             *
+             * @example
+             *
+             *     MyType.mixIn({
+             *         field: 'value'
+             *     });
+             */
+            mixIn: function(properties) {
+              for (var propertyName in properties) {
+                if (properties.hasOwnProperty(propertyName)) {
+                  this[propertyName] = properties[propertyName];
+                }
+              }
+              if (properties.hasOwnProperty("toString")) {
+                this.toString = properties.toString;
+              }
+            },
+            /**
+             * Creates a copy of this object.
+             *
+             * @return {Object} The clone.
+             *
+             * @example
+             *
+             *     var clone = instance.clone();
+             */
+            clone: function() {
+              return this.init.prototype.extend(this);
+            }
+          };
+        }();
+        var WordArray = C_lib.WordArray = Base.extend({
+          /**
+           * Initializes a newly created word array.
+           *
+           * @param {Array} words (Optional) An array of 32-bit words.
+           * @param {number} sigBytes (Optional) The number of significant bytes in the words.
+           *
+           * @example
+           *
+           *     var wordArray = CryptoJS.lib.WordArray.create();
+           *     var wordArray = CryptoJS.lib.WordArray.create([0x00010203, 0x04050607]);
+           *     var wordArray = CryptoJS.lib.WordArray.create([0x00010203, 0x04050607], 6);
+           */
+          init: function(words, sigBytes) {
+            words = this.words = words || [];
+            if (sigBytes != undefined$1) {
+              this.sigBytes = sigBytes;
+            } else {
+              this.sigBytes = words.length * 4;
+            }
+          },
+          /**
+           * Converts this word array to a string.
+           *
+           * @param {Encoder} encoder (Optional) The encoding strategy to use. Default: CryptoJS.enc.Hex
+           *
+           * @return {string} The stringified word array.
+           *
+           * @example
+           *
+           *     var string = wordArray + '';
+           *     var string = wordArray.toString();
+           *     var string = wordArray.toString(CryptoJS.enc.Utf8);
+           */
+          toString: function(encoder) {
+            return (encoder || Hex).stringify(this);
+          },
+          /**
+           * Concatenates a word array to this word array.
+           *
+           * @param {WordArray} wordArray The word array to append.
+           *
+           * @return {WordArray} This word array.
+           *
+           * @example
+           *
+           *     wordArray1.concat(wordArray2);
+           */
+          concat: function(wordArray) {
+            var thisWords = this.words;
+            var thatWords = wordArray.words;
+            var thisSigBytes = this.sigBytes;
+            var thatSigBytes = wordArray.sigBytes;
+            this.clamp();
+            if (thisSigBytes % 4) {
+              for (var i3 = 0; i3 < thatSigBytes; i3++) {
+                var thatByte = thatWords[i3 >>> 2] >>> 24 - i3 % 4 * 8 & 255;
+                thisWords[thisSigBytes + i3 >>> 2] |= thatByte << 24 - (thisSigBytes + i3) % 4 * 8;
+              }
+            } else {
+              for (var j2 = 0; j2 < thatSigBytes; j2 += 4) {
+                thisWords[thisSigBytes + j2 >>> 2] = thatWords[j2 >>> 2];
+              }
+            }
+            this.sigBytes += thatSigBytes;
+            return this;
+          },
+          /**
+           * Removes insignificant bits.
+           *
+           * @example
+           *
+           *     wordArray.clamp();
+           */
+          clamp: function() {
+            var words = this.words;
+            var sigBytes = this.sigBytes;
+            words[sigBytes >>> 2] &= 4294967295 << 32 - sigBytes % 4 * 8;
+            words.length = Math2.ceil(sigBytes / 4);
+          },
+          /**
+           * Creates a copy of this word array.
+           *
+           * @return {WordArray} The clone.
+           *
+           * @example
+           *
+           *     var clone = wordArray.clone();
+           */
+          clone: function() {
+            var clone = Base.clone.call(this);
+            clone.words = this.words.slice(0);
+            return clone;
+          },
+          /**
+           * Creates a word array filled with random bytes.
+           *
+           * @param {number} nBytes The number of random bytes to generate.
+           *
+           * @return {WordArray} The random word array.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var wordArray = CryptoJS.lib.WordArray.random(16);
+           */
+          random: function(nBytes) {
+            var words = [];
+            for (var i3 = 0; i3 < nBytes; i3 += 4) {
+              words.push(cryptoSecureRandomInt());
+            }
+            return new WordArray.init(words, nBytes);
+          }
+        });
+        var C_enc = C2.enc = {};
+        var Hex = C_enc.Hex = {
+          /**
+           * Converts a word array to a hex string.
+           *
+           * @param {WordArray} wordArray The word array.
+           *
+           * @return {string} The hex string.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var hexString = CryptoJS.enc.Hex.stringify(wordArray);
+           */
+          stringify: function(wordArray) {
+            var words = wordArray.words;
+            var sigBytes = wordArray.sigBytes;
+            var hexChars = [];
+            for (var i3 = 0; i3 < sigBytes; i3++) {
+              var bite = words[i3 >>> 2] >>> 24 - i3 % 4 * 8 & 255;
+              hexChars.push((bite >>> 4).toString(16));
+              hexChars.push((bite & 15).toString(16));
+            }
+            return hexChars.join("");
+          },
+          /**
+           * Converts a hex string to a word array.
+           *
+           * @param {string} hexStr The hex string.
+           *
+           * @return {WordArray} The word array.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var wordArray = CryptoJS.enc.Hex.parse(hexString);
+           */
+          parse: function(hexStr) {
+            var hexStrLength = hexStr.length;
+            var words = [];
+            for (var i3 = 0; i3 < hexStrLength; i3 += 2) {
+              words[i3 >>> 3] |= parseInt(hexStr.substr(i3, 2), 16) << 24 - i3 % 8 * 4;
+            }
+            return new WordArray.init(words, hexStrLength / 2);
+          }
+        };
+        var Latin1 = C_enc.Latin1 = {
+          /**
+           * Converts a word array to a Latin1 string.
+           *
+           * @param {WordArray} wordArray The word array.
+           *
+           * @return {string} The Latin1 string.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var latin1String = CryptoJS.enc.Latin1.stringify(wordArray);
+           */
+          stringify: function(wordArray) {
+            var words = wordArray.words;
+            var sigBytes = wordArray.sigBytes;
+            var latin1Chars = [];
+            for (var i3 = 0; i3 < sigBytes; i3++) {
+              var bite = words[i3 >>> 2] >>> 24 - i3 % 4 * 8 & 255;
+              latin1Chars.push(String.fromCharCode(bite));
+            }
+            return latin1Chars.join("");
+          },
+          /**
+           * Converts a Latin1 string to a word array.
+           *
+           * @param {string} latin1Str The Latin1 string.
+           *
+           * @return {WordArray} The word array.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var wordArray = CryptoJS.enc.Latin1.parse(latin1String);
+           */
+          parse: function(latin1Str) {
+            var latin1StrLength = latin1Str.length;
+            var words = [];
+            for (var i3 = 0; i3 < latin1StrLength; i3++) {
+              words[i3 >>> 2] |= (latin1Str.charCodeAt(i3) & 255) << 24 - i3 % 4 * 8;
+            }
+            return new WordArray.init(words, latin1StrLength);
+          }
+        };
+        var Utf8 = C_enc.Utf8 = {
+          /**
+           * Converts a word array to a UTF-8 string.
+           *
+           * @param {WordArray} wordArray The word array.
+           *
+           * @return {string} The UTF-8 string.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var utf8String = CryptoJS.enc.Utf8.stringify(wordArray);
+           */
+          stringify: function(wordArray) {
+            try {
+              return decodeURIComponent(escape(Latin1.stringify(wordArray)));
+            } catch (e3) {
+              throw new Error("Malformed UTF-8 data");
+            }
+          },
+          /**
+           * Converts a UTF-8 string to a word array.
+           *
+           * @param {string} utf8Str The UTF-8 string.
+           *
+           * @return {WordArray} The word array.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var wordArray = CryptoJS.enc.Utf8.parse(utf8String);
+           */
+          parse: function(utf8Str) {
+            return Latin1.parse(unescape(encodeURIComponent(utf8Str)));
+          }
+        };
+        var BufferedBlockAlgorithm = C_lib.BufferedBlockAlgorithm = Base.extend({
+          /**
+           * Resets this block algorithm's data buffer to its initial state.
+           *
+           * @example
+           *
+           *     bufferedBlockAlgorithm.reset();
+           */
+          reset: function() {
+            this._data = new WordArray.init();
+            this._nDataBytes = 0;
+          },
+          /**
+           * Adds new data to this block algorithm's buffer.
+           *
+           * @param {WordArray|string} data The data to append. Strings are converted to a WordArray using UTF-8.
+           *
+           * @example
+           *
+           *     bufferedBlockAlgorithm._append('data');
+           *     bufferedBlockAlgorithm._append(wordArray);
+           */
+          _append: function(data) {
+            if (typeof data == "string") {
+              data = Utf8.parse(data);
+            }
+            this._data.concat(data);
+            this._nDataBytes += data.sigBytes;
+          },
+          /**
+           * Processes available data blocks.
+           *
+           * This method invokes _doProcessBlock(offset), which must be implemented by a concrete subtype.
+           *
+           * @param {boolean} doFlush Whether all blocks and partial blocks should be processed.
+           *
+           * @return {WordArray} The processed data.
+           *
+           * @example
+           *
+           *     var processedData = bufferedBlockAlgorithm._process();
+           *     var processedData = bufferedBlockAlgorithm._process(!!'flush');
+           */
+          _process: function(doFlush) {
+            var processedWords;
+            var data = this._data;
+            var dataWords = data.words;
+            var dataSigBytes = data.sigBytes;
+            var blockSize = this.blockSize;
+            var blockSizeBytes = blockSize * 4;
+            var nBlocksReady = dataSigBytes / blockSizeBytes;
+            if (doFlush) {
+              nBlocksReady = Math2.ceil(nBlocksReady);
+            } else {
+              nBlocksReady = Math2.max((nBlocksReady | 0) - this._minBufferSize, 0);
+            }
+            var nWordsReady = nBlocksReady * blockSize;
+            var nBytesReady = Math2.min(nWordsReady * 4, dataSigBytes);
+            if (nWordsReady) {
+              for (var offset = 0; offset < nWordsReady; offset += blockSize) {
+                this._doProcessBlock(dataWords, offset);
+              }
+              processedWords = dataWords.splice(0, nWordsReady);
+              data.sigBytes -= nBytesReady;
+            }
+            return new WordArray.init(processedWords, nBytesReady);
+          },
+          /**
+           * Creates a copy of this object.
+           *
+           * @return {Object} The clone.
+           *
+           * @example
+           *
+           *     var clone = bufferedBlockAlgorithm.clone();
+           */
+          clone: function() {
+            var clone = Base.clone.call(this);
+            clone._data = this._data.clone();
+            return clone;
+          },
+          _minBufferSize: 0
+        });
+        C_lib.Hasher = BufferedBlockAlgorithm.extend({
+          /**
+           * Configuration options.
+           */
+          cfg: Base.extend(),
+          /**
+           * Initializes a newly created hasher.
+           *
+           * @param {Object} cfg (Optional) The configuration options to use for this hash computation.
+           *
+           * @example
+           *
+           *     var hasher = CryptoJS.algo.SHA256.create();
+           */
+          init: function(cfg) {
+            this.cfg = this.cfg.extend(cfg);
+            this.reset();
+          },
+          /**
+           * Resets this hasher to its initial state.
+           *
+           * @example
+           *
+           *     hasher.reset();
+           */
+          reset: function() {
+            BufferedBlockAlgorithm.reset.call(this);
+            this._doReset();
+          },
+          /**
+           * Updates this hasher with a message.
+           *
+           * @param {WordArray|string} messageUpdate The message to append.
+           *
+           * @return {Hasher} This hasher.
+           *
+           * @example
+           *
+           *     hasher.update('message');
+           *     hasher.update(wordArray);
+           */
+          update: function(messageUpdate) {
+            this._append(messageUpdate);
+            this._process();
+            return this;
+          },
+          /**
+           * Finalizes the hash computation.
+           * Note that the finalize operation is effectively a destructive, read-once operation.
+           *
+           * @param {WordArray|string} messageUpdate (Optional) A final message update.
+           *
+           * @return {WordArray} The hash.
+           *
+           * @example
+           *
+           *     var hash = hasher.finalize();
+           *     var hash = hasher.finalize('message');
+           *     var hash = hasher.finalize(wordArray);
+           */
+          finalize: function(messageUpdate) {
+            if (messageUpdate) {
+              this._append(messageUpdate);
+            }
+            var hash = this._doFinalize();
+            return hash;
+          },
+          blockSize: 512 / 32,
+          /**
+           * Creates a shortcut function to a hasher's object interface.
+           *
+           * @param {Hasher} hasher The hasher to create a helper for.
+           *
+           * @return {Function} The shortcut function.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var SHA256 = CryptoJS.lib.Hasher._createHelper(CryptoJS.algo.SHA256);
+           */
+          _createHelper: function(hasher) {
+            return function(message, cfg) {
+              return new hasher.init(cfg).finalize(message);
+            };
+          },
+          /**
+           * Creates a shortcut function to the HMAC's object interface.
+           *
+           * @param {Hasher} hasher The hasher to use in this HMAC helper.
+           *
+           * @return {Function} The shortcut function.
+           *
+           * @static
+           *
+           * @example
+           *
+           *     var HmacSHA256 = CryptoJS.lib.Hasher._createHmacHelper(CryptoJS.algo.SHA256);
+           */
+          _createHmacHelper: function(hasher) {
+            return function(message, key) {
+              return new C_algo.HMAC.init(hasher, key).finalize(message);
+            };
+          }
+        });
+        var C_algo = C2.algo = {};
+        return C2;
+      }(Math);
+      return CryptoJS;
+    });
+  })(core);
+  return core.exports;
+}
+(function(module, exports) {
+  (function(root, factory) {
+    {
+      module.exports = factory(requireCore());
     }
-    function a2(e4) {
-      try {
-        c2(i3.throw(e4));
-      } catch (e5) {
-        n2(e5);
-      }
-    }
-    function c2(e4) {
-      var t5;
-      e4.done ? r3(e4.value) : (t5 = e4.value, t5 instanceof s3 ? t5 : new s3(function(e5) {
-        e5(t5);
-      })).then(o3, a2);
-    }
-    c2((i3 = i3.apply(e3, t4 || [])).next());
+  })(commonjsGlobal, function(CryptoJS) {
+    (function(Math2) {
+      var C2 = CryptoJS;
+      var C_lib = C2.lib;
+      var WordArray = C_lib.WordArray;
+      var Hasher = C_lib.Hasher;
+      var C_algo = C2.algo;
+      var H2 = [];
+      var K2 = [];
+      (function() {
+        function isPrime(n3) {
+          var sqrtN = Math2.sqrt(n3);
+          for (var factor = 2; factor <= sqrtN; factor++) {
+            if (!(n3 % factor)) {
+              return false;
+            }
+          }
+          return true;
+        }
+        function getFractionalBits(n3) {
+          return (n3 - (n3 | 0)) * 4294967296 | 0;
+        }
+        var n2 = 2;
+        var nPrime = 0;
+        while (nPrime < 64) {
+          if (isPrime(n2)) {
+            if (nPrime < 8) {
+              H2[nPrime] = getFractionalBits(Math2.pow(n2, 1 / 2));
+            }
+            K2[nPrime] = getFractionalBits(Math2.pow(n2, 1 / 3));
+            nPrime++;
+          }
+          n2++;
+        }
+      })();
+      var W2 = [];
+      var SHA2562 = C_algo.SHA256 = Hasher.extend({
+        _doReset: function() {
+          this._hash = new WordArray.init(H2.slice(0));
+        },
+        _doProcessBlock: function(M2, offset) {
+          var H3 = this._hash.words;
+          var a2 = H3[0];
+          var b2 = H3[1];
+          var c2 = H3[2];
+          var d2 = H3[3];
+          var e3 = H3[4];
+          var f2 = H3[5];
+          var g2 = H3[6];
+          var h2 = H3[7];
+          for (var i3 = 0; i3 < 64; i3++) {
+            if (i3 < 16) {
+              W2[i3] = M2[offset + i3] | 0;
+            } else {
+              var gamma0x = W2[i3 - 15];
+              var gamma0 = (gamma0x << 25 | gamma0x >>> 7) ^ (gamma0x << 14 | gamma0x >>> 18) ^ gamma0x >>> 3;
+              var gamma1x = W2[i3 - 2];
+              var gamma1 = (gamma1x << 15 | gamma1x >>> 17) ^ (gamma1x << 13 | gamma1x >>> 19) ^ gamma1x >>> 10;
+              W2[i3] = gamma0 + W2[i3 - 7] + gamma1 + W2[i3 - 16];
+            }
+            var ch2 = e3 & f2 ^ ~e3 & g2;
+            var maj = a2 & b2 ^ a2 & c2 ^ b2 & c2;
+            var sigma0 = (a2 << 30 | a2 >>> 2) ^ (a2 << 19 | a2 >>> 13) ^ (a2 << 10 | a2 >>> 22);
+            var sigma1 = (e3 << 26 | e3 >>> 6) ^ (e3 << 21 | e3 >>> 11) ^ (e3 << 7 | e3 >>> 25);
+            var t1 = h2 + sigma1 + ch2 + K2[i3] + W2[i3];
+            var t22 = sigma0 + maj;
+            h2 = g2;
+            g2 = f2;
+            f2 = e3;
+            e3 = d2 + t1 | 0;
+            d2 = c2;
+            c2 = b2;
+            b2 = a2;
+            a2 = t1 + t22 | 0;
+          }
+          H3[0] = H3[0] + a2 | 0;
+          H3[1] = H3[1] + b2 | 0;
+          H3[2] = H3[2] + c2 | 0;
+          H3[3] = H3[3] + d2 | 0;
+          H3[4] = H3[4] + e3 | 0;
+          H3[5] = H3[5] + f2 | 0;
+          H3[6] = H3[6] + g2 | 0;
+          H3[7] = H3[7] + h2 | 0;
+        },
+        _doFinalize: function() {
+          var data = this._data;
+          var dataWords = data.words;
+          var nBitsTotal = this._nDataBytes * 8;
+          var nBitsLeft = data.sigBytes * 8;
+          dataWords[nBitsLeft >>> 5] |= 128 << 24 - nBitsLeft % 32;
+          dataWords[(nBitsLeft + 64 >>> 9 << 4) + 14] = Math2.floor(nBitsTotal / 4294967296);
+          dataWords[(nBitsLeft + 64 >>> 9 << 4) + 15] = nBitsTotal;
+          data.sigBytes = dataWords.length * 4;
+          this._process();
+          return this._hash;
+        },
+        clone: function() {
+          var clone = Hasher.clone.call(this);
+          clone._hash = this._hash.clone();
+          return clone;
+        }
+      });
+      C2.SHA256 = Hasher._createHelper(SHA2562);
+      C2.HmacSHA256 = Hasher._createHmacHelper(SHA2562);
+    })(Math);
+    return CryptoJS.SHA256;
   });
-}
-"function" == typeof SuppressedError && SuppressedError;
-let t$4 = class t {
-  constructor() {
-    this.listeners = {};
-  }
-  on(e3, t4) {
-    return this.listeners[e3] || (this.listeners[e3] = /* @__PURE__ */ new Set()), this.listeners[e3].add(t4), () => this.un(e3, t4);
-  }
-  once(e3, t4) {
-    const s3 = this.on(e3, t4), i3 = this.on(e3, () => {
-      s3(), i3();
-    });
-    return s3;
-  }
-  un(e3, t4) {
-    this.listeners[e3] && (t4 ? this.listeners[e3].delete(t4) : delete this.listeners[e3]);
-  }
-  unAll() {
-    this.listeners = {};
-  }
-  emit(e3, ...t4) {
-    this.listeners[e3] && this.listeners[e3].forEach((e4) => e4(...t4));
-  }
-};
-let s$7 = class s extends t$4 {
-  constructor(e3) {
-    super(), this.subscriptions = [], this.options = e3;
-  }
-  onInit() {
-  }
-  init(e3) {
-    this.wavesurfer = e3, this.onInit();
-  }
-  destroy() {
-    this.emit("destroy"), this.subscriptions.forEach((e3) => e3());
-  }
-};
-const i$5 = ["audio/webm", "audio/wav", "audio/mpeg", "audio/mp4", "audio/mp3"];
-let r$2 = class r extends s$7 {
-  constructor() {
-    super(...arguments), this.stream = null, this.mediaRecorder = null;
-  }
-  static create(e3) {
-    return new r(e3 || {});
-  }
-  renderMicStream(e3) {
-    const t4 = new AudioContext(), s3 = t4.createMediaStreamSource(e3), i3 = t4.createAnalyser();
-    s3.connect(i3);
-    const r3 = i3.frequencyBinCount, n2 = new Float32Array(r3), o3 = r3 / t4.sampleRate;
-    let a2;
-    const c2 = () => {
-      i3.getFloatTimeDomainData(n2), this.wavesurfer && (this.wavesurfer.options.cursorWidth = 0, this.wavesurfer.options.interact = false, this.wavesurfer.load("", [n2], o3)), a2 = requestAnimationFrame(c2);
-    };
-    return c2(), () => {
-      cancelAnimationFrame(a2), null == s3 || s3.disconnect(), null == t4 || t4.close();
-    };
-  }
-  startMic() {
-    return e$3(this, void 0, void 0, function* () {
-      let e3;
-      try {
-        e3 = yield navigator.mediaDevices.getUserMedia({ audio: true });
-      } catch (e4) {
-        throw new Error("Error accessing the microphone: " + e4.message);
-      }
-      const t4 = this.renderMicStream(e3);
-      return this.subscriptions.push(this.once("destroy", t4)), this.stream = e3, e3;
-    });
-  }
-  stopMic() {
-    this.stream && (this.stream.getTracks().forEach((e3) => e3.stop()), this.stream = null);
-  }
-  startRecording() {
-    return e$3(this, void 0, void 0, function* () {
-      const e3 = this.stream || (yield this.startMic()), t4 = this.mediaRecorder || new MediaRecorder(e3, { mimeType: this.options.mimeType || i$5.find((e4) => MediaRecorder.isTypeSupported(e4)), audioBitsPerSecond: this.options.audioBitsPerSecond });
-      this.mediaRecorder = t4, this.stopRecording();
-      const s3 = [];
-      t4.ondataavailable = (e4) => {
-        e4.data.size > 0 && s3.push(e4.data);
-      }, t4.onstop = () => {
-        var e4;
-        const i3 = new Blob(s3, { type: t4.mimeType });
-        this.emit("record-end", i3), false !== this.options.renderRecordedAudio && (null === (e4 = this.wavesurfer) || void 0 === e4 || e4.load(URL.createObjectURL(i3)));
-      }, t4.start(), this.emit("record-start");
-    });
-  }
-  isRecording() {
-    var e3;
-    return "recording" === (null === (e3 = this.mediaRecorder) || void 0 === e3 ? void 0 : e3.state);
-  }
-  stopRecording() {
-    var e3;
-    this.isRecording() && (null === (e3 = this.mediaRecorder) || void 0 === e3 || e3.stop());
-  }
-  destroy() {
-    super.destroy(), this.stopRecording(), this.stopMic();
-  }
-};
-class MyRecorder {
-  constructor(recordingMimeType) {
-    __publicField(this, "r");
-    __publicField(this, "recodingStatus");
-    __publicField(this, "onStartF");
-    __publicField(this, "onDoneF");
-    __publicField(this, "onCancelF");
-    this.r = r$2.create({
-      mimeType: recordingMimeType == null ? void 0 : recordingMimeType.mimeType,
-      audioBitsPerSecond: 1e5
-    });
-    this.recodingStatus = "init-idle";
-    this.onStartF = () => {
-    };
-    this.onDoneF = (_blob) => {
-    };
-    this.onCancelF = (_blob) => {
-    };
-    this.r.on("record-start", () => {
-      var _a;
-      switch (this.recodingStatus) {
-        case "recording":
-          (_a = this.onStartF) == null ? void 0 : _a.call(this);
-          break;
-        case "init-idle":
-        case "done":
-        case "canceled":
-          throw new Error("recorder has not started");
-      }
-    });
-    this.r.on("record-end", (blob) => {
-      var _a, _b;
-      switch (this.recodingStatus) {
-        case "recording":
-          throw new Error("recorder has not stopped");
-        case "init-idle":
-          throw new Error("recorder is at illegal state");
-        case "done":
-          (_a = this.onDoneF) == null ? void 0 : _a.call(this, blob);
-          break;
-        case "canceled":
-          (_b = this.onCancelF) == null ? void 0 : _b.call(this, blob);
-          break;
-      }
-    });
-  }
-  onStart(f2) {
-    this.onStartF = f2;
-  }
-  onDone(f2) {
-    this.onDoneF = f2;
-  }
-  onCancel(f2) {
-    this.onCancelF = f2;
-  }
-  start() {
-    this.recodingStatus = "recording";
-    return this.r.startRecording();
-  }
-  done() {
-    this.recodingStatus = "done";
-    this.r.stopRecording();
-  }
-  cancel() {
-    this.recodingStatus = "canceled";
-    this.r.stopRecording();
-  }
-  toggleRecord(c2) {
-    if (this.r.isRecording()) {
-      this.done();
-    } else {
-      this.start().catch(c2);
-    }
-  }
-}
+})(sha256);
+var sha256Exports = sha256.exports;
+const SHA256 = /* @__PURE__ */ getDefaultExportFromCjs(sha256Exports);
 const base64ToBlob = (base64String, mimeType) => {
   console.debug("decoding base64(truncated to 100 chars)", base64String.slice(0, 100));
   const byteCharacters = atob(base64String);
@@ -8057,139 +8618,14 @@ function timeDiffSecond(isoTime) {
 function joinClassNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-const useRecorderStore = create(
-  (set2) => ({
-    isRecording: false,
-    duration: 0,
-    recordingMimeType: chooseAudioMimeType(),
-    recorder: new MyRecorder(chooseAudioMimeType()),
-    setIsRecording: (isRecording) => set2((state) => ({
-      ...state,
-      isRecording
-    })),
-    setDuration: (duration) => set2((state) => ({
-      ...state,
-      duration
-    })),
-    incrDuration: (incr) => set2((state) => ({
-      ...state,
-      duration: state.duration + incr
-    }))
-  })
-);
-const useTextAreaStore = create(() => ({ inputAreaIsLarge: false }));
-const useInputStore = create(() => ({ inputText: "" }));
-const useSendingTextStore = create(() => ({ sendingText: "" }));
-const emptyBlob = new Blob([], { type: "audio/mp3" });
-const useSendingAudioStore = create(() => ({ sendingAudio: emptyBlob }));
-const Recorder = () => {
-  const isRecording = useRecorderStore((state) => state.isRecording);
-  const recorder = useRecorderStore((state) => state.recorder);
-  const setIsRecording = useRecorderStore((state) => state.setIsRecording);
-  const recordDuration = useRecorderStore((state) => state.duration);
-  reactExports.useEffect(() => {
-    recorder.onDone((blob) => {
-      setIsRecording(false);
-      useSendingAudioStore.setState({ sendingAudio: blob });
-    });
-    recorder.onStart(() => {
-      setIsRecording(true);
-    });
-    recorder.onCancel(() => {
-      setIsRecording(false);
-    });
-  }, []);
-  const handleClick = () => {
-    recorder.toggleRecord((e3) => {
-      console.error("failed to start recorder", e3);
-    });
-  };
-  const handleTouchStart = () => {
-    console.log("handleTouchStart");
-    recorder.start().catch(
-      (e3) => {
-        console.error("failed to start recorder", e3);
-      }
-    );
-  };
-  const handleTouchEnd = () => {
-    console.log("handleTouchEnd");
-    recorder.done();
-  };
-  const handleTouchCancel = () => {
-    console.log("handleTouchCancel");
-    recorder.cancel();
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    "div",
-    {
-      onClick: handleClick,
-      onTouchStart: handleTouchStart,
-      onTouchEnd: handleTouchEnd,
-      onTouchCancel: handleTouchCancel,
-      className: "rounded-lg p-1 gap-2 w-full h-10 bg-equal-100 select-none",
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: joinClassNames("flex gap-3 justify-center items-center", isRecording ? "hidden" : ""), children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "svg",
-            {
-              xmlns: "http://www.w3.org/2000/svg",
-              fill: "none",
-              viewBox: "0 0 24 24",
-              strokeWidth: "1.5",
-              stroke: "currentColor",
-              className: "w-6 h-6 text-neutral-900",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "path",
-                {
-                  strokeLinecap: "round",
-                  strokeLinejoin: "round",
-                  d: "M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
-                }
-              )
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "prose text-equal-500", children: [
-            "Hold ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("kbd", { className: "border rounded-md bg-white px-1.5 py-0.5", children: "Spacebar" }),
-            " to speak"
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: joinClassNames("flex justify-evenly items-center", isRecording ? "" : "hidden"), children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-slate-500 text-sm bg-white rounded-full px-2", children: [
-            "Press any key to ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline text-red-300", children: "cancel" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-center items-center", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "svg",
-              {
-                xmlns: "http://www.w3.org/2000/svg",
-                viewBox: "0 0 24 24",
-                fill: "currentColor",
-                className: "w-6 h-6 text-red-400",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "path",
-                    {
-                      d: "M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z"
-                    }
-                  )
-                ]
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose text-2xl  text-red-400 bg-white rounded-lg px-2", children: timeElapsedMMSS(recordDuration) })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-slate-500 text-sm bg-white rounded-full px-2", children: [
-            "Release to ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline text-blue-500", children: "send" })
-          ] })
-        ] })
-      ]
-    }
-  );
-};
+function generateHash(input) {
+  return SHA256(input).toString();
+}
+function compareSlices(arr1, arr2) {
+  const slice1 = arr1.slice();
+  const slice2 = arr2.slice();
+  return JSON.stringify(slice1) === JSON.stringify(slice2);
+}
 const trackedConnections = /* @__PURE__ */ new Map();
 const getTrackedConnectionState = (name) => {
   const api = trackedConnections.get(name);
@@ -8781,6 +9217,7545 @@ const zustandStorage = {
     await del(name);
   }
 };
+const useAuthStore = create()(
+  devtools(
+    persist((set2) => ({
+      passwordHash: void 0,
+      verified: false,
+      setPassword: (password) => set2(() => ({
+        passwordHash: generateHash(password)
+      })),
+      setVerified: (verified) => set2(() => ({
+        verified
+      }))
+    }), {
+      name: "auth",
+      storage: createJSONStorage(() => zustandStorage)
+      // (optional) by default the 'localStorage' is used
+    })
+  )
+);
+const MotionConfigContext = reactExports.createContext({
+  transformPagePoint: (p2) => p2,
+  isStatic: false,
+  reducedMotion: "never"
+});
+const MotionContext = reactExports.createContext({});
+const PresenceContext = reactExports.createContext(null);
+const isBrowser = typeof document !== "undefined";
+const useIsomorphicLayoutEffect = isBrowser ? reactExports.useLayoutEffect : reactExports.useEffect;
+const LazyContext = reactExports.createContext({ strict: false });
+function useVisualElement(Component2, visualState, props, createVisualElement) {
+  const { visualElement: parent } = reactExports.useContext(MotionContext);
+  const lazyContext = reactExports.useContext(LazyContext);
+  const presenceContext = reactExports.useContext(PresenceContext);
+  const reducedMotionConfig = reactExports.useContext(MotionConfigContext).reducedMotion;
+  const visualElementRef = reactExports.useRef();
+  createVisualElement = createVisualElement || lazyContext.renderer;
+  if (!visualElementRef.current && createVisualElement) {
+    visualElementRef.current = createVisualElement(Component2, {
+      visualState,
+      parent,
+      props,
+      presenceContext,
+      blockInitialAnimation: presenceContext ? presenceContext.initial === false : false,
+      reducedMotionConfig
+    });
+  }
+  const visualElement = visualElementRef.current;
+  reactExports.useInsertionEffect(() => {
+    visualElement && visualElement.update(props, presenceContext);
+  });
+  const canHandoff = reactExports.useRef(Boolean(window.HandoffAppearAnimations));
+  useIsomorphicLayoutEffect(() => {
+    if (!visualElement)
+      return;
+    visualElement.render();
+    if (canHandoff.current && visualElement.animationState) {
+      visualElement.animationState.animateChanges();
+    }
+  });
+  reactExports.useEffect(() => {
+    if (!visualElement)
+      return;
+    visualElement.updateFeatures();
+    if (!canHandoff.current && visualElement.animationState) {
+      visualElement.animationState.animateChanges();
+    }
+    window.HandoffAppearAnimations = void 0;
+    canHandoff.current = false;
+  });
+  return visualElement;
+}
+function isRefObject(ref) {
+  return typeof ref === "object" && Object.prototype.hasOwnProperty.call(ref, "current");
+}
+function useMotionRef(visualState, visualElement, externalRef) {
+  return reactExports.useCallback(
+    (instance) => {
+      instance && visualState.mount && visualState.mount(instance);
+      if (visualElement) {
+        instance ? visualElement.mount(instance) : visualElement.unmount();
+      }
+      if (externalRef) {
+        if (typeof externalRef === "function") {
+          externalRef(instance);
+        } else if (isRefObject(externalRef)) {
+          externalRef.current = instance;
+        }
+      }
+    },
+    /**
+     * Only pass a new ref callback to React if we've received a visual element
+     * factory. Otherwise we'll be mounting/remounting every time externalRef
+     * or other dependencies change.
+     */
+    [visualElement]
+  );
+}
+function isVariantLabel(v2) {
+  return typeof v2 === "string" || Array.isArray(v2);
+}
+function isAnimationControls(v2) {
+  return typeof v2 === "object" && typeof v2.start === "function";
+}
+const variantPriorityOrder = [
+  "animate",
+  "whileInView",
+  "whileFocus",
+  "whileHover",
+  "whileTap",
+  "whileDrag",
+  "exit"
+];
+const variantProps = ["initial", ...variantPriorityOrder];
+function isControllingVariants(props) {
+  return isAnimationControls(props.animate) || variantProps.some((name) => isVariantLabel(props[name]));
+}
+function isVariantNode(props) {
+  return Boolean(isControllingVariants(props) || props.variants);
+}
+function getCurrentTreeVariants(props, context) {
+  if (isControllingVariants(props)) {
+    const { initial, animate } = props;
+    return {
+      initial: initial === false || isVariantLabel(initial) ? initial : void 0,
+      animate: isVariantLabel(animate) ? animate : void 0
+    };
+  }
+  return props.inherit !== false ? context : {};
+}
+function useCreateMotionContext(props) {
+  const { initial, animate } = getCurrentTreeVariants(props, reactExports.useContext(MotionContext));
+  return reactExports.useMemo(() => ({ initial, animate }), [variantLabelsAsDependency(initial), variantLabelsAsDependency(animate)]);
+}
+function variantLabelsAsDependency(prop) {
+  return Array.isArray(prop) ? prop.join(" ") : prop;
+}
+const featureProps = {
+  animation: [
+    "animate",
+    "variants",
+    "whileHover",
+    "whileTap",
+    "exit",
+    "whileInView",
+    "whileFocus",
+    "whileDrag"
+  ],
+  exit: ["exit"],
+  drag: ["drag", "dragControls"],
+  focus: ["whileFocus"],
+  hover: ["whileHover", "onHoverStart", "onHoverEnd"],
+  tap: ["whileTap", "onTap", "onTapStart", "onTapCancel"],
+  pan: ["onPan", "onPanStart", "onPanSessionStart", "onPanEnd"],
+  inView: ["whileInView", "onViewportEnter", "onViewportLeave"],
+  layout: ["layout", "layoutId"]
+};
+const featureDefinitions = {};
+for (const key in featureProps) {
+  featureDefinitions[key] = {
+    isEnabled: (props) => featureProps[key].some((name) => !!props[name])
+  };
+}
+function loadFeatures(features) {
+  for (const key in features) {
+    featureDefinitions[key] = {
+      ...featureDefinitions[key],
+      ...features[key]
+    };
+  }
+}
+const LayoutGroupContext = reactExports.createContext({});
+const SwitchLayoutGroupContext = reactExports.createContext({});
+const motionComponentSymbol = Symbol.for("motionComponentSymbol");
+function createMotionComponent({ preloadedFeatures: preloadedFeatures2, createVisualElement, useRender, useVisualState, Component: Component2 }) {
+  preloadedFeatures2 && loadFeatures(preloadedFeatures2);
+  function MotionComponent(props, externalRef) {
+    let MeasureLayout2;
+    const configAndProps = {
+      ...reactExports.useContext(MotionConfigContext),
+      ...props,
+      layoutId: useLayoutId(props)
+    };
+    const { isStatic } = configAndProps;
+    const context = useCreateMotionContext(props);
+    const visualState = useVisualState(props, isStatic);
+    if (!isStatic && isBrowser) {
+      context.visualElement = useVisualElement(Component2, visualState, configAndProps, createVisualElement);
+      const initialLayoutGroupConfig = reactExports.useContext(SwitchLayoutGroupContext);
+      const isStrict = reactExports.useContext(LazyContext).strict;
+      if (context.visualElement) {
+        MeasureLayout2 = context.visualElement.loadFeatures(
+          // Note: Pass the full new combined props to correctly re-render dynamic feature components.
+          configAndProps,
+          isStrict,
+          preloadedFeatures2,
+          initialLayoutGroupConfig
+        );
+      }
+    }
+    return reactExports.createElement(
+      MotionContext.Provider,
+      { value: context },
+      MeasureLayout2 && context.visualElement ? reactExports.createElement(MeasureLayout2, { visualElement: context.visualElement, ...configAndProps }) : null,
+      useRender(Component2, props, useMotionRef(visualState, context.visualElement, externalRef), visualState, isStatic, context.visualElement)
+    );
+  }
+  const ForwardRefComponent = reactExports.forwardRef(MotionComponent);
+  ForwardRefComponent[motionComponentSymbol] = Component2;
+  return ForwardRefComponent;
+}
+function useLayoutId({ layoutId }) {
+  const layoutGroupId = reactExports.useContext(LayoutGroupContext).id;
+  return layoutGroupId && layoutId !== void 0 ? layoutGroupId + "-" + layoutId : layoutId;
+}
+function createMotionProxy(createConfig) {
+  function custom(Component2, customMotionComponentConfig = {}) {
+    return createMotionComponent(createConfig(Component2, customMotionComponentConfig));
+  }
+  if (typeof Proxy === "undefined") {
+    return custom;
+  }
+  const componentCache = /* @__PURE__ */ new Map();
+  return new Proxy(custom, {
+    /**
+     * Called when `motion` is referenced with a prop: `motion.div`, `motion.input` etc.
+     * The prop name is passed through as `key` and we can use that to generate a `motion`
+     * DOM component with that name.
+     */
+    get: (_target, key) => {
+      if (!componentCache.has(key)) {
+        componentCache.set(key, custom(key));
+      }
+      return componentCache.get(key);
+    }
+  });
+}
+const lowercaseSVGElements = [
+  "animate",
+  "circle",
+  "defs",
+  "desc",
+  "ellipse",
+  "g",
+  "image",
+  "line",
+  "filter",
+  "marker",
+  "mask",
+  "metadata",
+  "path",
+  "pattern",
+  "polygon",
+  "polyline",
+  "rect",
+  "stop",
+  "switch",
+  "symbol",
+  "svg",
+  "text",
+  "tspan",
+  "use",
+  "view"
+];
+function isSVGComponent(Component2) {
+  if (
+    /**
+     * If it's not a string, it's a custom React component. Currently we only support
+     * HTML custom React components.
+     */
+    typeof Component2 !== "string" || /**
+     * If it contains a dash, the element is a custom HTML webcomponent.
+     */
+    Component2.includes("-")
+  ) {
+    return false;
+  } else if (
+    /**
+     * If it's in our list of lowercase SVG tags, it's an SVG component
+     */
+    lowercaseSVGElements.indexOf(Component2) > -1 || /**
+     * If it contains a capital letter, it's an SVG component
+     */
+    /[A-Z]/.test(Component2)
+  ) {
+    return true;
+  }
+  return false;
+}
+const scaleCorrectors = {};
+function addScaleCorrector(correctors) {
+  Object.assign(scaleCorrectors, correctors);
+}
+const transformPropOrder = [
+  "transformPerspective",
+  "x",
+  "y",
+  "z",
+  "translateX",
+  "translateY",
+  "translateZ",
+  "scale",
+  "scaleX",
+  "scaleY",
+  "rotate",
+  "rotateX",
+  "rotateY",
+  "rotateZ",
+  "skew",
+  "skewX",
+  "skewY"
+];
+const transformProps = new Set(transformPropOrder);
+function isForcedMotionValue(key, { layout: layout2, layoutId }) {
+  return transformProps.has(key) || key.startsWith("origin") || (layout2 || layoutId !== void 0) && (!!scaleCorrectors[key] || key === "opacity");
+}
+const isMotionValue = (value) => Boolean(value && value.getVelocity);
+const translateAlias = {
+  x: "translateX",
+  y: "translateY",
+  z: "translateZ",
+  transformPerspective: "perspective"
+};
+const numTransforms = transformPropOrder.length;
+function buildTransform(transform, { enableHardwareAcceleration = true, allowTransformNone = true }, transformIsDefault, transformTemplate) {
+  let transformString = "";
+  for (let i3 = 0; i3 < numTransforms; i3++) {
+    const key = transformPropOrder[i3];
+    if (transform[key] !== void 0) {
+      const transformName = translateAlias[key] || key;
+      transformString += `${transformName}(${transform[key]}) `;
+    }
+  }
+  if (enableHardwareAcceleration && !transform.z) {
+    transformString += "translateZ(0)";
+  }
+  transformString = transformString.trim();
+  if (transformTemplate) {
+    transformString = transformTemplate(transform, transformIsDefault ? "" : transformString);
+  } else if (allowTransformNone && transformIsDefault) {
+    transformString = "none";
+  }
+  return transformString;
+}
+const checkStringStartsWith = (token) => (key) => typeof key === "string" && key.startsWith(token);
+const isCSSVariableName = checkStringStartsWith("--");
+const isCSSVariableToken = checkStringStartsWith("var(--");
+const cssVariableRegex = /var\s*\(\s*--[\w-]+(\s*,\s*(?:(?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)+)?\s*\)/g;
+const getValueAsType = (value, type) => {
+  return type && typeof value === "number" ? type.transform(value) : value;
+};
+const clamp = (min, max, v2) => Math.min(Math.max(v2, min), max);
+const number = {
+  test: (v2) => typeof v2 === "number",
+  parse: parseFloat,
+  transform: (v2) => v2
+};
+const alpha = {
+  ...number,
+  transform: (v2) => clamp(0, 1, v2)
+};
+const scale = {
+  ...number,
+  default: 1
+};
+const sanitize = (v2) => Math.round(v2 * 1e5) / 1e5;
+const floatRegex = /(-)?([\d]*\.?[\d])+/g;
+const colorRegex = /(#[0-9a-f]{3,8}|(rgb|hsl)a?\((-?[\d\.]+%?[,\s]+){2}(-?[\d\.]+%?)\s*[\,\/]?\s*[\d\.]*%?\))/gi;
+const singleColorRegex = /^(#[0-9a-f]{3,8}|(rgb|hsl)a?\((-?[\d\.]+%?[,\s]+){2}(-?[\d\.]+%?)\s*[\,\/]?\s*[\d\.]*%?\))$/i;
+function isString$1(v2) {
+  return typeof v2 === "string";
+}
+const createUnitType = (unit) => ({
+  test: (v2) => isString$1(v2) && v2.endsWith(unit) && v2.split(" ").length === 1,
+  parse: parseFloat,
+  transform: (v2) => `${v2}${unit}`
+});
+const degrees = createUnitType("deg");
+const percent = createUnitType("%");
+const px = createUnitType("px");
+const vh = createUnitType("vh");
+const vw = createUnitType("vw");
+const progressPercentage = {
+  ...percent,
+  parse: (v2) => percent.parse(v2) / 100,
+  transform: (v2) => percent.transform(v2 * 100)
+};
+const int = {
+  ...number,
+  transform: Math.round
+};
+const numberValueTypes = {
+  // Border props
+  borderWidth: px,
+  borderTopWidth: px,
+  borderRightWidth: px,
+  borderBottomWidth: px,
+  borderLeftWidth: px,
+  borderRadius: px,
+  radius: px,
+  borderTopLeftRadius: px,
+  borderTopRightRadius: px,
+  borderBottomRightRadius: px,
+  borderBottomLeftRadius: px,
+  // Positioning props
+  width: px,
+  maxWidth: px,
+  height: px,
+  maxHeight: px,
+  size: px,
+  top: px,
+  right: px,
+  bottom: px,
+  left: px,
+  // Spacing props
+  padding: px,
+  paddingTop: px,
+  paddingRight: px,
+  paddingBottom: px,
+  paddingLeft: px,
+  margin: px,
+  marginTop: px,
+  marginRight: px,
+  marginBottom: px,
+  marginLeft: px,
+  // Transform props
+  rotate: degrees,
+  rotateX: degrees,
+  rotateY: degrees,
+  rotateZ: degrees,
+  scale,
+  scaleX: scale,
+  scaleY: scale,
+  scaleZ: scale,
+  skew: degrees,
+  skewX: degrees,
+  skewY: degrees,
+  distance: px,
+  translateX: px,
+  translateY: px,
+  translateZ: px,
+  x: px,
+  y: px,
+  z: px,
+  perspective: px,
+  transformPerspective: px,
+  opacity: alpha,
+  originX: progressPercentage,
+  originY: progressPercentage,
+  originZ: px,
+  // Misc
+  zIndex: int,
+  // SVG
+  fillOpacity: alpha,
+  strokeOpacity: alpha,
+  numOctaves: int
+};
+function buildHTMLStyles(state, latestValues, options2, transformTemplate) {
+  const { style, vars, transform, transformOrigin } = state;
+  let hasTransform2 = false;
+  let hasTransformOrigin = false;
+  let transformIsNone = true;
+  for (const key in latestValues) {
+    const value = latestValues[key];
+    if (isCSSVariableName(key)) {
+      vars[key] = value;
+      continue;
+    }
+    const valueType = numberValueTypes[key];
+    const valueAsType = getValueAsType(value, valueType);
+    if (transformProps.has(key)) {
+      hasTransform2 = true;
+      transform[key] = valueAsType;
+      if (!transformIsNone)
+        continue;
+      if (value !== (valueType.default || 0))
+        transformIsNone = false;
+    } else if (key.startsWith("origin")) {
+      hasTransformOrigin = true;
+      transformOrigin[key] = valueAsType;
+    } else {
+      style[key] = valueAsType;
+    }
+  }
+  if (!latestValues.transform) {
+    if (hasTransform2 || transformTemplate) {
+      style.transform = buildTransform(state.transform, options2, transformIsNone, transformTemplate);
+    } else if (style.transform) {
+      style.transform = "none";
+    }
+  }
+  if (hasTransformOrigin) {
+    const { originX = "50%", originY = "50%", originZ = 0 } = transformOrigin;
+    style.transformOrigin = `${originX} ${originY} ${originZ}`;
+  }
+}
+const createHtmlRenderState = () => ({
+  style: {},
+  transform: {},
+  transformOrigin: {},
+  vars: {}
+});
+function copyRawValuesOnly(target, source, props) {
+  for (const key in source) {
+    if (!isMotionValue(source[key]) && !isForcedMotionValue(key, props)) {
+      target[key] = source[key];
+    }
+  }
+}
+function useInitialMotionValues({ transformTemplate }, visualState, isStatic) {
+  return reactExports.useMemo(() => {
+    const state = createHtmlRenderState();
+    buildHTMLStyles(state, visualState, { enableHardwareAcceleration: !isStatic }, transformTemplate);
+    return Object.assign({}, state.vars, state.style);
+  }, [visualState]);
+}
+function useStyle(props, visualState, isStatic) {
+  const styleProp = props.style || {};
+  const style = {};
+  copyRawValuesOnly(style, styleProp, props);
+  Object.assign(style, useInitialMotionValues(props, visualState, isStatic));
+  return props.transformValues ? props.transformValues(style) : style;
+}
+function useHTMLProps(props, visualState, isStatic) {
+  const htmlProps = {};
+  const style = useStyle(props, visualState, isStatic);
+  if (props.drag && props.dragListener !== false) {
+    htmlProps.draggable = false;
+    style.userSelect = style.WebkitUserSelect = style.WebkitTouchCallout = "none";
+    style.touchAction = props.drag === true ? "none" : `pan-${props.drag === "x" ? "y" : "x"}`;
+  }
+  if (props.tabIndex === void 0 && (props.onTap || props.onTapStart || props.whileTap)) {
+    htmlProps.tabIndex = 0;
+  }
+  htmlProps.style = style;
+  return htmlProps;
+}
+const validMotionProps = /* @__PURE__ */ new Set([
+  "animate",
+  "exit",
+  "variants",
+  "initial",
+  "style",
+  "values",
+  "variants",
+  "transition",
+  "transformTemplate",
+  "transformValues",
+  "custom",
+  "inherit",
+  "onLayoutAnimationStart",
+  "onLayoutAnimationComplete",
+  "onLayoutMeasure",
+  "onBeforeLayoutMeasure",
+  "onAnimationStart",
+  "onAnimationComplete",
+  "onUpdate",
+  "onDragStart",
+  "onDrag",
+  "onDragEnd",
+  "onMeasureDragConstraints",
+  "onDirectionLock",
+  "onDragTransitionEnd",
+  "_dragX",
+  "_dragY",
+  "onHoverStart",
+  "onHoverEnd",
+  "onViewportEnter",
+  "onViewportLeave",
+  "ignoreStrict",
+  "viewport"
+]);
+function isValidMotionProp(key) {
+  return key.startsWith("while") || key.startsWith("drag") && key !== "draggable" || key.startsWith("layout") || key.startsWith("onTap") || key.startsWith("onPan") || validMotionProps.has(key);
+}
+let shouldForward = (key) => !isValidMotionProp(key);
+function loadExternalIsValidProp(isValidProp) {
+  if (!isValidProp)
+    return;
+  shouldForward = (key) => key.startsWith("on") ? !isValidMotionProp(key) : isValidProp(key);
+}
+try {
+  loadExternalIsValidProp(require("@emotion/is-prop-valid").default);
+} catch (_a) {
+}
+function filterProps(props, isDom, forwardMotionProps) {
+  const filteredProps = {};
+  for (const key in props) {
+    if (key === "values" && typeof props.values === "object")
+      continue;
+    if (shouldForward(key) || forwardMotionProps === true && isValidMotionProp(key) || !isDom && !isValidMotionProp(key) || // If trying to use native HTML drag events, forward drag listeners
+    props["draggable"] && key.startsWith("onDrag")) {
+      filteredProps[key] = props[key];
+    }
+  }
+  return filteredProps;
+}
+function calcOrigin$1(origin, offset, size) {
+  return typeof origin === "string" ? origin : px.transform(offset + size * origin);
+}
+function calcSVGTransformOrigin(dimensions, originX, originY) {
+  const pxOriginX = calcOrigin$1(originX, dimensions.x, dimensions.width);
+  const pxOriginY = calcOrigin$1(originY, dimensions.y, dimensions.height);
+  return `${pxOriginX} ${pxOriginY}`;
+}
+const dashKeys = {
+  offset: "stroke-dashoffset",
+  array: "stroke-dasharray"
+};
+const camelKeys = {
+  offset: "strokeDashoffset",
+  array: "strokeDasharray"
+};
+function buildSVGPath(attrs, length, spacing = 1, offset = 0, useDashCase = true) {
+  attrs.pathLength = 1;
+  const keys = useDashCase ? dashKeys : camelKeys;
+  attrs[keys.offset] = px.transform(-offset);
+  const pathLength = px.transform(length);
+  const pathSpacing = px.transform(spacing);
+  attrs[keys.array] = `${pathLength} ${pathSpacing}`;
+}
+function buildSVGAttrs(state, {
+  attrX,
+  attrY,
+  attrScale,
+  originX,
+  originY,
+  pathLength,
+  pathSpacing = 1,
+  pathOffset = 0,
+  // This is object creation, which we try to avoid per-frame.
+  ...latest
+}, options2, isSVGTag2, transformTemplate) {
+  buildHTMLStyles(state, latest, options2, transformTemplate);
+  if (isSVGTag2) {
+    if (state.style.viewBox) {
+      state.attrs.viewBox = state.style.viewBox;
+    }
+    return;
+  }
+  state.attrs = state.style;
+  state.style = {};
+  const { attrs, style, dimensions } = state;
+  if (attrs.transform) {
+    if (dimensions)
+      style.transform = attrs.transform;
+    delete attrs.transform;
+  }
+  if (dimensions && (originX !== void 0 || originY !== void 0 || style.transform)) {
+    style.transformOrigin = calcSVGTransformOrigin(dimensions, originX !== void 0 ? originX : 0.5, originY !== void 0 ? originY : 0.5);
+  }
+  if (attrX !== void 0)
+    attrs.x = attrX;
+  if (attrY !== void 0)
+    attrs.y = attrY;
+  if (attrScale !== void 0)
+    attrs.scale = attrScale;
+  if (pathLength !== void 0) {
+    buildSVGPath(attrs, pathLength, pathSpacing, pathOffset, false);
+  }
+}
+const createSvgRenderState = () => ({
+  ...createHtmlRenderState(),
+  attrs: {}
+});
+const isSVGTag = (tag) => typeof tag === "string" && tag.toLowerCase() === "svg";
+function useSVGProps(props, visualState, _isStatic, Component2) {
+  const visualProps = reactExports.useMemo(() => {
+    const state = createSvgRenderState();
+    buildSVGAttrs(state, visualState, { enableHardwareAcceleration: false }, isSVGTag(Component2), props.transformTemplate);
+    return {
+      ...state.attrs,
+      style: { ...state.style }
+    };
+  }, [visualState]);
+  if (props.style) {
+    const rawStyles = {};
+    copyRawValuesOnly(rawStyles, props.style, props);
+    visualProps.style = { ...rawStyles, ...visualProps.style };
+  }
+  return visualProps;
+}
+function createUseRender(forwardMotionProps = false) {
+  const useRender = (Component2, props, ref, { latestValues }, isStatic) => {
+    const useVisualProps = isSVGComponent(Component2) ? useSVGProps : useHTMLProps;
+    const visualProps = useVisualProps(props, latestValues, isStatic, Component2);
+    const filteredProps = filterProps(props, typeof Component2 === "string", forwardMotionProps);
+    const elementProps = {
+      ...filteredProps,
+      ...visualProps,
+      ref
+    };
+    const { children } = props;
+    const renderedChildren = reactExports.useMemo(() => isMotionValue(children) ? children.get() : children, [children]);
+    return reactExports.createElement(Component2, {
+      ...elementProps,
+      children: renderedChildren
+    });
+  };
+  return useRender;
+}
+const camelToDash = (str) => str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+function renderHTML(element, { style, vars }, styleProp, projection) {
+  Object.assign(element.style, style, projection && projection.getProjectionStyles(styleProp));
+  for (const key in vars) {
+    element.style.setProperty(key, vars[key]);
+  }
+}
+const camelCaseAttributes = /* @__PURE__ */ new Set([
+  "baseFrequency",
+  "diffuseConstant",
+  "kernelMatrix",
+  "kernelUnitLength",
+  "keySplines",
+  "keyTimes",
+  "limitingConeAngle",
+  "markerHeight",
+  "markerWidth",
+  "numOctaves",
+  "targetX",
+  "targetY",
+  "surfaceScale",
+  "specularConstant",
+  "specularExponent",
+  "stdDeviation",
+  "tableValues",
+  "viewBox",
+  "gradientTransform",
+  "pathLength",
+  "startOffset",
+  "textLength",
+  "lengthAdjust"
+]);
+function renderSVG(element, renderState, _styleProp, projection) {
+  renderHTML(element, renderState, void 0, projection);
+  for (const key in renderState.attrs) {
+    element.setAttribute(!camelCaseAttributes.has(key) ? camelToDash(key) : key, renderState.attrs[key]);
+  }
+}
+function scrapeMotionValuesFromProps$1(props, prevProps) {
+  const { style } = props;
+  const newValues = {};
+  for (const key in style) {
+    if (isMotionValue(style[key]) || prevProps.style && isMotionValue(prevProps.style[key]) || isForcedMotionValue(key, props)) {
+      newValues[key] = style[key];
+    }
+  }
+  return newValues;
+}
+function scrapeMotionValuesFromProps(props, prevProps) {
+  const newValues = scrapeMotionValuesFromProps$1(props, prevProps);
+  for (const key in props) {
+    if (isMotionValue(props[key]) || isMotionValue(prevProps[key])) {
+      const targetKey = transformPropOrder.indexOf(key) !== -1 ? "attr" + key.charAt(0).toUpperCase() + key.substring(1) : key;
+      newValues[targetKey] = props[key];
+    }
+  }
+  return newValues;
+}
+function resolveVariantFromProps(props, definition, custom, currentValues = {}, currentVelocity = {}) {
+  if (typeof definition === "function") {
+    definition = definition(custom !== void 0 ? custom : props.custom, currentValues, currentVelocity);
+  }
+  if (typeof definition === "string") {
+    definition = props.variants && props.variants[definition];
+  }
+  if (typeof definition === "function") {
+    definition = definition(custom !== void 0 ? custom : props.custom, currentValues, currentVelocity);
+  }
+  return definition;
+}
+function useConstant(init) {
+  const ref = reactExports.useRef(null);
+  if (ref.current === null) {
+    ref.current = init();
+  }
+  return ref.current;
+}
+const isKeyframesTarget = (v2) => {
+  return Array.isArray(v2);
+};
+const isCustomValue = (v2) => {
+  return Boolean(v2 && typeof v2 === "object" && v2.mix && v2.toValue);
+};
+const resolveFinalValueInKeyframes = (v2) => {
+  return isKeyframesTarget(v2) ? v2[v2.length - 1] || 0 : v2;
+};
+function resolveMotionValue(value) {
+  const unwrappedValue = isMotionValue(value) ? value.get() : value;
+  return isCustomValue(unwrappedValue) ? unwrappedValue.toValue() : unwrappedValue;
+}
+function makeState({ scrapeMotionValuesFromProps: scrapeMotionValuesFromProps2, createRenderState, onMount }, props, context, presenceContext) {
+  const state = {
+    latestValues: makeLatestValues(props, context, presenceContext, scrapeMotionValuesFromProps2),
+    renderState: createRenderState()
+  };
+  if (onMount) {
+    state.mount = (instance) => onMount(props, instance, state);
+  }
+  return state;
+}
+const makeUseVisualState = (config) => (props, isStatic) => {
+  const context = reactExports.useContext(MotionContext);
+  const presenceContext = reactExports.useContext(PresenceContext);
+  const make = () => makeState(config, props, context, presenceContext);
+  return isStatic ? make() : useConstant(make);
+};
+function makeLatestValues(props, context, presenceContext, scrapeMotionValues) {
+  const values = {};
+  const motionValues = scrapeMotionValues(props, {});
+  for (const key in motionValues) {
+    values[key] = resolveMotionValue(motionValues[key]);
+  }
+  let { initial, animate } = props;
+  const isControllingVariants$1 = isControllingVariants(props);
+  const isVariantNode$1 = isVariantNode(props);
+  if (context && isVariantNode$1 && !isControllingVariants$1 && props.inherit !== false) {
+    if (initial === void 0)
+      initial = context.initial;
+    if (animate === void 0)
+      animate = context.animate;
+  }
+  let isInitialAnimationBlocked = presenceContext ? presenceContext.initial === false : false;
+  isInitialAnimationBlocked = isInitialAnimationBlocked || initial === false;
+  const variantToSet = isInitialAnimationBlocked ? animate : initial;
+  if (variantToSet && typeof variantToSet !== "boolean" && !isAnimationControls(variantToSet)) {
+    const list = Array.isArray(variantToSet) ? variantToSet : [variantToSet];
+    list.forEach((definition) => {
+      const resolved = resolveVariantFromProps(props, definition);
+      if (!resolved)
+        return;
+      const { transitionEnd, transition, ...target } = resolved;
+      for (const key in target) {
+        let valueTarget = target[key];
+        if (Array.isArray(valueTarget)) {
+          const index2 = isInitialAnimationBlocked ? valueTarget.length - 1 : 0;
+          valueTarget = valueTarget[index2];
+        }
+        if (valueTarget !== null) {
+          values[key] = valueTarget;
+        }
+      }
+      for (const key in transitionEnd)
+        values[key] = transitionEnd[key];
+    });
+  }
+  return values;
+}
+const noop$1 = (any) => any;
+function createRenderStep(runNextFrame) {
+  let toRun = [];
+  let toRunNextFrame = [];
+  let numToRun = 0;
+  let isProcessing = false;
+  let flushNextFrame = false;
+  const toKeepAlive = /* @__PURE__ */ new WeakSet();
+  const step = {
+    /**
+     * Schedule a process to run on the next frame.
+     */
+    schedule: (callback, keepAlive = false, immediate = false) => {
+      const addToCurrentFrame = immediate && isProcessing;
+      const buffer = addToCurrentFrame ? toRun : toRunNextFrame;
+      if (keepAlive)
+        toKeepAlive.add(callback);
+      if (buffer.indexOf(callback) === -1) {
+        buffer.push(callback);
+        if (addToCurrentFrame && isProcessing)
+          numToRun = toRun.length;
+      }
+      return callback;
+    },
+    /**
+     * Cancel the provided callback from running on the next frame.
+     */
+    cancel: (callback) => {
+      const index2 = toRunNextFrame.indexOf(callback);
+      if (index2 !== -1)
+        toRunNextFrame.splice(index2, 1);
+      toKeepAlive.delete(callback);
+    },
+    /**
+     * Execute all schedule callbacks.
+     */
+    process: (frameData2) => {
+      if (isProcessing) {
+        flushNextFrame = true;
+        return;
+      }
+      isProcessing = true;
+      [toRun, toRunNextFrame] = [toRunNextFrame, toRun];
+      toRunNextFrame.length = 0;
+      numToRun = toRun.length;
+      if (numToRun) {
+        for (let i3 = 0; i3 < numToRun; i3++) {
+          const callback = toRun[i3];
+          callback(frameData2);
+          if (toKeepAlive.has(callback)) {
+            step.schedule(callback);
+            runNextFrame();
+          }
+        }
+      }
+      isProcessing = false;
+      if (flushNextFrame) {
+        flushNextFrame = false;
+        step.process(frameData2);
+      }
+    }
+  };
+  return step;
+}
+const stepsOrder = [
+  "prepare",
+  "read",
+  "update",
+  "preRender",
+  "render",
+  "postRender"
+];
+const maxElapsed = 40;
+function createRenderBatcher(scheduleNextBatch, allowKeepAlive) {
+  let runNextFrame = false;
+  let useDefaultElapsed = true;
+  const state = {
+    delta: 0,
+    timestamp: 0,
+    isProcessing: false
+  };
+  const steps2 = stepsOrder.reduce((acc, key) => {
+    acc[key] = createRenderStep(() => runNextFrame = true);
+    return acc;
+  }, {});
+  const processStep = (stepId) => steps2[stepId].process(state);
+  const processBatch = () => {
+    const timestamp = performance.now();
+    runNextFrame = false;
+    state.delta = useDefaultElapsed ? 1e3 / 60 : Math.max(Math.min(timestamp - state.timestamp, maxElapsed), 1);
+    state.timestamp = timestamp;
+    state.isProcessing = true;
+    stepsOrder.forEach(processStep);
+    state.isProcessing = false;
+    if (runNextFrame && allowKeepAlive) {
+      useDefaultElapsed = false;
+      scheduleNextBatch(processBatch);
+    }
+  };
+  const wake = () => {
+    runNextFrame = true;
+    useDefaultElapsed = true;
+    if (!state.isProcessing) {
+      scheduleNextBatch(processBatch);
+    }
+  };
+  const schedule = stepsOrder.reduce((acc, key) => {
+    const step = steps2[key];
+    acc[key] = (process, keepAlive = false, immediate = false) => {
+      if (!runNextFrame)
+        wake();
+      return step.schedule(process, keepAlive, immediate);
+    };
+    return acc;
+  }, {});
+  const cancel = (process) => stepsOrder.forEach((key) => steps2[key].cancel(process));
+  return { schedule, cancel, state, steps: steps2 };
+}
+const { schedule: frame, cancel: cancelFrame, state: frameData, steps } = createRenderBatcher(typeof requestAnimationFrame !== "undefined" ? requestAnimationFrame : noop$1, true);
+const svgMotionConfig = {
+  useVisualState: makeUseVisualState({
+    scrapeMotionValuesFromProps,
+    createRenderState: createSvgRenderState,
+    onMount: (props, instance, { renderState, latestValues }) => {
+      frame.read(() => {
+        try {
+          renderState.dimensions = typeof instance.getBBox === "function" ? instance.getBBox() : instance.getBoundingClientRect();
+        } catch (e3) {
+          renderState.dimensions = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+          };
+        }
+      });
+      frame.render(() => {
+        buildSVGAttrs(renderState, latestValues, { enableHardwareAcceleration: false }, isSVGTag(instance.tagName), props.transformTemplate);
+        renderSVG(instance, renderState);
+      });
+    }
+  })
+};
+const htmlMotionConfig = {
+  useVisualState: makeUseVisualState({
+    scrapeMotionValuesFromProps: scrapeMotionValuesFromProps$1,
+    createRenderState: createHtmlRenderState
+  })
+};
+function createDomMotionConfig(Component2, { forwardMotionProps = false }, preloadedFeatures2, createVisualElement) {
+  const baseConfig = isSVGComponent(Component2) ? svgMotionConfig : htmlMotionConfig;
+  return {
+    ...baseConfig,
+    preloadedFeatures: preloadedFeatures2,
+    useRender: createUseRender(forwardMotionProps),
+    createVisualElement,
+    Component: Component2
+  };
+}
+function addDomEvent(target, eventName, handler, options2 = { passive: true }) {
+  target.addEventListener(eventName, handler, options2);
+  return () => target.removeEventListener(eventName, handler);
+}
+const isPrimaryPointer = (event) => {
+  if (event.pointerType === "mouse") {
+    return typeof event.button !== "number" || event.button <= 0;
+  } else {
+    return event.isPrimary !== false;
+  }
+};
+function extractEventInfo(event, pointType = "page") {
+  return {
+    point: {
+      x: event[pointType + "X"],
+      y: event[pointType + "Y"]
+    }
+  };
+}
+const addPointerInfo = (handler) => {
+  return (event) => isPrimaryPointer(event) && handler(event, extractEventInfo(event));
+};
+function addPointerEvent(target, eventName, handler, options2) {
+  return addDomEvent(target, eventName, addPointerInfo(handler), options2);
+}
+const combineFunctions = (a2, b2) => (v2) => b2(a2(v2));
+const pipe = (...transformers) => transformers.reduce(combineFunctions);
+function createLock(name) {
+  let lock = null;
+  return () => {
+    const openLock = () => {
+      lock = null;
+    };
+    if (lock === null) {
+      lock = name;
+      return openLock;
+    }
+    return false;
+  };
+}
+const globalHorizontalLock = createLock("dragHorizontal");
+const globalVerticalLock = createLock("dragVertical");
+function getGlobalLock(drag2) {
+  let lock = false;
+  if (drag2 === "y") {
+    lock = globalVerticalLock();
+  } else if (drag2 === "x") {
+    lock = globalHorizontalLock();
+  } else {
+    const openHorizontal = globalHorizontalLock();
+    const openVertical = globalVerticalLock();
+    if (openHorizontal && openVertical) {
+      lock = () => {
+        openHorizontal();
+        openVertical();
+      };
+    } else {
+      if (openHorizontal)
+        openHorizontal();
+      if (openVertical)
+        openVertical();
+    }
+  }
+  return lock;
+}
+function isDragActive() {
+  const openGestureLock = getGlobalLock(true);
+  if (!openGestureLock)
+    return true;
+  openGestureLock();
+  return false;
+}
+class Feature {
+  constructor(node) {
+    this.isMounted = false;
+    this.node = node;
+  }
+  update() {
+  }
+}
+function addHoverEvent(node, isActive) {
+  const eventName = "pointer" + (isActive ? "enter" : "leave");
+  const callbackName = "onHover" + (isActive ? "Start" : "End");
+  const handleEvent = (event, info) => {
+    if (event.type === "touch" || isDragActive())
+      return;
+    const props = node.getProps();
+    if (node.animationState && props.whileHover) {
+      node.animationState.setActive("whileHover", isActive);
+    }
+    if (props[callbackName]) {
+      frame.update(() => props[callbackName](event, info));
+    }
+  };
+  return addPointerEvent(node.current, eventName, handleEvent, {
+    passive: !node.getProps()[callbackName]
+  });
+}
+class HoverGesture extends Feature {
+  mount() {
+    this.unmount = pipe(addHoverEvent(this.node, true), addHoverEvent(this.node, false));
+  }
+  unmount() {
+  }
+}
+class FocusGesture extends Feature {
+  constructor() {
+    super(...arguments);
+    this.isActive = false;
+  }
+  onFocus() {
+    let isFocusVisible = false;
+    try {
+      isFocusVisible = this.node.current.matches(":focus-visible");
+    } catch (e3) {
+      isFocusVisible = true;
+    }
+    if (!isFocusVisible || !this.node.animationState)
+      return;
+    this.node.animationState.setActive("whileFocus", true);
+    this.isActive = true;
+  }
+  onBlur() {
+    if (!this.isActive || !this.node.animationState)
+      return;
+    this.node.animationState.setActive("whileFocus", false);
+    this.isActive = false;
+  }
+  mount() {
+    this.unmount = pipe(addDomEvent(this.node.current, "focus", () => this.onFocus()), addDomEvent(this.node.current, "blur", () => this.onBlur()));
+  }
+  unmount() {
+  }
+}
+const isNodeOrChild = (parent, child) => {
+  if (!child) {
+    return false;
+  } else if (parent === child) {
+    return true;
+  } else {
+    return isNodeOrChild(parent, child.parentElement);
+  }
+};
+function fireSyntheticPointerEvent(name, handler) {
+  if (!handler)
+    return;
+  const syntheticPointerEvent = new PointerEvent("pointer" + name);
+  handler(syntheticPointerEvent, extractEventInfo(syntheticPointerEvent));
+}
+class PressGesture extends Feature {
+  constructor() {
+    super(...arguments);
+    this.removeStartListeners = noop$1;
+    this.removeEndListeners = noop$1;
+    this.removeAccessibleListeners = noop$1;
+    this.startPointerPress = (startEvent, startInfo) => {
+      this.removeEndListeners();
+      if (this.isPressing)
+        return;
+      const props = this.node.getProps();
+      const endPointerPress = (endEvent, endInfo) => {
+        if (!this.checkPressEnd())
+          return;
+        const { onTap, onTapCancel } = this.node.getProps();
+        frame.update(() => {
+          !isNodeOrChild(this.node.current, endEvent.target) ? onTapCancel && onTapCancel(endEvent, endInfo) : onTap && onTap(endEvent, endInfo);
+        });
+      };
+      const removePointerUpListener = addPointerEvent(window, "pointerup", endPointerPress, { passive: !(props.onTap || props["onPointerUp"]) });
+      const removePointerCancelListener = addPointerEvent(window, "pointercancel", (cancelEvent, cancelInfo) => this.cancelPress(cancelEvent, cancelInfo), { passive: !(props.onTapCancel || props["onPointerCancel"]) });
+      this.removeEndListeners = pipe(removePointerUpListener, removePointerCancelListener);
+      this.startPress(startEvent, startInfo);
+    };
+    this.startAccessiblePress = () => {
+      const handleKeydown = (keydownEvent) => {
+        if (keydownEvent.key !== "Enter" || this.isPressing)
+          return;
+        const handleKeyup = (keyupEvent) => {
+          if (keyupEvent.key !== "Enter" || !this.checkPressEnd())
+            return;
+          fireSyntheticPointerEvent("up", (event, info) => {
+            const { onTap } = this.node.getProps();
+            if (onTap) {
+              frame.update(() => onTap(event, info));
+            }
+          });
+        };
+        this.removeEndListeners();
+        this.removeEndListeners = addDomEvent(this.node.current, "keyup", handleKeyup);
+        fireSyntheticPointerEvent("down", (event, info) => {
+          this.startPress(event, info);
+        });
+      };
+      const removeKeydownListener = addDomEvent(this.node.current, "keydown", handleKeydown);
+      const handleBlur = () => {
+        if (!this.isPressing)
+          return;
+        fireSyntheticPointerEvent("cancel", (cancelEvent, cancelInfo) => this.cancelPress(cancelEvent, cancelInfo));
+      };
+      const removeBlurListener = addDomEvent(this.node.current, "blur", handleBlur);
+      this.removeAccessibleListeners = pipe(removeKeydownListener, removeBlurListener);
+    };
+  }
+  startPress(event, info) {
+    this.isPressing = true;
+    const { onTapStart, whileTap } = this.node.getProps();
+    if (whileTap && this.node.animationState) {
+      this.node.animationState.setActive("whileTap", true);
+    }
+    if (onTapStart) {
+      frame.update(() => onTapStart(event, info));
+    }
+  }
+  checkPressEnd() {
+    this.removeEndListeners();
+    this.isPressing = false;
+    const props = this.node.getProps();
+    if (props.whileTap && this.node.animationState) {
+      this.node.animationState.setActive("whileTap", false);
+    }
+    return !isDragActive();
+  }
+  cancelPress(event, info) {
+    if (!this.checkPressEnd())
+      return;
+    const { onTapCancel } = this.node.getProps();
+    if (onTapCancel) {
+      frame.update(() => onTapCancel(event, info));
+    }
+  }
+  mount() {
+    const props = this.node.getProps();
+    const removePointerListener = addPointerEvent(this.node.current, "pointerdown", this.startPointerPress, { passive: !(props.onTapStart || props["onPointerStart"]) });
+    const removeFocusListener = addDomEvent(this.node.current, "focus", this.startAccessiblePress);
+    this.removeStartListeners = pipe(removePointerListener, removeFocusListener);
+  }
+  unmount() {
+    this.removeStartListeners();
+    this.removeEndListeners();
+    this.removeAccessibleListeners();
+  }
+}
+const observerCallbacks = /* @__PURE__ */ new WeakMap();
+const observers = /* @__PURE__ */ new WeakMap();
+const fireObserverCallback = (entry) => {
+  const callback = observerCallbacks.get(entry.target);
+  callback && callback(entry);
+};
+const fireAllObserverCallbacks = (entries) => {
+  entries.forEach(fireObserverCallback);
+};
+function initIntersectionObserver({ root, ...options2 }) {
+  const lookupRoot = root || document;
+  if (!observers.has(lookupRoot)) {
+    observers.set(lookupRoot, {});
+  }
+  const rootObservers = observers.get(lookupRoot);
+  const key = JSON.stringify(options2);
+  if (!rootObservers[key]) {
+    rootObservers[key] = new IntersectionObserver(fireAllObserverCallbacks, { root, ...options2 });
+  }
+  return rootObservers[key];
+}
+function observeIntersection(element, options2, callback) {
+  const rootInteresectionObserver = initIntersectionObserver(options2);
+  observerCallbacks.set(element, callback);
+  rootInteresectionObserver.observe(element);
+  return () => {
+    observerCallbacks.delete(element);
+    rootInteresectionObserver.unobserve(element);
+  };
+}
+const thresholdNames = {
+  some: 0,
+  all: 1
+};
+class InViewFeature extends Feature {
+  constructor() {
+    super(...arguments);
+    this.hasEnteredView = false;
+    this.isInView = false;
+  }
+  startObserver() {
+    this.unmount();
+    const { viewport = {} } = this.node.getProps();
+    const { root, margin: rootMargin, amount = "some", once } = viewport;
+    const options2 = {
+      root: root ? root.current : void 0,
+      rootMargin,
+      threshold: typeof amount === "number" ? amount : thresholdNames[amount]
+    };
+    const onIntersectionUpdate = (entry) => {
+      const { isIntersecting } = entry;
+      if (this.isInView === isIntersecting)
+        return;
+      this.isInView = isIntersecting;
+      if (once && !isIntersecting && this.hasEnteredView) {
+        return;
+      } else if (isIntersecting) {
+        this.hasEnteredView = true;
+      }
+      if (this.node.animationState) {
+        this.node.animationState.setActive("whileInView", isIntersecting);
+      }
+      const { onViewportEnter, onViewportLeave } = this.node.getProps();
+      const callback = isIntersecting ? onViewportEnter : onViewportLeave;
+      callback && callback(entry);
+    };
+    return observeIntersection(this.node.current, options2, onIntersectionUpdate);
+  }
+  mount() {
+    this.startObserver();
+  }
+  update() {
+    if (typeof IntersectionObserver === "undefined")
+      return;
+    const { props, prevProps } = this.node;
+    const hasOptionsChanged = ["amount", "margin", "root"].some(hasViewportOptionChanged(props, prevProps));
+    if (hasOptionsChanged) {
+      this.startObserver();
+    }
+  }
+  unmount() {
+  }
+}
+function hasViewportOptionChanged({ viewport = {} }, { viewport: prevViewport = {} } = {}) {
+  return (name) => viewport[name] !== prevViewport[name];
+}
+const gestureAnimations = {
+  inView: {
+    Feature: InViewFeature
+  },
+  tap: {
+    Feature: PressGesture
+  },
+  focus: {
+    Feature: FocusGesture
+  },
+  hover: {
+    Feature: HoverGesture
+  }
+};
+function shallowCompare(next, prev) {
+  if (!Array.isArray(prev))
+    return false;
+  const prevLength = prev.length;
+  if (prevLength !== next.length)
+    return false;
+  for (let i3 = 0; i3 < prevLength; i3++) {
+    if (prev[i3] !== next[i3])
+      return false;
+  }
+  return true;
+}
+function getCurrent(visualElement) {
+  const current = {};
+  visualElement.values.forEach((value, key) => current[key] = value.get());
+  return current;
+}
+function getVelocity$1(visualElement) {
+  const velocity = {};
+  visualElement.values.forEach((value, key) => velocity[key] = value.getVelocity());
+  return velocity;
+}
+function resolveVariant(visualElement, definition, custom) {
+  const props = visualElement.getProps();
+  return resolveVariantFromProps(props, definition, custom !== void 0 ? custom : props.custom, getCurrent(visualElement), getVelocity$1(visualElement));
+}
+const optimizedAppearDataId = "framerAppearId";
+const optimizedAppearDataAttribute = "data-" + camelToDash(optimizedAppearDataId);
+let warning = noop$1;
+let invariant = noop$1;
+const secondsToMilliseconds = (seconds) => seconds * 1e3;
+const millisecondsToSeconds = (milliseconds) => milliseconds / 1e3;
+const instantAnimationState = {
+  current: false
+};
+const isBezierDefinition = (easing) => Array.isArray(easing) && typeof easing[0] === "number";
+function isWaapiSupportedEasing(easing) {
+  return Boolean(!easing || typeof easing === "string" && supportedWaapiEasing[easing] || isBezierDefinition(easing) || Array.isArray(easing) && easing.every(isWaapiSupportedEasing));
+}
+const cubicBezierAsString = ([a2, b2, c2, d2]) => `cubic-bezier(${a2}, ${b2}, ${c2}, ${d2})`;
+const supportedWaapiEasing = {
+  linear: "linear",
+  ease: "ease",
+  easeIn: "ease-in",
+  easeOut: "ease-out",
+  easeInOut: "ease-in-out",
+  circIn: cubicBezierAsString([0, 0.65, 0.55, 1]),
+  circOut: cubicBezierAsString([0.55, 0, 1, 0.45]),
+  backIn: cubicBezierAsString([0.31, 0.01, 0.66, -0.59]),
+  backOut: cubicBezierAsString([0.33, 1.53, 0.69, 0.99])
+};
+function mapEasingToNativeEasing(easing) {
+  if (!easing)
+    return void 0;
+  return isBezierDefinition(easing) ? cubicBezierAsString(easing) : Array.isArray(easing) ? easing.map(mapEasingToNativeEasing) : supportedWaapiEasing[easing];
+}
+function animateStyle(element, valueName, keyframes2, { delay: delay2 = 0, duration, repeat = 0, repeatType = "loop", ease: ease2, times } = {}) {
+  const keyframeOptions = { [valueName]: keyframes2 };
+  if (times)
+    keyframeOptions.offset = times;
+  const easing = mapEasingToNativeEasing(ease2);
+  if (Array.isArray(easing))
+    keyframeOptions.easing = easing;
+  return element.animate(keyframeOptions, {
+    delay: delay2,
+    duration,
+    easing: !Array.isArray(easing) ? easing : "linear",
+    fill: "both",
+    iterations: repeat + 1,
+    direction: repeatType === "reverse" ? "alternate" : "normal"
+  });
+}
+function getFinalKeyframe(keyframes2, { repeat, repeatType = "loop" }) {
+  const index2 = repeat && repeatType !== "loop" && repeat % 2 === 1 ? 0 : keyframes2.length - 1;
+  return keyframes2[index2];
+}
+const calcBezier = (t4, a1, a2) => (((1 - 3 * a2 + 3 * a1) * t4 + (3 * a2 - 6 * a1)) * t4 + 3 * a1) * t4;
+const subdivisionPrecision = 1e-7;
+const subdivisionMaxIterations = 12;
+function binarySubdivide(x2, lowerBound, upperBound, mX1, mX2) {
+  let currentX;
+  let currentT;
+  let i3 = 0;
+  do {
+    currentT = lowerBound + (upperBound - lowerBound) / 2;
+    currentX = calcBezier(currentT, mX1, mX2) - x2;
+    if (currentX > 0) {
+      upperBound = currentT;
+    } else {
+      lowerBound = currentT;
+    }
+  } while (Math.abs(currentX) > subdivisionPrecision && ++i3 < subdivisionMaxIterations);
+  return currentT;
+}
+function cubicBezier(mX1, mY1, mX2, mY2) {
+  if (mX1 === mY1 && mX2 === mY2)
+    return noop$1;
+  const getTForX = (aX) => binarySubdivide(aX, 0, 1, mX1, mX2);
+  return (t4) => t4 === 0 || t4 === 1 ? t4 : calcBezier(getTForX(t4), mY1, mY2);
+}
+const easeIn = cubicBezier(0.42, 0, 1, 1);
+const easeOut = cubicBezier(0, 0, 0.58, 1);
+const easeInOut = cubicBezier(0.42, 0, 0.58, 1);
+const isEasingArray = (ease2) => {
+  return Array.isArray(ease2) && typeof ease2[0] !== "number";
+};
+const mirrorEasing = (easing) => (p2) => p2 <= 0.5 ? easing(2 * p2) / 2 : (2 - easing(2 * (1 - p2))) / 2;
+const reverseEasing = (easing) => (p2) => 1 - easing(1 - p2);
+const circIn = (p2) => 1 - Math.sin(Math.acos(p2));
+const circOut = reverseEasing(circIn);
+const circInOut = mirrorEasing(circOut);
+const backOut = cubicBezier(0.33, 1.53, 0.69, 0.99);
+const backIn = reverseEasing(backOut);
+const backInOut = mirrorEasing(backIn);
+const anticipate = (p2) => (p2 *= 2) < 1 ? 0.5 * backIn(p2) : 0.5 * (2 - Math.pow(2, -10 * (p2 - 1)));
+const easingLookup = {
+  linear: noop$1,
+  easeIn,
+  easeInOut,
+  easeOut,
+  circIn,
+  circInOut,
+  circOut,
+  backIn,
+  backInOut,
+  backOut,
+  anticipate
+};
+const easingDefinitionToFunction = (definition) => {
+  if (Array.isArray(definition)) {
+    invariant(definition.length === 4);
+    const [x1, y1, x2, y2] = definition;
+    return cubicBezier(x1, y1, x2, y2);
+  } else if (typeof definition === "string") {
+    return easingLookup[definition];
+  }
+  return definition;
+};
+const isColorString = (type, testProp) => (v2) => {
+  return Boolean(isString$1(v2) && singleColorRegex.test(v2) && v2.startsWith(type) || testProp && Object.prototype.hasOwnProperty.call(v2, testProp));
+};
+const splitColor = (aName, bName, cName) => (v2) => {
+  if (!isString$1(v2))
+    return v2;
+  const [a2, b2, c2, alpha2] = v2.match(floatRegex);
+  return {
+    [aName]: parseFloat(a2),
+    [bName]: parseFloat(b2),
+    [cName]: parseFloat(c2),
+    alpha: alpha2 !== void 0 ? parseFloat(alpha2) : 1
+  };
+};
+const clampRgbUnit = (v2) => clamp(0, 255, v2);
+const rgbUnit = {
+  ...number,
+  transform: (v2) => Math.round(clampRgbUnit(v2))
+};
+const rgba = {
+  test: isColorString("rgb", "red"),
+  parse: splitColor("red", "green", "blue"),
+  transform: ({ red, green, blue, alpha: alpha$1 = 1 }) => "rgba(" + rgbUnit.transform(red) + ", " + rgbUnit.transform(green) + ", " + rgbUnit.transform(blue) + ", " + sanitize(alpha.transform(alpha$1)) + ")"
+};
+function parseHex(v2) {
+  let r3 = "";
+  let g2 = "";
+  let b2 = "";
+  let a2 = "";
+  if (v2.length > 5) {
+    r3 = v2.substring(1, 3);
+    g2 = v2.substring(3, 5);
+    b2 = v2.substring(5, 7);
+    a2 = v2.substring(7, 9);
+  } else {
+    r3 = v2.substring(1, 2);
+    g2 = v2.substring(2, 3);
+    b2 = v2.substring(3, 4);
+    a2 = v2.substring(4, 5);
+    r3 += r3;
+    g2 += g2;
+    b2 += b2;
+    a2 += a2;
+  }
+  return {
+    red: parseInt(r3, 16),
+    green: parseInt(g2, 16),
+    blue: parseInt(b2, 16),
+    alpha: a2 ? parseInt(a2, 16) / 255 : 1
+  };
+}
+const hex = {
+  test: isColorString("#"),
+  parse: parseHex,
+  transform: rgba.transform
+};
+const hsla = {
+  test: isColorString("hsl", "hue"),
+  parse: splitColor("hue", "saturation", "lightness"),
+  transform: ({ hue, saturation, lightness, alpha: alpha$1 = 1 }) => {
+    return "hsla(" + Math.round(hue) + ", " + percent.transform(sanitize(saturation)) + ", " + percent.transform(sanitize(lightness)) + ", " + sanitize(alpha.transform(alpha$1)) + ")";
+  }
+};
+const color = {
+  test: (v2) => rgba.test(v2) || hex.test(v2) || hsla.test(v2),
+  parse: (v2) => {
+    if (rgba.test(v2)) {
+      return rgba.parse(v2);
+    } else if (hsla.test(v2)) {
+      return hsla.parse(v2);
+    } else {
+      return hex.parse(v2);
+    }
+  },
+  transform: (v2) => {
+    return isString$1(v2) ? v2 : v2.hasOwnProperty("red") ? rgba.transform(v2) : hsla.transform(v2);
+  }
+};
+const mix = (from, to, progress2) => -progress2 * from + progress2 * to + from;
+function hueToRgb(p2, q2, t4) {
+  if (t4 < 0)
+    t4 += 1;
+  if (t4 > 1)
+    t4 -= 1;
+  if (t4 < 1 / 6)
+    return p2 + (q2 - p2) * 6 * t4;
+  if (t4 < 1 / 2)
+    return q2;
+  if (t4 < 2 / 3)
+    return p2 + (q2 - p2) * (2 / 3 - t4) * 6;
+  return p2;
+}
+function hslaToRgba({ hue, saturation, lightness, alpha: alpha2 }) {
+  hue /= 360;
+  saturation /= 100;
+  lightness /= 100;
+  let red = 0;
+  let green = 0;
+  let blue = 0;
+  if (!saturation) {
+    red = green = blue = lightness;
+  } else {
+    const q2 = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+    const p2 = 2 * lightness - q2;
+    red = hueToRgb(p2, q2, hue + 1 / 3);
+    green = hueToRgb(p2, q2, hue);
+    blue = hueToRgb(p2, q2, hue - 1 / 3);
+  }
+  return {
+    red: Math.round(red * 255),
+    green: Math.round(green * 255),
+    blue: Math.round(blue * 255),
+    alpha: alpha2
+  };
+}
+const mixLinearColor = (from, to, v2) => {
+  const fromExpo = from * from;
+  return Math.sqrt(Math.max(0, v2 * (to * to - fromExpo) + fromExpo));
+};
+const colorTypes = [hex, rgba, hsla];
+const getColorType = (v2) => colorTypes.find((type) => type.test(v2));
+function asRGBA(color2) {
+  const type = getColorType(color2);
+  let model = type.parse(color2);
+  if (type === hsla) {
+    model = hslaToRgba(model);
+  }
+  return model;
+}
+const mixColor = (from, to) => {
+  const fromRGBA = asRGBA(from);
+  const toRGBA = asRGBA(to);
+  const blended = { ...fromRGBA };
+  return (v2) => {
+    blended.red = mixLinearColor(fromRGBA.red, toRGBA.red, v2);
+    blended.green = mixLinearColor(fromRGBA.green, toRGBA.green, v2);
+    blended.blue = mixLinearColor(fromRGBA.blue, toRGBA.blue, v2);
+    blended.alpha = mix(fromRGBA.alpha, toRGBA.alpha, v2);
+    return rgba.transform(blended);
+  };
+};
+function test(v2) {
+  var _a, _b;
+  return isNaN(v2) && isString$1(v2) && (((_a = v2.match(floatRegex)) === null || _a === void 0 ? void 0 : _a.length) || 0) + (((_b = v2.match(colorRegex)) === null || _b === void 0 ? void 0 : _b.length) || 0) > 0;
+}
+const cssVarTokeniser = {
+  regex: cssVariableRegex,
+  countKey: "Vars",
+  token: "${v}",
+  parse: noop$1
+};
+const colorTokeniser = {
+  regex: colorRegex,
+  countKey: "Colors",
+  token: "${c}",
+  parse: color.parse
+};
+const numberTokeniser = {
+  regex: floatRegex,
+  countKey: "Numbers",
+  token: "${n}",
+  parse: number.parse
+};
+function tokenise(info, { regex: regex2, countKey, token, parse }) {
+  const matches = info.tokenised.match(regex2);
+  if (!matches)
+    return;
+  info["num" + countKey] = matches.length;
+  info.tokenised = info.tokenised.replace(regex2, token);
+  info.values.push(...matches.map(parse));
+}
+function analyseComplexValue(value) {
+  const originalValue = value.toString();
+  const info = {
+    value: originalValue,
+    tokenised: originalValue,
+    values: [],
+    numVars: 0,
+    numColors: 0,
+    numNumbers: 0
+  };
+  if (info.value.includes("var(--"))
+    tokenise(info, cssVarTokeniser);
+  tokenise(info, colorTokeniser);
+  tokenise(info, numberTokeniser);
+  return info;
+}
+function parseComplexValue(v2) {
+  return analyseComplexValue(v2).values;
+}
+function createTransformer(source) {
+  const { values, numColors, numVars, tokenised } = analyseComplexValue(source);
+  const numValues = values.length;
+  return (v2) => {
+    let output = tokenised;
+    for (let i3 = 0; i3 < numValues; i3++) {
+      if (i3 < numVars) {
+        output = output.replace(cssVarTokeniser.token, v2[i3]);
+      } else if (i3 < numVars + numColors) {
+        output = output.replace(colorTokeniser.token, color.transform(v2[i3]));
+      } else {
+        output = output.replace(numberTokeniser.token, sanitize(v2[i3]));
+      }
+    }
+    return output;
+  };
+}
+const convertNumbersToZero = (v2) => typeof v2 === "number" ? 0 : v2;
+function getAnimatableNone$1(v2) {
+  const parsed = parseComplexValue(v2);
+  const transformer = createTransformer(v2);
+  return transformer(parsed.map(convertNumbersToZero));
+}
+const complex = {
+  test,
+  parse: parseComplexValue,
+  createTransformer,
+  getAnimatableNone: getAnimatableNone$1
+};
+const mixImmediate = (origin, target) => (p2) => `${p2 > 0 ? target : origin}`;
+function getMixer(origin, target) {
+  if (typeof origin === "number") {
+    return (v2) => mix(origin, target, v2);
+  } else if (color.test(origin)) {
+    return mixColor(origin, target);
+  } else {
+    return origin.startsWith("var(") ? mixImmediate(origin, target) : mixComplex(origin, target);
+  }
+}
+const mixArray = (from, to) => {
+  const output = [...from];
+  const numValues = output.length;
+  const blendValue = from.map((fromThis, i3) => getMixer(fromThis, to[i3]));
+  return (v2) => {
+    for (let i3 = 0; i3 < numValues; i3++) {
+      output[i3] = blendValue[i3](v2);
+    }
+    return output;
+  };
+};
+const mixObject = (origin, target) => {
+  const output = { ...origin, ...target };
+  const blendValue = {};
+  for (const key in output) {
+    if (origin[key] !== void 0 && target[key] !== void 0) {
+      blendValue[key] = getMixer(origin[key], target[key]);
+    }
+  }
+  return (v2) => {
+    for (const key in blendValue) {
+      output[key] = blendValue[key](v2);
+    }
+    return output;
+  };
+};
+const mixComplex = (origin, target) => {
+  const template = complex.createTransformer(target);
+  const originStats = analyseComplexValue(origin);
+  const targetStats = analyseComplexValue(target);
+  const canInterpolate = originStats.numVars === targetStats.numVars && originStats.numColors === targetStats.numColors && originStats.numNumbers >= targetStats.numNumbers;
+  if (canInterpolate) {
+    return pipe(mixArray(originStats.values, targetStats.values), template);
+  } else {
+    return mixImmediate(origin, target);
+  }
+};
+const progress = (from, to, value) => {
+  const toFromDifference = to - from;
+  return toFromDifference === 0 ? 1 : (value - from) / toFromDifference;
+};
+const mixNumber = (from, to) => (p2) => mix(from, to, p2);
+function detectMixerFactory(v2) {
+  if (typeof v2 === "number") {
+    return mixNumber;
+  } else if (typeof v2 === "string") {
+    return color.test(v2) ? mixColor : mixComplex;
+  } else if (Array.isArray(v2)) {
+    return mixArray;
+  } else if (typeof v2 === "object") {
+    return mixObject;
+  }
+  return mixNumber;
+}
+function createMixers(output, ease2, customMixer) {
+  const mixers = [];
+  const mixerFactory = customMixer || detectMixerFactory(output[0]);
+  const numMixers = output.length - 1;
+  for (let i3 = 0; i3 < numMixers; i3++) {
+    let mixer = mixerFactory(output[i3], output[i3 + 1]);
+    if (ease2) {
+      const easingFunction = Array.isArray(ease2) ? ease2[i3] || noop$1 : ease2;
+      mixer = pipe(easingFunction, mixer);
+    }
+    mixers.push(mixer);
+  }
+  return mixers;
+}
+function interpolate(input, output, { clamp: isClamp = true, ease: ease2, mixer } = {}) {
+  const inputLength = input.length;
+  invariant(inputLength === output.length);
+  if (inputLength === 1)
+    return () => output[0];
+  if (input[0] > input[inputLength - 1]) {
+    input = [...input].reverse();
+    output = [...output].reverse();
+  }
+  const mixers = createMixers(output, ease2, mixer);
+  const numMixers = mixers.length;
+  const interpolator = (v2) => {
+    let i3 = 0;
+    if (numMixers > 1) {
+      for (; i3 < input.length - 2; i3++) {
+        if (v2 < input[i3 + 1])
+          break;
+      }
+    }
+    const progressInRange = progress(input[i3], input[i3 + 1], v2);
+    return mixers[i3](progressInRange);
+  };
+  return isClamp ? (v2) => interpolator(clamp(input[0], input[inputLength - 1], v2)) : interpolator;
+}
+function fillOffset(offset, remaining) {
+  const min = offset[offset.length - 1];
+  for (let i3 = 1; i3 <= remaining; i3++) {
+    const offsetProgress = progress(0, remaining, i3);
+    offset.push(mix(min, 1, offsetProgress));
+  }
+}
+function defaultOffset(arr) {
+  const offset = [0];
+  fillOffset(offset, arr.length - 1);
+  return offset;
+}
+function convertOffsetToTimes(offset, duration) {
+  return offset.map((o3) => o3 * duration);
+}
+function defaultEasing(values, easing) {
+  return values.map(() => easing || easeInOut).splice(0, values.length - 1);
+}
+function keyframes({ duration = 300, keyframes: keyframeValues, times, ease: ease2 = "easeInOut" }) {
+  const easingFunctions = isEasingArray(ease2) ? ease2.map(easingDefinitionToFunction) : easingDefinitionToFunction(ease2);
+  const state = {
+    done: false,
+    value: keyframeValues[0]
+  };
+  const absoluteTimes = convertOffsetToTimes(
+    // Only use the provided offsets if they're the correct length
+    // TODO Maybe we should warn here if there's a length mismatch
+    times && times.length === keyframeValues.length ? times : defaultOffset(keyframeValues),
+    duration
+  );
+  const mapTimeToKeyframe = interpolate(absoluteTimes, keyframeValues, {
+    ease: Array.isArray(easingFunctions) ? easingFunctions : defaultEasing(keyframeValues, easingFunctions)
+  });
+  return {
+    calculatedDuration: duration,
+    next: (t4) => {
+      state.value = mapTimeToKeyframe(t4);
+      state.done = t4 >= duration;
+      return state;
+    }
+  };
+}
+function velocityPerSecond(velocity, frameDuration) {
+  return frameDuration ? velocity * (1e3 / frameDuration) : 0;
+}
+const velocitySampleDuration = 5;
+function calcGeneratorVelocity(resolveValue, t4, current) {
+  const prevT = Math.max(t4 - velocitySampleDuration, 0);
+  return velocityPerSecond(current - resolveValue(prevT), t4 - prevT);
+}
+const safeMin = 1e-3;
+const minDuration = 0.01;
+const maxDuration$1 = 10;
+const minDamping = 0.05;
+const maxDamping = 1;
+function findSpring({ duration = 800, bounce = 0.25, velocity = 0, mass = 1 }) {
+  let envelope;
+  let derivative;
+  warning(duration <= secondsToMilliseconds(maxDuration$1));
+  let dampingRatio = 1 - bounce;
+  dampingRatio = clamp(minDamping, maxDamping, dampingRatio);
+  duration = clamp(minDuration, maxDuration$1, millisecondsToSeconds(duration));
+  if (dampingRatio < 1) {
+    envelope = (undampedFreq2) => {
+      const exponentialDecay = undampedFreq2 * dampingRatio;
+      const delta = exponentialDecay * duration;
+      const a2 = exponentialDecay - velocity;
+      const b2 = calcAngularFreq(undampedFreq2, dampingRatio);
+      const c2 = Math.exp(-delta);
+      return safeMin - a2 / b2 * c2;
+    };
+    derivative = (undampedFreq2) => {
+      const exponentialDecay = undampedFreq2 * dampingRatio;
+      const delta = exponentialDecay * duration;
+      const d2 = delta * velocity + velocity;
+      const e3 = Math.pow(dampingRatio, 2) * Math.pow(undampedFreq2, 2) * duration;
+      const f2 = Math.exp(-delta);
+      const g2 = calcAngularFreq(Math.pow(undampedFreq2, 2), dampingRatio);
+      const factor = -envelope(undampedFreq2) + safeMin > 0 ? -1 : 1;
+      return factor * ((d2 - e3) * f2) / g2;
+    };
+  } else {
+    envelope = (undampedFreq2) => {
+      const a2 = Math.exp(-undampedFreq2 * duration);
+      const b2 = (undampedFreq2 - velocity) * duration + 1;
+      return -safeMin + a2 * b2;
+    };
+    derivative = (undampedFreq2) => {
+      const a2 = Math.exp(-undampedFreq2 * duration);
+      const b2 = (velocity - undampedFreq2) * (duration * duration);
+      return a2 * b2;
+    };
+  }
+  const initialGuess = 5 / duration;
+  const undampedFreq = approximateRoot(envelope, derivative, initialGuess);
+  duration = secondsToMilliseconds(duration);
+  if (isNaN(undampedFreq)) {
+    return {
+      stiffness: 100,
+      damping: 10,
+      duration
+    };
+  } else {
+    const stiffness = Math.pow(undampedFreq, 2) * mass;
+    return {
+      stiffness,
+      damping: dampingRatio * 2 * Math.sqrt(mass * stiffness),
+      duration
+    };
+  }
+}
+const rootIterations = 12;
+function approximateRoot(envelope, derivative, initialGuess) {
+  let result = initialGuess;
+  for (let i3 = 1; i3 < rootIterations; i3++) {
+    result = result - envelope(result) / derivative(result);
+  }
+  return result;
+}
+function calcAngularFreq(undampedFreq, dampingRatio) {
+  return undampedFreq * Math.sqrt(1 - dampingRatio * dampingRatio);
+}
+const durationKeys = ["duration", "bounce"];
+const physicsKeys = ["stiffness", "damping", "mass"];
+function isSpringType(options2, keys) {
+  return keys.some((key) => options2[key] !== void 0);
+}
+function getSpringOptions(options2) {
+  let springOptions = {
+    velocity: 0,
+    stiffness: 100,
+    damping: 10,
+    mass: 1,
+    isResolvedFromDuration: false,
+    ...options2
+  };
+  if (!isSpringType(options2, physicsKeys) && isSpringType(options2, durationKeys)) {
+    const derived = findSpring(options2);
+    springOptions = {
+      ...springOptions,
+      ...derived,
+      velocity: 0,
+      mass: 1
+    };
+    springOptions.isResolvedFromDuration = true;
+  }
+  return springOptions;
+}
+function spring({ keyframes: keyframes2, restDelta, restSpeed, ...options2 }) {
+  const origin = keyframes2[0];
+  const target = keyframes2[keyframes2.length - 1];
+  const state = { done: false, value: origin };
+  const { stiffness, damping, mass, velocity, duration, isResolvedFromDuration } = getSpringOptions(options2);
+  const initialVelocity = velocity ? -millisecondsToSeconds(velocity) : 0;
+  const dampingRatio = damping / (2 * Math.sqrt(stiffness * mass));
+  const initialDelta = target - origin;
+  const undampedAngularFreq = millisecondsToSeconds(Math.sqrt(stiffness / mass));
+  const isGranularScale = Math.abs(initialDelta) < 5;
+  restSpeed || (restSpeed = isGranularScale ? 0.01 : 2);
+  restDelta || (restDelta = isGranularScale ? 5e-3 : 0.5);
+  let resolveSpring;
+  if (dampingRatio < 1) {
+    const angularFreq = calcAngularFreq(undampedAngularFreq, dampingRatio);
+    resolveSpring = (t4) => {
+      const envelope = Math.exp(-dampingRatio * undampedAngularFreq * t4);
+      return target - envelope * ((initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) / angularFreq * Math.sin(angularFreq * t4) + initialDelta * Math.cos(angularFreq * t4));
+    };
+  } else if (dampingRatio === 1) {
+    resolveSpring = (t4) => target - Math.exp(-undampedAngularFreq * t4) * (initialDelta + (initialVelocity + undampedAngularFreq * initialDelta) * t4);
+  } else {
+    const dampedAngularFreq = undampedAngularFreq * Math.sqrt(dampingRatio * dampingRatio - 1);
+    resolveSpring = (t4) => {
+      const envelope = Math.exp(-dampingRatio * undampedAngularFreq * t4);
+      const freqForT = Math.min(dampedAngularFreq * t4, 300);
+      return target - envelope * ((initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) * Math.sinh(freqForT) + dampedAngularFreq * initialDelta * Math.cosh(freqForT)) / dampedAngularFreq;
+    };
+  }
+  return {
+    calculatedDuration: isResolvedFromDuration ? duration || null : null,
+    next: (t4) => {
+      const current = resolveSpring(t4);
+      if (!isResolvedFromDuration) {
+        let currentVelocity = initialVelocity;
+        if (t4 !== 0) {
+          if (dampingRatio < 1) {
+            currentVelocity = calcGeneratorVelocity(resolveSpring, t4, current);
+          } else {
+            currentVelocity = 0;
+          }
+        }
+        const isBelowVelocityThreshold = Math.abs(currentVelocity) <= restSpeed;
+        const isBelowDisplacementThreshold = Math.abs(target - current) <= restDelta;
+        state.done = isBelowVelocityThreshold && isBelowDisplacementThreshold;
+      } else {
+        state.done = t4 >= duration;
+      }
+      state.value = state.done ? target : current;
+      return state;
+    }
+  };
+}
+function inertia({ keyframes: keyframes2, velocity = 0, power = 0.8, timeConstant = 325, bounceDamping = 10, bounceStiffness = 500, modifyTarget, min, max, restDelta = 0.5, restSpeed }) {
+  const origin = keyframes2[0];
+  const state = {
+    done: false,
+    value: origin
+  };
+  const isOutOfBounds = (v2) => min !== void 0 && v2 < min || max !== void 0 && v2 > max;
+  const nearestBoundary = (v2) => {
+    if (min === void 0)
+      return max;
+    if (max === void 0)
+      return min;
+    return Math.abs(min - v2) < Math.abs(max - v2) ? min : max;
+  };
+  let amplitude = power * velocity;
+  const ideal = origin + amplitude;
+  const target = modifyTarget === void 0 ? ideal : modifyTarget(ideal);
+  if (target !== ideal)
+    amplitude = target - origin;
+  const calcDelta = (t4) => -amplitude * Math.exp(-t4 / timeConstant);
+  const calcLatest = (t4) => target + calcDelta(t4);
+  const applyFriction = (t4) => {
+    const delta = calcDelta(t4);
+    const latest = calcLatest(t4);
+    state.done = Math.abs(delta) <= restDelta;
+    state.value = state.done ? target : latest;
+  };
+  let timeReachedBoundary;
+  let spring$1;
+  const checkCatchBoundary = (t4) => {
+    if (!isOutOfBounds(state.value))
+      return;
+    timeReachedBoundary = t4;
+    spring$1 = spring({
+      keyframes: [state.value, nearestBoundary(state.value)],
+      velocity: calcGeneratorVelocity(calcLatest, t4, state.value),
+      damping: bounceDamping,
+      stiffness: bounceStiffness,
+      restDelta,
+      restSpeed
+    });
+  };
+  checkCatchBoundary(0);
+  return {
+    calculatedDuration: null,
+    next: (t4) => {
+      let hasUpdatedFrame = false;
+      if (!spring$1 && timeReachedBoundary === void 0) {
+        hasUpdatedFrame = true;
+        applyFriction(t4);
+        checkCatchBoundary(t4);
+      }
+      if (timeReachedBoundary !== void 0 && t4 > timeReachedBoundary) {
+        return spring$1.next(t4 - timeReachedBoundary);
+      } else {
+        !hasUpdatedFrame && applyFriction(t4);
+        return state;
+      }
+    }
+  };
+}
+const frameloopDriver = (update) => {
+  const passTimestamp = ({ timestamp }) => update(timestamp);
+  return {
+    start: () => frame.update(passTimestamp, true),
+    stop: () => cancelFrame(passTimestamp),
+    /**
+     * If we're processing this frame we can use the
+     * framelocked timestamp to keep things in sync.
+     */
+    now: () => frameData.isProcessing ? frameData.timestamp : performance.now()
+  };
+};
+const maxGeneratorDuration = 2e4;
+function calcGeneratorDuration(generator) {
+  let duration = 0;
+  const timeStep = 50;
+  let state = generator.next(duration);
+  while (!state.done && duration < maxGeneratorDuration) {
+    duration += timeStep;
+    state = generator.next(duration);
+  }
+  return duration >= maxGeneratorDuration ? Infinity : duration;
+}
+const types = {
+  decay: inertia,
+  inertia,
+  tween: keyframes,
+  keyframes,
+  spring
+};
+function animateValue({ autoplay = true, delay: delay2 = 0, driver = frameloopDriver, keyframes: keyframes$1, type = "keyframes", repeat = 0, repeatDelay = 0, repeatType = "loop", onPlay, onStop, onComplete, onUpdate, ...options2 }) {
+  let speed = 1;
+  let hasStopped = false;
+  let resolveFinishedPromise;
+  let currentFinishedPromise;
+  const updateFinishedPromise = () => {
+    currentFinishedPromise = new Promise((resolve) => {
+      resolveFinishedPromise = resolve;
+    });
+  };
+  updateFinishedPromise();
+  let animationDriver;
+  const generatorFactory = types[type] || keyframes;
+  let mapNumbersToKeyframes;
+  if (generatorFactory !== keyframes && typeof keyframes$1[0] !== "number") {
+    mapNumbersToKeyframes = interpolate([0, 100], keyframes$1, {
+      clamp: false
+    });
+    keyframes$1 = [0, 100];
+  }
+  const generator = generatorFactory({ ...options2, keyframes: keyframes$1 });
+  let mirroredGenerator;
+  if (repeatType === "mirror") {
+    mirroredGenerator = generatorFactory({
+      ...options2,
+      keyframes: [...keyframes$1].reverse(),
+      velocity: -(options2.velocity || 0)
+    });
+  }
+  let playState = "idle";
+  let holdTime = null;
+  let startTime = null;
+  let cancelTime = null;
+  if (generator.calculatedDuration === null && repeat) {
+    generator.calculatedDuration = calcGeneratorDuration(generator);
+  }
+  const { calculatedDuration } = generator;
+  let resolvedDuration = Infinity;
+  let totalDuration = Infinity;
+  if (calculatedDuration !== null) {
+    resolvedDuration = calculatedDuration + repeatDelay;
+    totalDuration = resolvedDuration * (repeat + 1) - repeatDelay;
+  }
+  let currentTime = 0;
+  const tick = (timestamp) => {
+    if (startTime === null)
+      return;
+    if (speed > 0)
+      startTime = Math.min(startTime, timestamp);
+    if (speed < 0)
+      startTime = Math.min(timestamp - totalDuration / speed, startTime);
+    if (holdTime !== null) {
+      currentTime = holdTime;
+    } else {
+      currentTime = Math.round(timestamp - startTime) * speed;
+    }
+    const timeWithoutDelay = currentTime - delay2 * (speed >= 0 ? 1 : -1);
+    const isInDelayPhase = speed >= 0 ? timeWithoutDelay < 0 : timeWithoutDelay > totalDuration;
+    currentTime = Math.max(timeWithoutDelay, 0);
+    if (playState === "finished" && holdTime === null) {
+      currentTime = totalDuration;
+    }
+    let elapsed = currentTime;
+    let frameGenerator = generator;
+    if (repeat) {
+      const progress2 = currentTime / resolvedDuration;
+      let currentIteration = Math.floor(progress2);
+      let iterationProgress = progress2 % 1;
+      if (!iterationProgress && progress2 >= 1) {
+        iterationProgress = 1;
+      }
+      iterationProgress === 1 && currentIteration--;
+      currentIteration = Math.min(currentIteration, repeat + 1);
+      const iterationIsOdd = Boolean(currentIteration % 2);
+      if (iterationIsOdd) {
+        if (repeatType === "reverse") {
+          iterationProgress = 1 - iterationProgress;
+          if (repeatDelay) {
+            iterationProgress -= repeatDelay / resolvedDuration;
+          }
+        } else if (repeatType === "mirror") {
+          frameGenerator = mirroredGenerator;
+        }
+      }
+      let p2 = clamp(0, 1, iterationProgress);
+      if (currentTime > totalDuration) {
+        p2 = repeatType === "reverse" && iterationIsOdd ? 1 : 0;
+      }
+      elapsed = p2 * resolvedDuration;
+    }
+    const state = isInDelayPhase ? { done: false, value: keyframes$1[0] } : frameGenerator.next(elapsed);
+    if (mapNumbersToKeyframes) {
+      state.value = mapNumbersToKeyframes(state.value);
+    }
+    let { done } = state;
+    if (!isInDelayPhase && calculatedDuration !== null) {
+      done = speed >= 0 ? currentTime >= totalDuration : currentTime <= 0;
+    }
+    const isAnimationFinished = holdTime === null && (playState === "finished" || playState === "running" && done);
+    if (onUpdate) {
+      onUpdate(state.value);
+    }
+    if (isAnimationFinished) {
+      finish();
+    }
+    return state;
+  };
+  const stopAnimationDriver = () => {
+    animationDriver && animationDriver.stop();
+    animationDriver = void 0;
+  };
+  const cancel = () => {
+    playState = "idle";
+    stopAnimationDriver();
+    resolveFinishedPromise();
+    updateFinishedPromise();
+    startTime = cancelTime = null;
+  };
+  const finish = () => {
+    playState = "finished";
+    onComplete && onComplete();
+    stopAnimationDriver();
+    resolveFinishedPromise();
+  };
+  const play2 = () => {
+    if (hasStopped)
+      return;
+    if (!animationDriver)
+      animationDriver = driver(tick);
+    const now = animationDriver.now();
+    onPlay && onPlay();
+    if (holdTime !== null) {
+      startTime = now - holdTime;
+    } else if (!startTime || playState === "finished") {
+      startTime = now;
+    }
+    if (playState === "finished") {
+      updateFinishedPromise();
+    }
+    cancelTime = startTime;
+    holdTime = null;
+    playState = "running";
+    animationDriver.start();
+  };
+  if (autoplay) {
+    play2();
+  }
+  const controls = {
+    then(resolve, reject) {
+      return currentFinishedPromise.then(resolve, reject);
+    },
+    get time() {
+      return millisecondsToSeconds(currentTime);
+    },
+    set time(newTime) {
+      newTime = secondsToMilliseconds(newTime);
+      currentTime = newTime;
+      if (holdTime !== null || !animationDriver || speed === 0) {
+        holdTime = newTime;
+      } else {
+        startTime = animationDriver.now() - newTime / speed;
+      }
+    },
+    get duration() {
+      const duration = generator.calculatedDuration === null ? calcGeneratorDuration(generator) : generator.calculatedDuration;
+      return millisecondsToSeconds(duration);
+    },
+    get speed() {
+      return speed;
+    },
+    set speed(newSpeed) {
+      if (newSpeed === speed || !animationDriver)
+        return;
+      speed = newSpeed;
+      controls.time = millisecondsToSeconds(currentTime);
+    },
+    get state() {
+      return playState;
+    },
+    play: play2,
+    pause: () => {
+      playState = "paused";
+      holdTime = currentTime;
+    },
+    stop: () => {
+      hasStopped = true;
+      if (playState === "idle")
+        return;
+      playState = "idle";
+      onStop && onStop();
+      cancel();
+    },
+    cancel: () => {
+      if (cancelTime !== null)
+        tick(cancelTime);
+      cancel();
+    },
+    complete: () => {
+      playState = "finished";
+    },
+    sample: (elapsed) => {
+      startTime = 0;
+      return tick(elapsed);
+    }
+  };
+  return controls;
+}
+function memo(callback) {
+  let result;
+  return () => {
+    if (result === void 0)
+      result = callback();
+    return result;
+  };
+}
+const supportsWaapi = memo(() => Object.hasOwnProperty.call(Element.prototype, "animate"));
+const acceleratedValues = /* @__PURE__ */ new Set([
+  "opacity",
+  "clipPath",
+  "filter",
+  "transform",
+  "backgroundColor"
+]);
+const sampleDelta = 10;
+const maxDuration = 2e4;
+const requiresPregeneratedKeyframes = (valueName, options2) => options2.type === "spring" || valueName === "backgroundColor" || !isWaapiSupportedEasing(options2.ease);
+function createAcceleratedAnimation(value, valueName, { onUpdate, onComplete, ...options2 }) {
+  const canAccelerateAnimation = supportsWaapi() && acceleratedValues.has(valueName) && !options2.repeatDelay && options2.repeatType !== "mirror" && options2.damping !== 0 && options2.type !== "inertia";
+  if (!canAccelerateAnimation)
+    return false;
+  let hasStopped = false;
+  let resolveFinishedPromise;
+  let currentFinishedPromise;
+  const updateFinishedPromise = () => {
+    currentFinishedPromise = new Promise((resolve) => {
+      resolveFinishedPromise = resolve;
+    });
+  };
+  updateFinishedPromise();
+  let { keyframes: keyframes2, duration = 300, ease: ease2, times } = options2;
+  if (requiresPregeneratedKeyframes(valueName, options2)) {
+    const sampleAnimation = animateValue({
+      ...options2,
+      repeat: 0,
+      delay: 0
+    });
+    let state = { done: false, value: keyframes2[0] };
+    const pregeneratedKeyframes = [];
+    let t4 = 0;
+    while (!state.done && t4 < maxDuration) {
+      state = sampleAnimation.sample(t4);
+      pregeneratedKeyframes.push(state.value);
+      t4 += sampleDelta;
+    }
+    times = void 0;
+    keyframes2 = pregeneratedKeyframes;
+    duration = t4 - sampleDelta;
+    ease2 = "linear";
+  }
+  const animation = animateStyle(value.owner.current, valueName, keyframes2, {
+    ...options2,
+    duration,
+    /**
+     * This function is currently not called if ease is provided
+     * as a function so the cast is safe.
+     *
+     * However it would be possible for a future refinement to port
+     * in easing pregeneration from Motion One for browsers that
+     * support the upcoming `linear()` easing function.
+     */
+    ease: ease2,
+    times
+  });
+  const cancelAnimation = () => animation.cancel();
+  const safeCancel = () => {
+    frame.update(cancelAnimation);
+    resolveFinishedPromise();
+    updateFinishedPromise();
+  };
+  animation.onfinish = () => {
+    value.set(getFinalKeyframe(keyframes2, options2));
+    onComplete && onComplete();
+    safeCancel();
+  };
+  const controls = {
+    then(resolve, reject) {
+      return currentFinishedPromise.then(resolve, reject);
+    },
+    attachTimeline(timeline) {
+      animation.timeline = timeline;
+      animation.onfinish = null;
+      return noop$1;
+    },
+    get time() {
+      return millisecondsToSeconds(animation.currentTime || 0);
+    },
+    set time(newTime) {
+      animation.currentTime = secondsToMilliseconds(newTime);
+    },
+    get speed() {
+      return animation.playbackRate;
+    },
+    set speed(newSpeed) {
+      animation.playbackRate = newSpeed;
+    },
+    get duration() {
+      return millisecondsToSeconds(duration);
+    },
+    play: () => {
+      if (hasStopped)
+        return;
+      animation.play();
+      cancelFrame(cancelAnimation);
+    },
+    pause: () => animation.pause(),
+    stop: () => {
+      hasStopped = true;
+      if (animation.playState === "idle")
+        return;
+      const { currentTime } = animation;
+      if (currentTime) {
+        const sampleAnimation = animateValue({
+          ...options2,
+          autoplay: false
+        });
+        value.setWithVelocity(sampleAnimation.sample(currentTime - sampleDelta).value, sampleAnimation.sample(currentTime).value, sampleDelta);
+      }
+      safeCancel();
+    },
+    complete: () => animation.finish(),
+    cancel: safeCancel
+  };
+  return controls;
+}
+function createInstantAnimation({ keyframes: keyframes2, delay: delay2, onUpdate, onComplete }) {
+  const setValue = () => {
+    onUpdate && onUpdate(keyframes2[keyframes2.length - 1]);
+    onComplete && onComplete();
+    return {
+      time: 0,
+      speed: 1,
+      duration: 0,
+      play: noop$1,
+      pause: noop$1,
+      stop: noop$1,
+      then: (resolve) => {
+        resolve();
+        return Promise.resolve();
+      },
+      cancel: noop$1,
+      complete: noop$1
+    };
+  };
+  return delay2 ? animateValue({
+    keyframes: [0, 1],
+    duration: 0,
+    delay: delay2,
+    onComplete: setValue
+  }) : setValue();
+}
+const underDampedSpring = {
+  type: "spring",
+  stiffness: 500,
+  damping: 25,
+  restSpeed: 10
+};
+const criticallyDampedSpring = (target) => ({
+  type: "spring",
+  stiffness: 550,
+  damping: target === 0 ? 2 * Math.sqrt(550) : 30,
+  restSpeed: 10
+});
+const keyframesTransition = {
+  type: "keyframes",
+  duration: 0.8
+};
+const ease = {
+  type: "keyframes",
+  ease: [0.25, 0.1, 0.35, 1],
+  duration: 0.3
+};
+const getDefaultTransition = (valueKey, { keyframes: keyframes2 }) => {
+  if (keyframes2.length > 2) {
+    return keyframesTransition;
+  } else if (transformProps.has(valueKey)) {
+    return valueKey.startsWith("scale") ? criticallyDampedSpring(keyframes2[1]) : underDampedSpring;
+  }
+  return ease;
+};
+const isAnimatable = (key, value) => {
+  if (key === "zIndex")
+    return false;
+  if (typeof value === "number" || Array.isArray(value))
+    return true;
+  if (typeof value === "string" && // It's animatable if we have a string
+  (complex.test(value) || value === "0") && // And it contains numbers and/or colors
+  !value.startsWith("url(")) {
+    return true;
+  }
+  return false;
+};
+const maxDefaults = /* @__PURE__ */ new Set(["brightness", "contrast", "saturate", "opacity"]);
+function applyDefaultFilter(v2) {
+  const [name, value] = v2.slice(0, -1).split("(");
+  if (name === "drop-shadow")
+    return v2;
+  const [number2] = value.match(floatRegex) || [];
+  if (!number2)
+    return v2;
+  const unit = value.replace(number2, "");
+  let defaultValue = maxDefaults.has(name) ? 1 : 0;
+  if (number2 !== value)
+    defaultValue *= 100;
+  return name + "(" + defaultValue + unit + ")";
+}
+const functionRegex = /([a-z-]*)\(.*?\)/g;
+const filter = {
+  ...complex,
+  getAnimatableNone: (v2) => {
+    const functions = v2.match(functionRegex);
+    return functions ? functions.map(applyDefaultFilter).join(" ") : v2;
+  }
+};
+const defaultValueTypes = {
+  ...numberValueTypes,
+  // Color props
+  color,
+  backgroundColor: color,
+  outlineColor: color,
+  fill: color,
+  stroke: color,
+  // Border props
+  borderColor: color,
+  borderTopColor: color,
+  borderRightColor: color,
+  borderBottomColor: color,
+  borderLeftColor: color,
+  filter,
+  WebkitFilter: filter
+};
+const getDefaultValueType = (key) => defaultValueTypes[key];
+function getAnimatableNone(key, value) {
+  let defaultValueType = getDefaultValueType(key);
+  if (defaultValueType !== filter)
+    defaultValueType = complex;
+  return defaultValueType.getAnimatableNone ? defaultValueType.getAnimatableNone(value) : void 0;
+}
+const isZeroValueString = (v2) => /^0[^.\s]+$/.test(v2);
+function isNone(value) {
+  if (typeof value === "number") {
+    return value === 0;
+  } else if (value !== null) {
+    return value === "none" || value === "0" || isZeroValueString(value);
+  }
+}
+function getKeyframes(value, valueName, target, transition) {
+  const isTargetAnimatable = isAnimatable(valueName, target);
+  let keyframes2;
+  if (Array.isArray(target)) {
+    keyframes2 = [...target];
+  } else {
+    keyframes2 = [null, target];
+  }
+  const defaultOrigin = transition.from !== void 0 ? transition.from : value.get();
+  let animatableTemplateValue = void 0;
+  const noneKeyframeIndexes = [];
+  for (let i3 = 0; i3 < keyframes2.length; i3++) {
+    if (keyframes2[i3] === null) {
+      keyframes2[i3] = i3 === 0 ? defaultOrigin : keyframes2[i3 - 1];
+    }
+    if (isNone(keyframes2[i3])) {
+      noneKeyframeIndexes.push(i3);
+    }
+    if (typeof keyframes2[i3] === "string" && keyframes2[i3] !== "none" && keyframes2[i3] !== "0") {
+      animatableTemplateValue = keyframes2[i3];
+    }
+  }
+  if (isTargetAnimatable && noneKeyframeIndexes.length && animatableTemplateValue) {
+    for (let i3 = 0; i3 < noneKeyframeIndexes.length; i3++) {
+      const index2 = noneKeyframeIndexes[i3];
+      keyframes2[index2] = getAnimatableNone(valueName, animatableTemplateValue);
+    }
+  }
+  return keyframes2;
+}
+function isTransitionDefined({ when, delay: _delay, delayChildren, staggerChildren, staggerDirection, repeat, repeatType, repeatDelay, from, elapsed, ...transition }) {
+  return !!Object.keys(transition).length;
+}
+function getValueTransition(transition, key) {
+  return transition[key] || transition["default"] || transition;
+}
+const animateMotionValue = (valueName, value, target, transition = {}) => {
+  return (onComplete) => {
+    const valueTransition = getValueTransition(transition, valueName) || {};
+    const delay2 = valueTransition.delay || transition.delay || 0;
+    let { elapsed = 0 } = transition;
+    elapsed = elapsed - secondsToMilliseconds(delay2);
+    const keyframes2 = getKeyframes(value, valueName, target, valueTransition);
+    const originKeyframe = keyframes2[0];
+    const targetKeyframe = keyframes2[keyframes2.length - 1];
+    const isOriginAnimatable = isAnimatable(valueName, originKeyframe);
+    const isTargetAnimatable = isAnimatable(valueName, targetKeyframe);
+    let options2 = {
+      keyframes: keyframes2,
+      velocity: value.getVelocity(),
+      ease: "easeOut",
+      ...valueTransition,
+      delay: -elapsed,
+      onUpdate: (v2) => {
+        value.set(v2);
+        valueTransition.onUpdate && valueTransition.onUpdate(v2);
+      },
+      onComplete: () => {
+        onComplete();
+        valueTransition.onComplete && valueTransition.onComplete();
+      }
+    };
+    if (!isTransitionDefined(valueTransition)) {
+      options2 = {
+        ...options2,
+        ...getDefaultTransition(valueName, options2)
+      };
+    }
+    if (options2.duration) {
+      options2.duration = secondsToMilliseconds(options2.duration);
+    }
+    if (options2.repeatDelay) {
+      options2.repeatDelay = secondsToMilliseconds(options2.repeatDelay);
+    }
+    if (!isOriginAnimatable || !isTargetAnimatable || instantAnimationState.current || valueTransition.type === false) {
+      return createInstantAnimation(options2);
+    }
+    if (value.owner && value.owner.current instanceof HTMLElement && !value.owner.getProps().onUpdate) {
+      const acceleratedAnimation = createAcceleratedAnimation(value, valueName, options2);
+      if (acceleratedAnimation)
+        return acceleratedAnimation;
+    }
+    return animateValue(options2);
+  };
+};
+function isWillChangeMotionValue(value) {
+  return Boolean(isMotionValue(value) && value.add);
+}
+const isNumericalString = (v2) => /^\-?\d*\.?\d+$/.test(v2);
+function addUniqueItem(arr, item) {
+  if (arr.indexOf(item) === -1)
+    arr.push(item);
+}
+function removeItem(arr, item) {
+  const index2 = arr.indexOf(item);
+  if (index2 > -1)
+    arr.splice(index2, 1);
+}
+class SubscriptionManager {
+  constructor() {
+    this.subscriptions = [];
+  }
+  add(handler) {
+    addUniqueItem(this.subscriptions, handler);
+    return () => removeItem(this.subscriptions, handler);
+  }
+  notify(a2, b2, c2) {
+    const numSubscriptions = this.subscriptions.length;
+    if (!numSubscriptions)
+      return;
+    if (numSubscriptions === 1) {
+      this.subscriptions[0](a2, b2, c2);
+    } else {
+      for (let i3 = 0; i3 < numSubscriptions; i3++) {
+        const handler = this.subscriptions[i3];
+        handler && handler(a2, b2, c2);
+      }
+    }
+  }
+  getSize() {
+    return this.subscriptions.length;
+  }
+  clear() {
+    this.subscriptions.length = 0;
+  }
+}
+const isFloat = (value) => {
+  return !isNaN(parseFloat(value));
+};
+class MotionValue {
+  /**
+   * @param init - The initiating value
+   * @param config - Optional configuration options
+   *
+   * -  `transformer`: A function to transform incoming values with.
+   *
+   * @internal
+   */
+  constructor(init, options2 = {}) {
+    this.version = "10.16.1";
+    this.timeDelta = 0;
+    this.lastUpdated = 0;
+    this.canTrackVelocity = false;
+    this.events = {};
+    this.updateAndNotify = (v2, render = true) => {
+      this.prev = this.current;
+      this.current = v2;
+      const { delta, timestamp } = frameData;
+      if (this.lastUpdated !== timestamp) {
+        this.timeDelta = delta;
+        this.lastUpdated = timestamp;
+        frame.postRender(this.scheduleVelocityCheck);
+      }
+      if (this.prev !== this.current && this.events.change) {
+        this.events.change.notify(this.current);
+      }
+      if (this.events.velocityChange) {
+        this.events.velocityChange.notify(this.getVelocity());
+      }
+      if (render && this.events.renderRequest) {
+        this.events.renderRequest.notify(this.current);
+      }
+    };
+    this.scheduleVelocityCheck = () => frame.postRender(this.velocityCheck);
+    this.velocityCheck = ({ timestamp }) => {
+      if (timestamp !== this.lastUpdated) {
+        this.prev = this.current;
+        if (this.events.velocityChange) {
+          this.events.velocityChange.notify(this.getVelocity());
+        }
+      }
+    };
+    this.hasAnimated = false;
+    this.prev = this.current = init;
+    this.canTrackVelocity = isFloat(this.current);
+    this.owner = options2.owner;
+  }
+  /**
+   * Adds a function that will be notified when the `MotionValue` is updated.
+   *
+   * It returns a function that, when called, will cancel the subscription.
+   *
+   * When calling `onChange` inside a React component, it should be wrapped with the
+   * `useEffect` hook. As it returns an unsubscribe function, this should be returned
+   * from the `useEffect` function to ensure you don't add duplicate subscribers..
+   *
+   * ```jsx
+   * export const MyComponent = () => {
+   *   const x = useMotionValue(0)
+   *   const y = useMotionValue(0)
+   *   const opacity = useMotionValue(1)
+   *
+   *   useEffect(() => {
+   *     function updateOpacity() {
+   *       const maxXY = Math.max(x.get(), y.get())
+   *       const newOpacity = transform(maxXY, [0, 100], [1, 0])
+   *       opacity.set(newOpacity)
+   *     }
+   *
+   *     const unsubscribeX = x.on("change", updateOpacity)
+   *     const unsubscribeY = y.on("change", updateOpacity)
+   *
+   *     return () => {
+   *       unsubscribeX()
+   *       unsubscribeY()
+   *     }
+   *   }, [])
+   *
+   *   return <motion.div style={{ x }} />
+   * }
+   * ```
+   *
+   * @param subscriber - A function that receives the latest value.
+   * @returns A function that, when called, will cancel this subscription.
+   *
+   * @deprecated
+   */
+  onChange(subscription) {
+    return this.on("change", subscription);
+  }
+  on(eventName, callback) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = new SubscriptionManager();
+    }
+    const unsubscribe = this.events[eventName].add(callback);
+    if (eventName === "change") {
+      return () => {
+        unsubscribe();
+        frame.read(() => {
+          if (!this.events.change.getSize()) {
+            this.stop();
+          }
+        });
+      };
+    }
+    return unsubscribe;
+  }
+  clearListeners() {
+    for (const eventManagers in this.events) {
+      this.events[eventManagers].clear();
+    }
+  }
+  /**
+   * Attaches a passive effect to the `MotionValue`.
+   *
+   * @internal
+   */
+  attach(passiveEffect, stopPassiveEffect) {
+    this.passiveEffect = passiveEffect;
+    this.stopPassiveEffect = stopPassiveEffect;
+  }
+  /**
+   * Sets the state of the `MotionValue`.
+   *
+   * @remarks
+   *
+   * ```jsx
+   * const x = useMotionValue(0)
+   * x.set(10)
+   * ```
+   *
+   * @param latest - Latest value to set.
+   * @param render - Whether to notify render subscribers. Defaults to `true`
+   *
+   * @public
+   */
+  set(v2, render = true) {
+    if (!render || !this.passiveEffect) {
+      this.updateAndNotify(v2, render);
+    } else {
+      this.passiveEffect(v2, this.updateAndNotify);
+    }
+  }
+  setWithVelocity(prev, current, delta) {
+    this.set(current);
+    this.prev = prev;
+    this.timeDelta = delta;
+  }
+  /**
+   * Set the state of the `MotionValue`, stopping any active animations,
+   * effects, and resets velocity to `0`.
+   */
+  jump(v2) {
+    this.updateAndNotify(v2);
+    this.prev = v2;
+    this.stop();
+    if (this.stopPassiveEffect)
+      this.stopPassiveEffect();
+  }
+  /**
+   * Returns the latest state of `MotionValue`
+   *
+   * @returns - The latest state of `MotionValue`
+   *
+   * @public
+   */
+  get() {
+    return this.current;
+  }
+  /**
+   * @public
+   */
+  getPrevious() {
+    return this.prev;
+  }
+  /**
+   * Returns the latest velocity of `MotionValue`
+   *
+   * @returns - The latest velocity of `MotionValue`. Returns `0` if the state is non-numerical.
+   *
+   * @public
+   */
+  getVelocity() {
+    return this.canTrackVelocity ? (
+      // These casts could be avoided if parseFloat would be typed better
+      velocityPerSecond(parseFloat(this.current) - parseFloat(this.prev), this.timeDelta)
+    ) : 0;
+  }
+  /**
+   * Registers a new animation to control this `MotionValue`. Only one
+   * animation can drive a `MotionValue` at one time.
+   *
+   * ```jsx
+   * value.start()
+   * ```
+   *
+   * @param animation - A function that starts the provided animation
+   *
+   * @internal
+   */
+  start(startAnimation) {
+    this.stop();
+    return new Promise((resolve) => {
+      this.hasAnimated = true;
+      this.animation = startAnimation(resolve);
+      if (this.events.animationStart) {
+        this.events.animationStart.notify();
+      }
+    }).then(() => {
+      if (this.events.animationComplete) {
+        this.events.animationComplete.notify();
+      }
+      this.clearAnimation();
+    });
+  }
+  /**
+   * Stop the currently active animation.
+   *
+   * @public
+   */
+  stop() {
+    if (this.animation) {
+      this.animation.stop();
+      if (this.events.animationCancel) {
+        this.events.animationCancel.notify();
+      }
+    }
+    this.clearAnimation();
+  }
+  /**
+   * Returns `true` if this value is currently animating.
+   *
+   * @public
+   */
+  isAnimating() {
+    return !!this.animation;
+  }
+  clearAnimation() {
+    delete this.animation;
+  }
+  /**
+   * Destroy and clean up subscribers to this `MotionValue`.
+   *
+   * The `MotionValue` hooks like `useMotionValue` and `useTransform` automatically
+   * handle the lifecycle of the returned `MotionValue`, so this method is only necessary if you've manually
+   * created a `MotionValue` via the `motionValue` function.
+   *
+   * @public
+   */
+  destroy() {
+    this.clearListeners();
+    this.stop();
+    if (this.stopPassiveEffect) {
+      this.stopPassiveEffect();
+    }
+  }
+}
+function motionValue(init, options2) {
+  return new MotionValue(init, options2);
+}
+const testValueType = (v2) => (type) => type.test(v2);
+const auto = {
+  test: (v2) => v2 === "auto",
+  parse: (v2) => v2
+};
+const dimensionValueTypes = [number, px, percent, degrees, vw, vh, auto];
+const findDimensionValueType = (v2) => dimensionValueTypes.find(testValueType(v2));
+const valueTypes = [...dimensionValueTypes, color, complex];
+const findValueType = (v2) => valueTypes.find(testValueType(v2));
+function setMotionValue(visualElement, key, value) {
+  if (visualElement.hasValue(key)) {
+    visualElement.getValue(key).set(value);
+  } else {
+    visualElement.addValue(key, motionValue(value));
+  }
+}
+function setTarget(visualElement, definition) {
+  const resolved = resolveVariant(visualElement, definition);
+  let { transitionEnd = {}, transition = {}, ...target } = resolved ? visualElement.makeTargetAnimatable(resolved, false) : {};
+  target = { ...target, ...transitionEnd };
+  for (const key in target) {
+    const value = resolveFinalValueInKeyframes(target[key]);
+    setMotionValue(visualElement, key, value);
+  }
+}
+function checkTargetForNewValues(visualElement, target, origin) {
+  var _a, _b;
+  const newValueKeys = Object.keys(target).filter((key) => !visualElement.hasValue(key));
+  const numNewValues = newValueKeys.length;
+  if (!numNewValues)
+    return;
+  for (let i3 = 0; i3 < numNewValues; i3++) {
+    const key = newValueKeys[i3];
+    const targetValue = target[key];
+    let value = null;
+    if (Array.isArray(targetValue)) {
+      value = targetValue[0];
+    }
+    if (value === null) {
+      value = (_b = (_a = origin[key]) !== null && _a !== void 0 ? _a : visualElement.readValue(key)) !== null && _b !== void 0 ? _b : target[key];
+    }
+    if (value === void 0 || value === null)
+      continue;
+    if (typeof value === "string" && (isNumericalString(value) || isZeroValueString(value))) {
+      value = parseFloat(value);
+    } else if (!findValueType(value) && complex.test(targetValue)) {
+      value = getAnimatableNone(key, targetValue);
+    }
+    visualElement.addValue(key, motionValue(value, { owner: visualElement }));
+    if (origin[key] === void 0) {
+      origin[key] = value;
+    }
+    if (value !== null)
+      visualElement.setBaseTarget(key, value);
+  }
+}
+function getOriginFromTransition(key, transition) {
+  if (!transition)
+    return;
+  const valueTransition = transition[key] || transition["default"] || transition;
+  return valueTransition.from;
+}
+function getOrigin(target, transition, visualElement) {
+  const origin = {};
+  for (const key in target) {
+    const transitionOrigin = getOriginFromTransition(key, transition);
+    if (transitionOrigin !== void 0) {
+      origin[key] = transitionOrigin;
+    } else {
+      const value = visualElement.getValue(key);
+      if (value) {
+        origin[key] = value.get();
+      }
+    }
+  }
+  return origin;
+}
+function shouldBlockAnimation({ protectedKeys, needsAnimating }, key) {
+  const shouldBlock = protectedKeys.hasOwnProperty(key) && needsAnimating[key] !== true;
+  needsAnimating[key] = false;
+  return shouldBlock;
+}
+function animateTarget(visualElement, definition, { delay: delay2 = 0, transitionOverride, type } = {}) {
+  let { transition = visualElement.getDefaultTransition(), transitionEnd, ...target } = visualElement.makeTargetAnimatable(definition);
+  const willChange = visualElement.getValue("willChange");
+  if (transitionOverride)
+    transition = transitionOverride;
+  const animations2 = [];
+  const animationTypeState = type && visualElement.animationState && visualElement.animationState.getState()[type];
+  for (const key in target) {
+    const value = visualElement.getValue(key);
+    const valueTarget = target[key];
+    if (!value || valueTarget === void 0 || animationTypeState && shouldBlockAnimation(animationTypeState, key)) {
+      continue;
+    }
+    const valueTransition = { delay: delay2, elapsed: 0, ...transition };
+    if (window.HandoffAppearAnimations && !value.hasAnimated) {
+      const appearId = visualElement.getProps()[optimizedAppearDataAttribute];
+      if (appearId) {
+        valueTransition.elapsed = window.HandoffAppearAnimations(appearId, key, value, frame);
+      }
+    }
+    value.start(animateMotionValue(key, value, valueTarget, visualElement.shouldReduceMotion && transformProps.has(key) ? { type: false } : valueTransition));
+    const animation = value.animation;
+    if (isWillChangeMotionValue(willChange)) {
+      willChange.add(key);
+      animation.then(() => willChange.remove(key));
+    }
+    animations2.push(animation);
+  }
+  if (transitionEnd) {
+    Promise.all(animations2).then(() => {
+      transitionEnd && setTarget(visualElement, transitionEnd);
+    });
+  }
+  return animations2;
+}
+function animateVariant(visualElement, variant, options2 = {}) {
+  const resolved = resolveVariant(visualElement, variant, options2.custom);
+  let { transition = visualElement.getDefaultTransition() || {} } = resolved || {};
+  if (options2.transitionOverride) {
+    transition = options2.transitionOverride;
+  }
+  const getAnimation = resolved ? () => Promise.all(animateTarget(visualElement, resolved, options2)) : () => Promise.resolve();
+  const getChildAnimations = visualElement.variantChildren && visualElement.variantChildren.size ? (forwardDelay = 0) => {
+    const { delayChildren = 0, staggerChildren, staggerDirection } = transition;
+    return animateChildren(visualElement, variant, delayChildren + forwardDelay, staggerChildren, staggerDirection, options2);
+  } : () => Promise.resolve();
+  const { when } = transition;
+  if (when) {
+    const [first, last] = when === "beforeChildren" ? [getAnimation, getChildAnimations] : [getChildAnimations, getAnimation];
+    return first().then(() => last());
+  } else {
+    return Promise.all([getAnimation(), getChildAnimations(options2.delay)]);
+  }
+}
+function animateChildren(visualElement, variant, delayChildren = 0, staggerChildren = 0, staggerDirection = 1, options2) {
+  const animations2 = [];
+  const maxStaggerDuration = (visualElement.variantChildren.size - 1) * staggerChildren;
+  const generateStaggerDuration = staggerDirection === 1 ? (i3 = 0) => i3 * staggerChildren : (i3 = 0) => maxStaggerDuration - i3 * staggerChildren;
+  Array.from(visualElement.variantChildren).sort(sortByTreeOrder).forEach((child, i3) => {
+    child.notify("AnimationStart", variant);
+    animations2.push(animateVariant(child, variant, {
+      ...options2,
+      delay: delayChildren + generateStaggerDuration(i3)
+    }).then(() => child.notify("AnimationComplete", variant)));
+  });
+  return Promise.all(animations2);
+}
+function sortByTreeOrder(a2, b2) {
+  return a2.sortNodePosition(b2);
+}
+function animateVisualElement(visualElement, definition, options2 = {}) {
+  visualElement.notify("AnimationStart", definition);
+  let animation;
+  if (Array.isArray(definition)) {
+    const animations2 = definition.map((variant) => animateVariant(visualElement, variant, options2));
+    animation = Promise.all(animations2);
+  } else if (typeof definition === "string") {
+    animation = animateVariant(visualElement, definition, options2);
+  } else {
+    const resolvedDefinition = typeof definition === "function" ? resolveVariant(visualElement, definition, options2.custom) : definition;
+    animation = Promise.all(animateTarget(visualElement, resolvedDefinition, options2));
+  }
+  return animation.then(() => visualElement.notify("AnimationComplete", definition));
+}
+const reversePriorityOrder = [...variantPriorityOrder].reverse();
+const numAnimationTypes = variantPriorityOrder.length;
+function animateList(visualElement) {
+  return (animations2) => Promise.all(animations2.map(({ animation, options: options2 }) => animateVisualElement(visualElement, animation, options2)));
+}
+function createAnimationState(visualElement) {
+  let animate = animateList(visualElement);
+  const state = createState();
+  let isInitialRender = true;
+  const buildResolvedTypeValues = (acc, definition) => {
+    const resolved = resolveVariant(visualElement, definition);
+    if (resolved) {
+      const { transition, transitionEnd, ...target } = resolved;
+      acc = { ...acc, ...target, ...transitionEnd };
+    }
+    return acc;
+  };
+  function setAnimateFunction(makeAnimator) {
+    animate = makeAnimator(visualElement);
+  }
+  function animateChanges(options2, changedActiveType) {
+    const props = visualElement.getProps();
+    const context = visualElement.getVariantContext(true) || {};
+    const animations2 = [];
+    const removedKeys = /* @__PURE__ */ new Set();
+    let encounteredKeys = {};
+    let removedVariantIndex = Infinity;
+    for (let i3 = 0; i3 < numAnimationTypes; i3++) {
+      const type = reversePriorityOrder[i3];
+      const typeState = state[type];
+      const prop = props[type] !== void 0 ? props[type] : context[type];
+      const propIsVariant = isVariantLabel(prop);
+      const activeDelta = type === changedActiveType ? typeState.isActive : null;
+      if (activeDelta === false)
+        removedVariantIndex = i3;
+      let isInherited = prop === context[type] && prop !== props[type] && propIsVariant;
+      if (isInherited && isInitialRender && visualElement.manuallyAnimateOnMount) {
+        isInherited = false;
+      }
+      typeState.protectedKeys = { ...encounteredKeys };
+      if (
+        // If it isn't active and hasn't *just* been set as inactive
+        !typeState.isActive && activeDelta === null || // If we didn't and don't have any defined prop for this animation type
+        !prop && !typeState.prevProp || // Or if the prop doesn't define an animation
+        isAnimationControls(prop) || typeof prop === "boolean"
+      ) {
+        continue;
+      }
+      const variantDidChange = checkVariantsDidChange(typeState.prevProp, prop);
+      let shouldAnimateType = variantDidChange || // If we're making this variant active, we want to always make it active
+      type === changedActiveType && typeState.isActive && !isInherited && propIsVariant || // If we removed a higher-priority variant (i is in reverse order)
+      i3 > removedVariantIndex && propIsVariant;
+      const definitionList = Array.isArray(prop) ? prop : [prop];
+      let resolvedValues = definitionList.reduce(buildResolvedTypeValues, {});
+      if (activeDelta === false)
+        resolvedValues = {};
+      const { prevResolvedValues = {} } = typeState;
+      const allKeys = {
+        ...prevResolvedValues,
+        ...resolvedValues
+      };
+      const markToAnimate = (key) => {
+        shouldAnimateType = true;
+        removedKeys.delete(key);
+        typeState.needsAnimating[key] = true;
+      };
+      for (const key in allKeys) {
+        const next = resolvedValues[key];
+        const prev = prevResolvedValues[key];
+        if (encounteredKeys.hasOwnProperty(key))
+          continue;
+        if (next !== prev) {
+          if (isKeyframesTarget(next) && isKeyframesTarget(prev)) {
+            if (!shallowCompare(next, prev) || variantDidChange) {
+              markToAnimate(key);
+            } else {
+              typeState.protectedKeys[key] = true;
+            }
+          } else if (next !== void 0) {
+            markToAnimate(key);
+          } else {
+            removedKeys.add(key);
+          }
+        } else if (next !== void 0 && removedKeys.has(key)) {
+          markToAnimate(key);
+        } else {
+          typeState.protectedKeys[key] = true;
+        }
+      }
+      typeState.prevProp = prop;
+      typeState.prevResolvedValues = resolvedValues;
+      if (typeState.isActive) {
+        encounteredKeys = { ...encounteredKeys, ...resolvedValues };
+      }
+      if (isInitialRender && visualElement.blockInitialAnimation) {
+        shouldAnimateType = false;
+      }
+      if (shouldAnimateType && !isInherited) {
+        animations2.push(...definitionList.map((animation) => ({
+          animation,
+          options: { type, ...options2 }
+        })));
+      }
+    }
+    if (removedKeys.size) {
+      const fallbackAnimation = {};
+      removedKeys.forEach((key) => {
+        const fallbackTarget = visualElement.getBaseTarget(key);
+        if (fallbackTarget !== void 0) {
+          fallbackAnimation[key] = fallbackTarget;
+        }
+      });
+      animations2.push({ animation: fallbackAnimation });
+    }
+    let shouldAnimate = Boolean(animations2.length);
+    if (isInitialRender && props.initial === false && !visualElement.manuallyAnimateOnMount) {
+      shouldAnimate = false;
+    }
+    isInitialRender = false;
+    return shouldAnimate ? animate(animations2) : Promise.resolve();
+  }
+  function setActive(type, isActive, options2) {
+    var _a;
+    if (state[type].isActive === isActive)
+      return Promise.resolve();
+    (_a = visualElement.variantChildren) === null || _a === void 0 ? void 0 : _a.forEach((child) => {
+      var _a2;
+      return (_a2 = child.animationState) === null || _a2 === void 0 ? void 0 : _a2.setActive(type, isActive);
+    });
+    state[type].isActive = isActive;
+    const animations2 = animateChanges(options2, type);
+    for (const key in state) {
+      state[key].protectedKeys = {};
+    }
+    return animations2;
+  }
+  return {
+    animateChanges,
+    setActive,
+    setAnimateFunction,
+    getState: () => state
+  };
+}
+function checkVariantsDidChange(prev, next) {
+  if (typeof next === "string") {
+    return next !== prev;
+  } else if (Array.isArray(next)) {
+    return !shallowCompare(next, prev);
+  }
+  return false;
+}
+function createTypeState(isActive = false) {
+  return {
+    isActive,
+    protectedKeys: {},
+    needsAnimating: {},
+    prevResolvedValues: {}
+  };
+}
+function createState() {
+  return {
+    animate: createTypeState(true),
+    whileInView: createTypeState(),
+    whileHover: createTypeState(),
+    whileTap: createTypeState(),
+    whileDrag: createTypeState(),
+    whileFocus: createTypeState(),
+    exit: createTypeState()
+  };
+}
+class AnimationFeature extends Feature {
+  /**
+   * We dynamically generate the AnimationState manager as it contains a reference
+   * to the underlying animation library. We only want to load that if we load this,
+   * so people can optionally code split it out using the `m` component.
+   */
+  constructor(node) {
+    super(node);
+    node.animationState || (node.animationState = createAnimationState(node));
+  }
+  updateAnimationControlsSubscription() {
+    const { animate } = this.node.getProps();
+    this.unmount();
+    if (isAnimationControls(animate)) {
+      this.unmount = animate.subscribe(this.node);
+    }
+  }
+  /**
+   * Subscribe any provided AnimationControls to the component's VisualElement
+   */
+  mount() {
+    this.updateAnimationControlsSubscription();
+  }
+  update() {
+    const { animate } = this.node.getProps();
+    const { animate: prevAnimate } = this.node.prevProps || {};
+    if (animate !== prevAnimate) {
+      this.updateAnimationControlsSubscription();
+    }
+  }
+  unmount() {
+  }
+}
+let id$1 = 0;
+class ExitAnimationFeature extends Feature {
+  constructor() {
+    super(...arguments);
+    this.id = id$1++;
+  }
+  update() {
+    if (!this.node.presenceContext)
+      return;
+    const { isPresent, onExitComplete, custom } = this.node.presenceContext;
+    const { isPresent: prevIsPresent } = this.node.prevPresenceContext || {};
+    if (!this.node.animationState || isPresent === prevIsPresent) {
+      return;
+    }
+    const exitAnimation = this.node.animationState.setActive("exit", !isPresent, { custom: custom !== null && custom !== void 0 ? custom : this.node.getProps().custom });
+    if (onExitComplete && !isPresent) {
+      exitAnimation.then(() => onExitComplete(this.id));
+    }
+  }
+  mount() {
+    const { register } = this.node.presenceContext || {};
+    if (register) {
+      this.unmount = register(this.id);
+    }
+  }
+  unmount() {
+  }
+}
+const animations = {
+  animation: {
+    Feature: AnimationFeature
+  },
+  exit: {
+    Feature: ExitAnimationFeature
+  }
+};
+const distance = (a2, b2) => Math.abs(a2 - b2);
+function distance2D(a2, b2) {
+  const xDelta = distance(a2.x, b2.x);
+  const yDelta = distance(a2.y, b2.y);
+  return Math.sqrt(xDelta ** 2 + yDelta ** 2);
+}
+class PanSession {
+  constructor(event, handlers, { transformPagePoint } = {}) {
+    this.startEvent = null;
+    this.lastMoveEvent = null;
+    this.lastMoveEventInfo = null;
+    this.handlers = {};
+    this.updatePoint = () => {
+      if (!(this.lastMoveEvent && this.lastMoveEventInfo))
+        return;
+      const info2 = getPanInfo(this.lastMoveEventInfo, this.history);
+      const isPanStarted = this.startEvent !== null;
+      const isDistancePastThreshold = distance2D(info2.offset, { x: 0, y: 0 }) >= 3;
+      if (!isPanStarted && !isDistancePastThreshold)
+        return;
+      const { point: point2 } = info2;
+      const { timestamp: timestamp2 } = frameData;
+      this.history.push({ ...point2, timestamp: timestamp2 });
+      const { onStart, onMove } = this.handlers;
+      if (!isPanStarted) {
+        onStart && onStart(this.lastMoveEvent, info2);
+        this.startEvent = this.lastMoveEvent;
+      }
+      onMove && onMove(this.lastMoveEvent, info2);
+    };
+    this.handlePointerMove = (event2, info2) => {
+      this.lastMoveEvent = event2;
+      this.lastMoveEventInfo = transformPoint(info2, this.transformPagePoint);
+      frame.update(this.updatePoint, true);
+    };
+    this.handlePointerUp = (event2, info2) => {
+      this.end();
+      if (!(this.lastMoveEvent && this.lastMoveEventInfo))
+        return;
+      const { onEnd, onSessionEnd } = this.handlers;
+      const panInfo = getPanInfo(event2.type === "pointercancel" ? this.lastMoveEventInfo : transformPoint(info2, this.transformPagePoint), this.history);
+      if (this.startEvent && onEnd) {
+        onEnd(event2, panInfo);
+      }
+      onSessionEnd && onSessionEnd(event2, panInfo);
+    };
+    if (!isPrimaryPointer(event))
+      return;
+    this.handlers = handlers;
+    this.transformPagePoint = transformPagePoint;
+    const info = extractEventInfo(event);
+    const initialInfo = transformPoint(info, this.transformPagePoint);
+    const { point } = initialInfo;
+    const { timestamp } = frameData;
+    this.history = [{ ...point, timestamp }];
+    const { onSessionStart } = handlers;
+    onSessionStart && onSessionStart(event, getPanInfo(initialInfo, this.history));
+    this.removeListeners = pipe(addPointerEvent(window, "pointermove", this.handlePointerMove), addPointerEvent(window, "pointerup", this.handlePointerUp), addPointerEvent(window, "pointercancel", this.handlePointerUp));
+  }
+  updateHandlers(handlers) {
+    this.handlers = handlers;
+  }
+  end() {
+    this.removeListeners && this.removeListeners();
+    cancelFrame(this.updatePoint);
+  }
+}
+function transformPoint(info, transformPagePoint) {
+  return transformPagePoint ? { point: transformPagePoint(info.point) } : info;
+}
+function subtractPoint(a2, b2) {
+  return { x: a2.x - b2.x, y: a2.y - b2.y };
+}
+function getPanInfo({ point }, history) {
+  return {
+    point,
+    delta: subtractPoint(point, lastDevicePoint(history)),
+    offset: subtractPoint(point, startDevicePoint(history)),
+    velocity: getVelocity(history, 0.1)
+  };
+}
+function startDevicePoint(history) {
+  return history[0];
+}
+function lastDevicePoint(history) {
+  return history[history.length - 1];
+}
+function getVelocity(history, timeDelta) {
+  if (history.length < 2) {
+    return { x: 0, y: 0 };
+  }
+  let i3 = history.length - 1;
+  let timestampedPoint = null;
+  const lastPoint = lastDevicePoint(history);
+  while (i3 >= 0) {
+    timestampedPoint = history[i3];
+    if (lastPoint.timestamp - timestampedPoint.timestamp > secondsToMilliseconds(timeDelta)) {
+      break;
+    }
+    i3--;
+  }
+  if (!timestampedPoint) {
+    return { x: 0, y: 0 };
+  }
+  const time = millisecondsToSeconds(lastPoint.timestamp - timestampedPoint.timestamp);
+  if (time === 0) {
+    return { x: 0, y: 0 };
+  }
+  const currentVelocity = {
+    x: (lastPoint.x - timestampedPoint.x) / time,
+    y: (lastPoint.y - timestampedPoint.y) / time
+  };
+  if (currentVelocity.x === Infinity) {
+    currentVelocity.x = 0;
+  }
+  if (currentVelocity.y === Infinity) {
+    currentVelocity.y = 0;
+  }
+  return currentVelocity;
+}
+function calcLength(axis) {
+  return axis.max - axis.min;
+}
+function isNear(value, target = 0, maxDistance = 0.01) {
+  return Math.abs(value - target) <= maxDistance;
+}
+function calcAxisDelta(delta, source, target, origin = 0.5) {
+  delta.origin = origin;
+  delta.originPoint = mix(source.min, source.max, delta.origin);
+  delta.scale = calcLength(target) / calcLength(source);
+  if (isNear(delta.scale, 1, 1e-4) || isNaN(delta.scale))
+    delta.scale = 1;
+  delta.translate = mix(target.min, target.max, delta.origin) - delta.originPoint;
+  if (isNear(delta.translate) || isNaN(delta.translate))
+    delta.translate = 0;
+}
+function calcBoxDelta(delta, source, target, origin) {
+  calcAxisDelta(delta.x, source.x, target.x, origin ? origin.originX : void 0);
+  calcAxisDelta(delta.y, source.y, target.y, origin ? origin.originY : void 0);
+}
+function calcRelativeAxis(target, relative, parent) {
+  target.min = parent.min + relative.min;
+  target.max = target.min + calcLength(relative);
+}
+function calcRelativeBox(target, relative, parent) {
+  calcRelativeAxis(target.x, relative.x, parent.x);
+  calcRelativeAxis(target.y, relative.y, parent.y);
+}
+function calcRelativeAxisPosition(target, layout2, parent) {
+  target.min = layout2.min - parent.min;
+  target.max = target.min + calcLength(layout2);
+}
+function calcRelativePosition(target, layout2, parent) {
+  calcRelativeAxisPosition(target.x, layout2.x, parent.x);
+  calcRelativeAxisPosition(target.y, layout2.y, parent.y);
+}
+function applyConstraints(point, { min, max }, elastic) {
+  if (min !== void 0 && point < min) {
+    point = elastic ? mix(min, point, elastic.min) : Math.max(point, min);
+  } else if (max !== void 0 && point > max) {
+    point = elastic ? mix(max, point, elastic.max) : Math.min(point, max);
+  }
+  return point;
+}
+function calcRelativeAxisConstraints(axis, min, max) {
+  return {
+    min: min !== void 0 ? axis.min + min : void 0,
+    max: max !== void 0 ? axis.max + max - (axis.max - axis.min) : void 0
+  };
+}
+function calcRelativeConstraints(layoutBox, { top, left, bottom, right }) {
+  return {
+    x: calcRelativeAxisConstraints(layoutBox.x, left, right),
+    y: calcRelativeAxisConstraints(layoutBox.y, top, bottom)
+  };
+}
+function calcViewportAxisConstraints(layoutAxis, constraintsAxis) {
+  let min = constraintsAxis.min - layoutAxis.min;
+  let max = constraintsAxis.max - layoutAxis.max;
+  if (constraintsAxis.max - constraintsAxis.min < layoutAxis.max - layoutAxis.min) {
+    [min, max] = [max, min];
+  }
+  return { min, max };
+}
+function calcViewportConstraints(layoutBox, constraintsBox) {
+  return {
+    x: calcViewportAxisConstraints(layoutBox.x, constraintsBox.x),
+    y: calcViewportAxisConstraints(layoutBox.y, constraintsBox.y)
+  };
+}
+function calcOrigin(source, target) {
+  let origin = 0.5;
+  const sourceLength = calcLength(source);
+  const targetLength = calcLength(target);
+  if (targetLength > sourceLength) {
+    origin = progress(target.min, target.max - sourceLength, source.min);
+  } else if (sourceLength > targetLength) {
+    origin = progress(source.min, source.max - targetLength, target.min);
+  }
+  return clamp(0, 1, origin);
+}
+function rebaseAxisConstraints(layout2, constraints) {
+  const relativeConstraints = {};
+  if (constraints.min !== void 0) {
+    relativeConstraints.min = constraints.min - layout2.min;
+  }
+  if (constraints.max !== void 0) {
+    relativeConstraints.max = constraints.max - layout2.min;
+  }
+  return relativeConstraints;
+}
+const defaultElastic = 0.35;
+function resolveDragElastic(dragElastic = defaultElastic) {
+  if (dragElastic === false) {
+    dragElastic = 0;
+  } else if (dragElastic === true) {
+    dragElastic = defaultElastic;
+  }
+  return {
+    x: resolveAxisElastic(dragElastic, "left", "right"),
+    y: resolveAxisElastic(dragElastic, "top", "bottom")
+  };
+}
+function resolveAxisElastic(dragElastic, minLabel, maxLabel) {
+  return {
+    min: resolvePointElastic(dragElastic, minLabel),
+    max: resolvePointElastic(dragElastic, maxLabel)
+  };
+}
+function resolvePointElastic(dragElastic, label) {
+  return typeof dragElastic === "number" ? dragElastic : dragElastic[label] || 0;
+}
+const createAxisDelta = () => ({
+  translate: 0,
+  scale: 1,
+  origin: 0,
+  originPoint: 0
+});
+const createDelta = () => ({
+  x: createAxisDelta(),
+  y: createAxisDelta()
+});
+const createAxis = () => ({ min: 0, max: 0 });
+const createBox = () => ({
+  x: createAxis(),
+  y: createAxis()
+});
+function eachAxis(callback) {
+  return [callback("x"), callback("y")];
+}
+function convertBoundingBoxToBox({ top, left, right, bottom }) {
+  return {
+    x: { min: left, max: right },
+    y: { min: top, max: bottom }
+  };
+}
+function convertBoxToBoundingBox({ x: x2, y: y2 }) {
+  return { top: y2.min, right: x2.max, bottom: y2.max, left: x2.min };
+}
+function transformBoxPoints(point, transformPoint2) {
+  if (!transformPoint2)
+    return point;
+  const topLeft = transformPoint2({ x: point.left, y: point.top });
+  const bottomRight = transformPoint2({ x: point.right, y: point.bottom });
+  return {
+    top: topLeft.y,
+    left: topLeft.x,
+    bottom: bottomRight.y,
+    right: bottomRight.x
+  };
+}
+function isIdentityScale(scale2) {
+  return scale2 === void 0 || scale2 === 1;
+}
+function hasScale({ scale: scale2, scaleX, scaleY }) {
+  return !isIdentityScale(scale2) || !isIdentityScale(scaleX) || !isIdentityScale(scaleY);
+}
+function hasTransform(values) {
+  return hasScale(values) || has2DTranslate(values) || values.z || values.rotate || values.rotateX || values.rotateY;
+}
+function has2DTranslate(values) {
+  return is2DTranslate(values.x) || is2DTranslate(values.y);
+}
+function is2DTranslate(value) {
+  return value && value !== "0%";
+}
+function scalePoint(point, scale2, originPoint) {
+  const distanceFromOrigin = point - originPoint;
+  const scaled = scale2 * distanceFromOrigin;
+  return originPoint + scaled;
+}
+function applyPointDelta(point, translate, scale2, originPoint, boxScale) {
+  if (boxScale !== void 0) {
+    point = scalePoint(point, boxScale, originPoint);
+  }
+  return scalePoint(point, scale2, originPoint) + translate;
+}
+function applyAxisDelta(axis, translate = 0, scale2 = 1, originPoint, boxScale) {
+  axis.min = applyPointDelta(axis.min, translate, scale2, originPoint, boxScale);
+  axis.max = applyPointDelta(axis.max, translate, scale2, originPoint, boxScale);
+}
+function applyBoxDelta(box, { x: x2, y: y2 }) {
+  applyAxisDelta(box.x, x2.translate, x2.scale, x2.originPoint);
+  applyAxisDelta(box.y, y2.translate, y2.scale, y2.originPoint);
+}
+function applyTreeDeltas(box, treeScale, treePath, isSharedTransition = false) {
+  const treeLength = treePath.length;
+  if (!treeLength)
+    return;
+  treeScale.x = treeScale.y = 1;
+  let node;
+  let delta;
+  for (let i3 = 0; i3 < treeLength; i3++) {
+    node = treePath[i3];
+    delta = node.projectionDelta;
+    const instance = node.instance;
+    if (instance && instance.style && instance.style.display === "contents") {
+      continue;
+    }
+    if (isSharedTransition && node.options.layoutScroll && node.scroll && node !== node.root) {
+      transformBox(box, {
+        x: -node.scroll.offset.x,
+        y: -node.scroll.offset.y
+      });
+    }
+    if (delta) {
+      treeScale.x *= delta.x.scale;
+      treeScale.y *= delta.y.scale;
+      applyBoxDelta(box, delta);
+    }
+    if (isSharedTransition && hasTransform(node.latestValues)) {
+      transformBox(box, node.latestValues);
+    }
+  }
+  treeScale.x = snapToDefault(treeScale.x);
+  treeScale.y = snapToDefault(treeScale.y);
+}
+function snapToDefault(scale2) {
+  if (Number.isInteger(scale2))
+    return scale2;
+  return scale2 > 1.0000000000001 || scale2 < 0.999999999999 ? scale2 : 1;
+}
+function translateAxis(axis, distance2) {
+  axis.min = axis.min + distance2;
+  axis.max = axis.max + distance2;
+}
+function transformAxis(axis, transforms, [key, scaleKey, originKey]) {
+  const axisOrigin = transforms[originKey] !== void 0 ? transforms[originKey] : 0.5;
+  const originPoint = mix(axis.min, axis.max, axisOrigin);
+  applyAxisDelta(axis, transforms[key], transforms[scaleKey], originPoint, transforms.scale);
+}
+const xKeys$1 = ["x", "scaleX", "originX"];
+const yKeys$1 = ["y", "scaleY", "originY"];
+function transformBox(box, transform) {
+  transformAxis(box.x, transform, xKeys$1);
+  transformAxis(box.y, transform, yKeys$1);
+}
+function measureViewportBox(instance, transformPoint2) {
+  return convertBoundingBoxToBox(transformBoxPoints(instance.getBoundingClientRect(), transformPoint2));
+}
+function measurePageBox(element, rootProjectionNode2, transformPagePoint) {
+  const viewportBox = measureViewportBox(element, transformPagePoint);
+  const { scroll } = rootProjectionNode2;
+  if (scroll) {
+    translateAxis(viewportBox.x, scroll.offset.x);
+    translateAxis(viewportBox.y, scroll.offset.y);
+  }
+  return viewportBox;
+}
+const elementDragControls = /* @__PURE__ */ new WeakMap();
+class VisualElementDragControls {
+  constructor(visualElement) {
+    this.openGlobalLock = null;
+    this.isDragging = false;
+    this.currentDirection = null;
+    this.originPoint = { x: 0, y: 0 };
+    this.constraints = false;
+    this.hasMutatedConstraints = false;
+    this.elastic = createBox();
+    this.visualElement = visualElement;
+  }
+  start(originEvent, { snapToCursor = false } = {}) {
+    const { presenceContext } = this.visualElement;
+    if (presenceContext && presenceContext.isPresent === false)
+      return;
+    const onSessionStart = (event) => {
+      this.stopAnimation();
+      if (snapToCursor) {
+        this.snapToCursor(extractEventInfo(event, "page").point);
+      }
+    };
+    const onStart = (event, info) => {
+      const { drag: drag2, dragPropagation, onDragStart } = this.getProps();
+      if (drag2 && !dragPropagation) {
+        if (this.openGlobalLock)
+          this.openGlobalLock();
+        this.openGlobalLock = getGlobalLock(drag2);
+        if (!this.openGlobalLock)
+          return;
+      }
+      this.isDragging = true;
+      this.currentDirection = null;
+      this.resolveConstraints();
+      if (this.visualElement.projection) {
+        this.visualElement.projection.isAnimationBlocked = true;
+        this.visualElement.projection.target = void 0;
+      }
+      eachAxis((axis) => {
+        let current = this.getAxisMotionValue(axis).get() || 0;
+        if (percent.test(current)) {
+          const { projection } = this.visualElement;
+          if (projection && projection.layout) {
+            const measuredAxis = projection.layout.layoutBox[axis];
+            if (measuredAxis) {
+              const length = calcLength(measuredAxis);
+              current = length * (parseFloat(current) / 100);
+            }
+          }
+        }
+        this.originPoint[axis] = current;
+      });
+      if (onDragStart) {
+        frame.update(() => onDragStart(event, info), false, true);
+      }
+      const { animationState } = this.visualElement;
+      animationState && animationState.setActive("whileDrag", true);
+    };
+    const onMove = (event, info) => {
+      const { dragPropagation, dragDirectionLock, onDirectionLock, onDrag } = this.getProps();
+      if (!dragPropagation && !this.openGlobalLock)
+        return;
+      const { offset } = info;
+      if (dragDirectionLock && this.currentDirection === null) {
+        this.currentDirection = getCurrentDirection(offset);
+        if (this.currentDirection !== null) {
+          onDirectionLock && onDirectionLock(this.currentDirection);
+        }
+        return;
+      }
+      this.updateAxis("x", info.point, offset);
+      this.updateAxis("y", info.point, offset);
+      this.visualElement.render();
+      onDrag && onDrag(event, info);
+    };
+    const onSessionEnd = (event, info) => this.stop(event, info);
+    this.panSession = new PanSession(originEvent, {
+      onSessionStart,
+      onStart,
+      onMove,
+      onSessionEnd
+    }, { transformPagePoint: this.visualElement.getTransformPagePoint() });
+  }
+  stop(event, info) {
+    const isDragging = this.isDragging;
+    this.cancel();
+    if (!isDragging)
+      return;
+    const { velocity } = info;
+    this.startAnimation(velocity);
+    const { onDragEnd } = this.getProps();
+    if (onDragEnd) {
+      frame.update(() => onDragEnd(event, info));
+    }
+  }
+  cancel() {
+    this.isDragging = false;
+    const { projection, animationState } = this.visualElement;
+    if (projection) {
+      projection.isAnimationBlocked = false;
+    }
+    this.panSession && this.panSession.end();
+    this.panSession = void 0;
+    const { dragPropagation } = this.getProps();
+    if (!dragPropagation && this.openGlobalLock) {
+      this.openGlobalLock();
+      this.openGlobalLock = null;
+    }
+    animationState && animationState.setActive("whileDrag", false);
+  }
+  updateAxis(axis, _point, offset) {
+    const { drag: drag2 } = this.getProps();
+    if (!offset || !shouldDrag(axis, drag2, this.currentDirection))
+      return;
+    const axisValue = this.getAxisMotionValue(axis);
+    let next = this.originPoint[axis] + offset[axis];
+    if (this.constraints && this.constraints[axis]) {
+      next = applyConstraints(next, this.constraints[axis], this.elastic[axis]);
+    }
+    axisValue.set(next);
+  }
+  resolveConstraints() {
+    const { dragConstraints, dragElastic } = this.getProps();
+    const { layout: layout2 } = this.visualElement.projection || {};
+    const prevConstraints = this.constraints;
+    if (dragConstraints && isRefObject(dragConstraints)) {
+      if (!this.constraints) {
+        this.constraints = this.resolveRefConstraints();
+      }
+    } else {
+      if (dragConstraints && layout2) {
+        this.constraints = calcRelativeConstraints(layout2.layoutBox, dragConstraints);
+      } else {
+        this.constraints = false;
+      }
+    }
+    this.elastic = resolveDragElastic(dragElastic);
+    if (prevConstraints !== this.constraints && layout2 && this.constraints && !this.hasMutatedConstraints) {
+      eachAxis((axis) => {
+        if (this.getAxisMotionValue(axis)) {
+          this.constraints[axis] = rebaseAxisConstraints(layout2.layoutBox[axis], this.constraints[axis]);
+        }
+      });
+    }
+  }
+  resolveRefConstraints() {
+    const { dragConstraints: constraints, onMeasureDragConstraints } = this.getProps();
+    if (!constraints || !isRefObject(constraints))
+      return false;
+    const constraintsElement = constraints.current;
+    const { projection } = this.visualElement;
+    if (!projection || !projection.layout)
+      return false;
+    const constraintsBox = measurePageBox(constraintsElement, projection.root, this.visualElement.getTransformPagePoint());
+    let measuredConstraints = calcViewportConstraints(projection.layout.layoutBox, constraintsBox);
+    if (onMeasureDragConstraints) {
+      const userConstraints = onMeasureDragConstraints(convertBoxToBoundingBox(measuredConstraints));
+      this.hasMutatedConstraints = !!userConstraints;
+      if (userConstraints) {
+        measuredConstraints = convertBoundingBoxToBox(userConstraints);
+      }
+    }
+    return measuredConstraints;
+  }
+  startAnimation(velocity) {
+    const { drag: drag2, dragMomentum, dragElastic, dragTransition, dragSnapToOrigin, onDragTransitionEnd } = this.getProps();
+    const constraints = this.constraints || {};
+    const momentumAnimations = eachAxis((axis) => {
+      if (!shouldDrag(axis, drag2, this.currentDirection)) {
+        return;
+      }
+      let transition = constraints && constraints[axis] || {};
+      if (dragSnapToOrigin)
+        transition = { min: 0, max: 0 };
+      const bounceStiffness = dragElastic ? 200 : 1e6;
+      const bounceDamping = dragElastic ? 40 : 1e7;
+      const inertia2 = {
+        type: "inertia",
+        velocity: dragMomentum ? velocity[axis] : 0,
+        bounceStiffness,
+        bounceDamping,
+        timeConstant: 750,
+        restDelta: 1,
+        restSpeed: 10,
+        ...dragTransition,
+        ...transition
+      };
+      return this.startAxisValueAnimation(axis, inertia2);
+    });
+    return Promise.all(momentumAnimations).then(onDragTransitionEnd);
+  }
+  startAxisValueAnimation(axis, transition) {
+    const axisValue = this.getAxisMotionValue(axis);
+    return axisValue.start(animateMotionValue(axis, axisValue, 0, transition));
+  }
+  stopAnimation() {
+    eachAxis((axis) => this.getAxisMotionValue(axis).stop());
+  }
+  /**
+   * Drag works differently depending on which props are provided.
+   *
+   * - If _dragX and _dragY are provided, we output the gesture delta directly to those motion values.
+   * - Otherwise, we apply the delta to the x/y motion values.
+   */
+  getAxisMotionValue(axis) {
+    const dragKey = "_drag" + axis.toUpperCase();
+    const props = this.visualElement.getProps();
+    const externalMotionValue = props[dragKey];
+    return externalMotionValue ? externalMotionValue : this.visualElement.getValue(axis, (props.initial ? props.initial[axis] : void 0) || 0);
+  }
+  snapToCursor(point) {
+    eachAxis((axis) => {
+      const { drag: drag2 } = this.getProps();
+      if (!shouldDrag(axis, drag2, this.currentDirection))
+        return;
+      const { projection } = this.visualElement;
+      const axisValue = this.getAxisMotionValue(axis);
+      if (projection && projection.layout) {
+        const { min, max } = projection.layout.layoutBox[axis];
+        axisValue.set(point[axis] - mix(min, max, 0.5));
+      }
+    });
+  }
+  /**
+   * When the viewport resizes we want to check if the measured constraints
+   * have changed and, if so, reposition the element within those new constraints
+   * relative to where it was before the resize.
+   */
+  scalePositionWithinConstraints() {
+    if (!this.visualElement.current)
+      return;
+    const { drag: drag2, dragConstraints } = this.getProps();
+    const { projection } = this.visualElement;
+    if (!isRefObject(dragConstraints) || !projection || !this.constraints)
+      return;
+    this.stopAnimation();
+    const boxProgress = { x: 0, y: 0 };
+    eachAxis((axis) => {
+      const axisValue = this.getAxisMotionValue(axis);
+      if (axisValue) {
+        const latest = axisValue.get();
+        boxProgress[axis] = calcOrigin({ min: latest, max: latest }, this.constraints[axis]);
+      }
+    });
+    const { transformTemplate } = this.visualElement.getProps();
+    this.visualElement.current.style.transform = transformTemplate ? transformTemplate({}, "") : "none";
+    projection.root && projection.root.updateScroll();
+    projection.updateLayout();
+    this.resolveConstraints();
+    eachAxis((axis) => {
+      if (!shouldDrag(axis, drag2, null))
+        return;
+      const axisValue = this.getAxisMotionValue(axis);
+      const { min, max } = this.constraints[axis];
+      axisValue.set(mix(min, max, boxProgress[axis]));
+    });
+  }
+  addListeners() {
+    if (!this.visualElement.current)
+      return;
+    elementDragControls.set(this.visualElement, this);
+    const element = this.visualElement.current;
+    const stopPointerListener = addPointerEvent(element, "pointerdown", (event) => {
+      const { drag: drag2, dragListener = true } = this.getProps();
+      drag2 && dragListener && this.start(event);
+    });
+    const measureDragConstraints = () => {
+      const { dragConstraints } = this.getProps();
+      if (isRefObject(dragConstraints)) {
+        this.constraints = this.resolveRefConstraints();
+      }
+    };
+    const { projection } = this.visualElement;
+    const stopMeasureLayoutListener = projection.addEventListener("measure", measureDragConstraints);
+    if (projection && !projection.layout) {
+      projection.root && projection.root.updateScroll();
+      projection.updateLayout();
+    }
+    measureDragConstraints();
+    const stopResizeListener = addDomEvent(window, "resize", () => this.scalePositionWithinConstraints());
+    const stopLayoutUpdateListener = projection.addEventListener("didUpdate", ({ delta, hasLayoutChanged }) => {
+      if (this.isDragging && hasLayoutChanged) {
+        eachAxis((axis) => {
+          const motionValue2 = this.getAxisMotionValue(axis);
+          if (!motionValue2)
+            return;
+          this.originPoint[axis] += delta[axis].translate;
+          motionValue2.set(motionValue2.get() + delta[axis].translate);
+        });
+        this.visualElement.render();
+      }
+    });
+    return () => {
+      stopResizeListener();
+      stopPointerListener();
+      stopMeasureLayoutListener();
+      stopLayoutUpdateListener && stopLayoutUpdateListener();
+    };
+  }
+  getProps() {
+    const props = this.visualElement.getProps();
+    const { drag: drag2 = false, dragDirectionLock = false, dragPropagation = false, dragConstraints = false, dragElastic = defaultElastic, dragMomentum = true } = props;
+    return {
+      ...props,
+      drag: drag2,
+      dragDirectionLock,
+      dragPropagation,
+      dragConstraints,
+      dragElastic,
+      dragMomentum
+    };
+  }
+}
+function shouldDrag(direction, drag2, currentDirection) {
+  return (drag2 === true || drag2 === direction) && (currentDirection === null || currentDirection === direction);
+}
+function getCurrentDirection(offset, lockThreshold = 10) {
+  let direction = null;
+  if (Math.abs(offset.y) > lockThreshold) {
+    direction = "y";
+  } else if (Math.abs(offset.x) > lockThreshold) {
+    direction = "x";
+  }
+  return direction;
+}
+class DragGesture extends Feature {
+  constructor(node) {
+    super(node);
+    this.removeGroupControls = noop$1;
+    this.removeListeners = noop$1;
+    this.controls = new VisualElementDragControls(node);
+  }
+  mount() {
+    const { dragControls } = this.node.getProps();
+    if (dragControls) {
+      this.removeGroupControls = dragControls.subscribe(this.controls);
+    }
+    this.removeListeners = this.controls.addListeners() || noop$1;
+  }
+  unmount() {
+    this.removeGroupControls();
+    this.removeListeners();
+  }
+}
+const asyncHandler = (handler) => (event, info) => {
+  if (handler) {
+    frame.update(() => handler(event, info));
+  }
+};
+class PanGesture extends Feature {
+  constructor() {
+    super(...arguments);
+    this.removePointerDownListener = noop$1;
+  }
+  onPointerDown(pointerDownEvent) {
+    this.session = new PanSession(pointerDownEvent, this.createPanHandlers(), { transformPagePoint: this.node.getTransformPagePoint() });
+  }
+  createPanHandlers() {
+    const { onPanSessionStart, onPanStart, onPan, onPanEnd } = this.node.getProps();
+    return {
+      onSessionStart: asyncHandler(onPanSessionStart),
+      onStart: asyncHandler(onPanStart),
+      onMove: onPan,
+      onEnd: (event, info) => {
+        delete this.session;
+        if (onPanEnd) {
+          frame.update(() => onPanEnd(event, info));
+        }
+      }
+    };
+  }
+  mount() {
+    this.removePointerDownListener = addPointerEvent(this.node.current, "pointerdown", (event) => this.onPointerDown(event));
+  }
+  update() {
+    this.session && this.session.updateHandlers(this.createPanHandlers());
+  }
+  unmount() {
+    this.removePointerDownListener();
+    this.session && this.session.end();
+  }
+}
+function usePresence() {
+  const context = reactExports.useContext(PresenceContext);
+  if (context === null)
+    return [true, null];
+  const { isPresent, onExitComplete, register } = context;
+  const id2 = reactExports.useId();
+  reactExports.useEffect(() => register(id2), []);
+  const safeToRemove = () => onExitComplete && onExitComplete(id2);
+  return !isPresent && onExitComplete ? [false, safeToRemove] : [true];
+}
+const globalProjectionState = {
+  /**
+   * Global flag as to whether the tree has animated since the last time
+   * we resized the window
+   */
+  hasAnimatedSinceResize: true,
+  /**
+   * We set this to true once, on the first update. Any nodes added to the tree beyond that
+   * update will be given a `data-projection-id` attribute.
+   */
+  hasEverUpdated: false
+};
+function pixelsToPercent(pixels, axis) {
+  if (axis.max === axis.min)
+    return 0;
+  return pixels / (axis.max - axis.min) * 100;
+}
+const correctBorderRadius = {
+  correct: (latest, node) => {
+    if (!node.target)
+      return latest;
+    if (typeof latest === "string") {
+      if (px.test(latest)) {
+        latest = parseFloat(latest);
+      } else {
+        return latest;
+      }
+    }
+    const x2 = pixelsToPercent(latest, node.target.x);
+    const y2 = pixelsToPercent(latest, node.target.y);
+    return `${x2}% ${y2}%`;
+  }
+};
+const correctBoxShadow = {
+  correct: (latest, { treeScale, projectionDelta }) => {
+    const original = latest;
+    const shadow = complex.parse(latest);
+    if (shadow.length > 5)
+      return original;
+    const template = complex.createTransformer(latest);
+    const offset = typeof shadow[0] !== "number" ? 1 : 0;
+    const xScale = projectionDelta.x.scale * treeScale.x;
+    const yScale = projectionDelta.y.scale * treeScale.y;
+    shadow[0 + offset] /= xScale;
+    shadow[1 + offset] /= yScale;
+    const averageScale = mix(xScale, yScale, 0.5);
+    if (typeof shadow[2 + offset] === "number")
+      shadow[2 + offset] /= averageScale;
+    if (typeof shadow[3 + offset] === "number")
+      shadow[3 + offset] /= averageScale;
+    return template(shadow);
+  }
+};
+class MeasureLayoutWithContext extends React.Component {
+  /**
+   * This only mounts projection nodes for components that
+   * need measuring, we might want to do it for all components
+   * in order to incorporate transforms
+   */
+  componentDidMount() {
+    const { visualElement, layoutGroup, switchLayoutGroup, layoutId } = this.props;
+    const { projection } = visualElement;
+    addScaleCorrector(defaultScaleCorrectors);
+    if (projection) {
+      if (layoutGroup.group)
+        layoutGroup.group.add(projection);
+      if (switchLayoutGroup && switchLayoutGroup.register && layoutId) {
+        switchLayoutGroup.register(projection);
+      }
+      projection.root.didUpdate();
+      projection.addEventListener("animationComplete", () => {
+        this.safeToRemove();
+      });
+      projection.setOptions({
+        ...projection.options,
+        onExitComplete: () => this.safeToRemove()
+      });
+    }
+    globalProjectionState.hasEverUpdated = true;
+  }
+  getSnapshotBeforeUpdate(prevProps) {
+    const { layoutDependency, visualElement, drag: drag2, isPresent } = this.props;
+    const projection = visualElement.projection;
+    if (!projection)
+      return null;
+    projection.isPresent = isPresent;
+    if (drag2 || prevProps.layoutDependency !== layoutDependency || layoutDependency === void 0) {
+      projection.willUpdate();
+    } else {
+      this.safeToRemove();
+    }
+    if (prevProps.isPresent !== isPresent) {
+      if (isPresent) {
+        projection.promote();
+      } else if (!projection.relegate()) {
+        frame.postRender(() => {
+          const stack = projection.getStack();
+          if (!stack || !stack.members.length) {
+            this.safeToRemove();
+          }
+        });
+      }
+    }
+    return null;
+  }
+  componentDidUpdate() {
+    const { projection } = this.props.visualElement;
+    if (projection) {
+      projection.root.didUpdate();
+      queueMicrotask(() => {
+        if (!projection.currentAnimation && projection.isLead()) {
+          this.safeToRemove();
+        }
+      });
+    }
+  }
+  componentWillUnmount() {
+    const { visualElement, layoutGroup, switchLayoutGroup: promoteContext } = this.props;
+    const { projection } = visualElement;
+    if (projection) {
+      projection.scheduleCheckAfterUnmount();
+      if (layoutGroup && layoutGroup.group)
+        layoutGroup.group.remove(projection);
+      if (promoteContext && promoteContext.deregister)
+        promoteContext.deregister(projection);
+    }
+  }
+  safeToRemove() {
+    const { safeToRemove } = this.props;
+    safeToRemove && safeToRemove();
+  }
+  render() {
+    return null;
+  }
+}
+function MeasureLayout(props) {
+  const [isPresent, safeToRemove] = usePresence();
+  const layoutGroup = reactExports.useContext(LayoutGroupContext);
+  return React.createElement(MeasureLayoutWithContext, { ...props, layoutGroup, switchLayoutGroup: reactExports.useContext(SwitchLayoutGroupContext), isPresent, safeToRemove });
+}
+const defaultScaleCorrectors = {
+  borderRadius: {
+    ...correctBorderRadius,
+    applyTo: [
+      "borderTopLeftRadius",
+      "borderTopRightRadius",
+      "borderBottomLeftRadius",
+      "borderBottomRightRadius"
+    ]
+  },
+  borderTopLeftRadius: correctBorderRadius,
+  borderTopRightRadius: correctBorderRadius,
+  borderBottomLeftRadius: correctBorderRadius,
+  borderBottomRightRadius: correctBorderRadius,
+  boxShadow: correctBoxShadow
+};
+const borders = ["TopLeft", "TopRight", "BottomLeft", "BottomRight"];
+const numBorders = borders.length;
+const asNumber = (value) => typeof value === "string" ? parseFloat(value) : value;
+const isPx = (value) => typeof value === "number" || px.test(value);
+function mixValues(target, follow, lead, progress2, shouldCrossfadeOpacity, isOnlyMember) {
+  if (shouldCrossfadeOpacity) {
+    target.opacity = mix(
+      0,
+      // TODO Reinstate this if only child
+      lead.opacity !== void 0 ? lead.opacity : 1,
+      easeCrossfadeIn(progress2)
+    );
+    target.opacityExit = mix(follow.opacity !== void 0 ? follow.opacity : 1, 0, easeCrossfadeOut(progress2));
+  } else if (isOnlyMember) {
+    target.opacity = mix(follow.opacity !== void 0 ? follow.opacity : 1, lead.opacity !== void 0 ? lead.opacity : 1, progress2);
+  }
+  for (let i3 = 0; i3 < numBorders; i3++) {
+    const borderLabel = `border${borders[i3]}Radius`;
+    let followRadius = getRadius(follow, borderLabel);
+    let leadRadius = getRadius(lead, borderLabel);
+    if (followRadius === void 0 && leadRadius === void 0)
+      continue;
+    followRadius || (followRadius = 0);
+    leadRadius || (leadRadius = 0);
+    const canMix = followRadius === 0 || leadRadius === 0 || isPx(followRadius) === isPx(leadRadius);
+    if (canMix) {
+      target[borderLabel] = Math.max(mix(asNumber(followRadius), asNumber(leadRadius), progress2), 0);
+      if (percent.test(leadRadius) || percent.test(followRadius)) {
+        target[borderLabel] += "%";
+      }
+    } else {
+      target[borderLabel] = leadRadius;
+    }
+  }
+  if (follow.rotate || lead.rotate) {
+    target.rotate = mix(follow.rotate || 0, lead.rotate || 0, progress2);
+  }
+}
+function getRadius(values, radiusName) {
+  return values[radiusName] !== void 0 ? values[radiusName] : values.borderRadius;
+}
+const easeCrossfadeIn = compress(0, 0.5, circOut);
+const easeCrossfadeOut = compress(0.5, 0.95, noop$1);
+function compress(min, max, easing) {
+  return (p2) => {
+    if (p2 < min)
+      return 0;
+    if (p2 > max)
+      return 1;
+    return easing(progress(min, max, p2));
+  };
+}
+function copyAxisInto(axis, originAxis) {
+  axis.min = originAxis.min;
+  axis.max = originAxis.max;
+}
+function copyBoxInto(box, originBox) {
+  copyAxisInto(box.x, originBox.x);
+  copyAxisInto(box.y, originBox.y);
+}
+function removePointDelta(point, translate, scale2, originPoint, boxScale) {
+  point -= translate;
+  point = scalePoint(point, 1 / scale2, originPoint);
+  if (boxScale !== void 0) {
+    point = scalePoint(point, 1 / boxScale, originPoint);
+  }
+  return point;
+}
+function removeAxisDelta(axis, translate = 0, scale2 = 1, origin = 0.5, boxScale, originAxis = axis, sourceAxis = axis) {
+  if (percent.test(translate)) {
+    translate = parseFloat(translate);
+    const relativeProgress = mix(sourceAxis.min, sourceAxis.max, translate / 100);
+    translate = relativeProgress - sourceAxis.min;
+  }
+  if (typeof translate !== "number")
+    return;
+  let originPoint = mix(originAxis.min, originAxis.max, origin);
+  if (axis === originAxis)
+    originPoint -= translate;
+  axis.min = removePointDelta(axis.min, translate, scale2, originPoint, boxScale);
+  axis.max = removePointDelta(axis.max, translate, scale2, originPoint, boxScale);
+}
+function removeAxisTransforms(axis, transforms, [key, scaleKey, originKey], origin, sourceAxis) {
+  removeAxisDelta(axis, transforms[key], transforms[scaleKey], transforms[originKey], transforms.scale, origin, sourceAxis);
+}
+const xKeys = ["x", "scaleX", "originX"];
+const yKeys = ["y", "scaleY", "originY"];
+function removeBoxTransforms(box, transforms, originBox, sourceBox) {
+  removeAxisTransforms(box.x, transforms, xKeys, originBox ? originBox.x : void 0, sourceBox ? sourceBox.x : void 0);
+  removeAxisTransforms(box.y, transforms, yKeys, originBox ? originBox.y : void 0, sourceBox ? sourceBox.y : void 0);
+}
+function isAxisDeltaZero(delta) {
+  return delta.translate === 0 && delta.scale === 1;
+}
+function isDeltaZero(delta) {
+  return isAxisDeltaZero(delta.x) && isAxisDeltaZero(delta.y);
+}
+function boxEquals(a2, b2) {
+  return a2.x.min === b2.x.min && a2.x.max === b2.x.max && a2.y.min === b2.y.min && a2.y.max === b2.y.max;
+}
+function boxEqualsRounded(a2, b2) {
+  return Math.round(a2.x.min) === Math.round(b2.x.min) && Math.round(a2.x.max) === Math.round(b2.x.max) && Math.round(a2.y.min) === Math.round(b2.y.min) && Math.round(a2.y.max) === Math.round(b2.y.max);
+}
+function aspectRatio(box) {
+  return calcLength(box.x) / calcLength(box.y);
+}
+class NodeStack {
+  constructor() {
+    this.members = [];
+  }
+  add(node) {
+    addUniqueItem(this.members, node);
+    node.scheduleRender();
+  }
+  remove(node) {
+    removeItem(this.members, node);
+    if (node === this.prevLead) {
+      this.prevLead = void 0;
+    }
+    if (node === this.lead) {
+      const prevLead = this.members[this.members.length - 1];
+      if (prevLead) {
+        this.promote(prevLead);
+      }
+    }
+  }
+  relegate(node) {
+    const indexOfNode = this.members.findIndex((member) => node === member);
+    if (indexOfNode === 0)
+      return false;
+    let prevLead;
+    for (let i3 = indexOfNode; i3 >= 0; i3--) {
+      const member = this.members[i3];
+      if (member.isPresent !== false) {
+        prevLead = member;
+        break;
+      }
+    }
+    if (prevLead) {
+      this.promote(prevLead);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  promote(node, preserveFollowOpacity) {
+    const prevLead = this.lead;
+    if (node === prevLead)
+      return;
+    this.prevLead = prevLead;
+    this.lead = node;
+    node.show();
+    if (prevLead) {
+      prevLead.instance && prevLead.scheduleRender();
+      node.scheduleRender();
+      node.resumeFrom = prevLead;
+      if (preserveFollowOpacity) {
+        node.resumeFrom.preserveOpacity = true;
+      }
+      if (prevLead.snapshot) {
+        node.snapshot = prevLead.snapshot;
+        node.snapshot.latestValues = prevLead.animationValues || prevLead.latestValues;
+      }
+      if (node.root && node.root.isUpdating) {
+        node.isLayoutDirty = true;
+      }
+      const { crossfade } = node.options;
+      if (crossfade === false) {
+        prevLead.hide();
+      }
+    }
+  }
+  exitAnimationComplete() {
+    this.members.forEach((node) => {
+      const { options: options2, resumingFrom } = node;
+      options2.onExitComplete && options2.onExitComplete();
+      if (resumingFrom) {
+        resumingFrom.options.onExitComplete && resumingFrom.options.onExitComplete();
+      }
+    });
+  }
+  scheduleRender() {
+    this.members.forEach((node) => {
+      node.instance && node.scheduleRender(false);
+    });
+  }
+  /**
+   * Clear any leads that have been removed this render to prevent them from being
+   * used in future animations and to prevent memory leaks
+   */
+  removeLeadSnapshot() {
+    if (this.lead && this.lead.snapshot) {
+      this.lead.snapshot = void 0;
+    }
+  }
+}
+function buildProjectionTransform(delta, treeScale, latestTransform) {
+  let transform = "";
+  const xTranslate = delta.x.translate / treeScale.x;
+  const yTranslate = delta.y.translate / treeScale.y;
+  if (xTranslate || yTranslate) {
+    transform = `translate3d(${xTranslate}px, ${yTranslate}px, 0) `;
+  }
+  if (treeScale.x !== 1 || treeScale.y !== 1) {
+    transform += `scale(${1 / treeScale.x}, ${1 / treeScale.y}) `;
+  }
+  if (latestTransform) {
+    const { rotate, rotateX, rotateY } = latestTransform;
+    if (rotate)
+      transform += `rotate(${rotate}deg) `;
+    if (rotateX)
+      transform += `rotateX(${rotateX}deg) `;
+    if (rotateY)
+      transform += `rotateY(${rotateY}deg) `;
+  }
+  const elementScaleX = delta.x.scale * treeScale.x;
+  const elementScaleY = delta.y.scale * treeScale.y;
+  if (elementScaleX !== 1 || elementScaleY !== 1) {
+    transform += `scale(${elementScaleX}, ${elementScaleY})`;
+  }
+  return transform || "none";
+}
+const compareByDepth = (a2, b2) => a2.depth - b2.depth;
+class FlatTree {
+  constructor() {
+    this.children = [];
+    this.isDirty = false;
+  }
+  add(child) {
+    addUniqueItem(this.children, child);
+    this.isDirty = true;
+  }
+  remove(child) {
+    removeItem(this.children, child);
+    this.isDirty = true;
+  }
+  forEach(callback) {
+    this.isDirty && this.children.sort(compareByDepth);
+    this.isDirty = false;
+    this.children.forEach(callback);
+  }
+}
+function delay(callback, timeout) {
+  const start = performance.now();
+  const checkElapsed = ({ timestamp }) => {
+    const elapsed = timestamp - start;
+    if (elapsed >= timeout) {
+      cancelFrame(checkElapsed);
+      callback(elapsed - timeout);
+    }
+  };
+  frame.read(checkElapsed, true);
+  return () => cancelFrame(checkElapsed);
+}
+function record(data) {
+  if (window.MotionDebug) {
+    window.MotionDebug.record(data);
+  }
+}
+function isSVGElement(element) {
+  return element instanceof SVGElement && element.tagName !== "svg";
+}
+function animateSingleValue(value, keyframes2, options2) {
+  const motionValue$1 = isMotionValue(value) ? value : motionValue(value);
+  motionValue$1.start(animateMotionValue("", motionValue$1, keyframes2, options2));
+  return motionValue$1.animation;
+}
+const transformAxes = ["", "X", "Y", "Z"];
+const animationTarget = 1e3;
+let id = 0;
+const projectionFrameData = {
+  type: "projectionFrame",
+  totalNodes: 0,
+  resolvedTargetDeltas: 0,
+  recalculatedProjection: 0
+};
+function createProjectionNode({ attachResizeListener, defaultParent, measureScroll, checkIsScrollRoot, resetTransform }) {
+  return class ProjectionNode {
+    constructor(latestValues = {}, parent = defaultParent === null || defaultParent === void 0 ? void 0 : defaultParent()) {
+      this.id = id++;
+      this.animationId = 0;
+      this.children = /* @__PURE__ */ new Set();
+      this.options = {};
+      this.isTreeAnimating = false;
+      this.isAnimationBlocked = false;
+      this.isLayoutDirty = false;
+      this.isProjectionDirty = false;
+      this.isSharedProjectionDirty = false;
+      this.isTransformDirty = false;
+      this.updateManuallyBlocked = false;
+      this.updateBlockedByResize = false;
+      this.isUpdating = false;
+      this.isSVG = false;
+      this.needsReset = false;
+      this.shouldResetTransform = false;
+      this.treeScale = { x: 1, y: 1 };
+      this.eventHandlers = /* @__PURE__ */ new Map();
+      this.hasTreeAnimated = false;
+      this.updateScheduled = false;
+      this.checkUpdateFailed = () => {
+        if (this.isUpdating) {
+          this.isUpdating = false;
+          this.clearAllSnapshots();
+        }
+      };
+      this.updateProjection = () => {
+        projectionFrameData.totalNodes = projectionFrameData.resolvedTargetDeltas = projectionFrameData.recalculatedProjection = 0;
+        this.nodes.forEach(propagateDirtyNodes);
+        this.nodes.forEach(resolveTargetDelta);
+        this.nodes.forEach(calcProjection);
+        this.nodes.forEach(cleanDirtyNodes);
+        record(projectionFrameData);
+      };
+      this.hasProjected = false;
+      this.isVisible = true;
+      this.animationProgress = 0;
+      this.sharedNodes = /* @__PURE__ */ new Map();
+      this.latestValues = latestValues;
+      this.root = parent ? parent.root || parent : this;
+      this.path = parent ? [...parent.path, parent] : [];
+      this.parent = parent;
+      this.depth = parent ? parent.depth + 1 : 0;
+      for (let i3 = 0; i3 < this.path.length; i3++) {
+        this.path[i3].shouldResetTransform = true;
+      }
+      if (this.root === this)
+        this.nodes = new FlatTree();
+    }
+    addEventListener(name, handler) {
+      if (!this.eventHandlers.has(name)) {
+        this.eventHandlers.set(name, new SubscriptionManager());
+      }
+      return this.eventHandlers.get(name).add(handler);
+    }
+    notifyListeners(name, ...args) {
+      const subscriptionManager = this.eventHandlers.get(name);
+      subscriptionManager && subscriptionManager.notify(...args);
+    }
+    hasListeners(name) {
+      return this.eventHandlers.has(name);
+    }
+    /**
+     * Lifecycles
+     */
+    mount(instance, isLayoutDirty = this.root.hasTreeAnimated) {
+      if (this.instance)
+        return;
+      this.isSVG = isSVGElement(instance);
+      this.instance = instance;
+      const { layoutId, layout: layout2, visualElement } = this.options;
+      if (visualElement && !visualElement.current) {
+        visualElement.mount(instance);
+      }
+      this.root.nodes.add(this);
+      this.parent && this.parent.children.add(this);
+      if (isLayoutDirty && (layout2 || layoutId)) {
+        this.isLayoutDirty = true;
+      }
+      if (attachResizeListener) {
+        let cancelDelay;
+        const resizeUnblockUpdate = () => this.root.updateBlockedByResize = false;
+        attachResizeListener(instance, () => {
+          this.root.updateBlockedByResize = true;
+          cancelDelay && cancelDelay();
+          cancelDelay = delay(resizeUnblockUpdate, 250);
+          if (globalProjectionState.hasAnimatedSinceResize) {
+            globalProjectionState.hasAnimatedSinceResize = false;
+            this.nodes.forEach(finishAnimation);
+          }
+        });
+      }
+      if (layoutId) {
+        this.root.registerSharedNode(layoutId, this);
+      }
+      if (this.options.animate !== false && visualElement && (layoutId || layout2)) {
+        this.addEventListener("didUpdate", ({ delta, hasLayoutChanged, hasRelativeTargetChanged, layout: newLayout }) => {
+          if (this.isTreeAnimationBlocked()) {
+            this.target = void 0;
+            this.relativeTarget = void 0;
+            return;
+          }
+          const layoutTransition = this.options.transition || visualElement.getDefaultTransition() || defaultLayoutTransition;
+          const { onLayoutAnimationStart, onLayoutAnimationComplete } = visualElement.getProps();
+          const targetChanged = !this.targetLayout || !boxEqualsRounded(this.targetLayout, newLayout) || hasRelativeTargetChanged;
+          const hasOnlyRelativeTargetChanged = !hasLayoutChanged && hasRelativeTargetChanged;
+          if (this.options.layoutRoot || this.resumeFrom && this.resumeFrom.instance || hasOnlyRelativeTargetChanged || hasLayoutChanged && (targetChanged || !this.currentAnimation)) {
+            if (this.resumeFrom) {
+              this.resumingFrom = this.resumeFrom;
+              this.resumingFrom.resumingFrom = void 0;
+            }
+            this.setAnimationOrigin(delta, hasOnlyRelativeTargetChanged);
+            const animationOptions = {
+              ...getValueTransition(layoutTransition, "layout"),
+              onPlay: onLayoutAnimationStart,
+              onComplete: onLayoutAnimationComplete
+            };
+            if (visualElement.shouldReduceMotion || this.options.layoutRoot) {
+              animationOptions.delay = 0;
+              animationOptions.type = false;
+            }
+            this.startAnimation(animationOptions);
+          } else {
+            if (!hasLayoutChanged) {
+              finishAnimation(this);
+            }
+            if (this.isLead() && this.options.onExitComplete) {
+              this.options.onExitComplete();
+            }
+          }
+          this.targetLayout = newLayout;
+        });
+      }
+    }
+    unmount() {
+      this.options.layoutId && this.willUpdate();
+      this.root.nodes.remove(this);
+      const stack = this.getStack();
+      stack && stack.remove(this);
+      this.parent && this.parent.children.delete(this);
+      this.instance = void 0;
+      cancelFrame(this.updateProjection);
+    }
+    // only on the root
+    blockUpdate() {
+      this.updateManuallyBlocked = true;
+    }
+    unblockUpdate() {
+      this.updateManuallyBlocked = false;
+    }
+    isUpdateBlocked() {
+      return this.updateManuallyBlocked || this.updateBlockedByResize;
+    }
+    isTreeAnimationBlocked() {
+      return this.isAnimationBlocked || this.parent && this.parent.isTreeAnimationBlocked() || false;
+    }
+    // Note: currently only running on root node
+    startUpdate() {
+      if (this.isUpdateBlocked())
+        return;
+      this.isUpdating = true;
+      this.nodes && this.nodes.forEach(resetRotation);
+      this.animationId++;
+    }
+    getTransformTemplate() {
+      const { visualElement } = this.options;
+      return visualElement && visualElement.getProps().transformTemplate;
+    }
+    willUpdate(shouldNotifyListeners = true) {
+      this.root.hasTreeAnimated = true;
+      if (this.root.isUpdateBlocked()) {
+        this.options.onExitComplete && this.options.onExitComplete();
+        return;
+      }
+      !this.root.isUpdating && this.root.startUpdate();
+      if (this.isLayoutDirty)
+        return;
+      this.isLayoutDirty = true;
+      for (let i3 = 0; i3 < this.path.length; i3++) {
+        const node = this.path[i3];
+        node.shouldResetTransform = true;
+        node.updateScroll("snapshot");
+        if (node.options.layoutRoot) {
+          node.willUpdate(false);
+        }
+      }
+      const { layoutId, layout: layout2 } = this.options;
+      if (layoutId === void 0 && !layout2)
+        return;
+      const transformTemplate = this.getTransformTemplate();
+      this.prevTransformTemplateValue = transformTemplate ? transformTemplate(this.latestValues, "") : void 0;
+      this.updateSnapshot();
+      shouldNotifyListeners && this.notifyListeners("willUpdate");
+    }
+    update() {
+      this.updateScheduled = false;
+      const updateWasBlocked = this.isUpdateBlocked();
+      if (updateWasBlocked) {
+        this.unblockUpdate();
+        this.clearAllSnapshots();
+        this.nodes.forEach(clearMeasurements);
+        return;
+      }
+      if (!this.isUpdating) {
+        this.nodes.forEach(clearIsLayoutDirty);
+      }
+      this.isUpdating = false;
+      this.nodes.forEach(resetTransformStyle);
+      this.nodes.forEach(updateLayout);
+      this.nodes.forEach(notifyLayoutUpdate);
+      this.clearAllSnapshots();
+      const now = performance.now();
+      frameData.delta = clamp(0, 1e3 / 60, now - frameData.timestamp);
+      frameData.timestamp = now;
+      frameData.isProcessing = true;
+      steps.update.process(frameData);
+      steps.preRender.process(frameData);
+      steps.render.process(frameData);
+      frameData.isProcessing = false;
+    }
+    didUpdate() {
+      if (!this.updateScheduled) {
+        this.updateScheduled = true;
+        queueMicrotask(() => this.update());
+      }
+    }
+    clearAllSnapshots() {
+      this.nodes.forEach(clearSnapshot);
+      this.sharedNodes.forEach(removeLeadSnapshots);
+    }
+    scheduleUpdateProjection() {
+      frame.preRender(this.updateProjection, false, true);
+    }
+    scheduleCheckAfterUnmount() {
+      frame.postRender(() => {
+        if (this.isLayoutDirty) {
+          this.root.didUpdate();
+        } else {
+          this.root.checkUpdateFailed();
+        }
+      });
+    }
+    /**
+     * Update measurements
+     */
+    updateSnapshot() {
+      if (this.snapshot || !this.instance)
+        return;
+      this.snapshot = this.measure();
+    }
+    updateLayout() {
+      if (!this.instance)
+        return;
+      this.updateScroll();
+      if (!(this.options.alwaysMeasureLayout && this.isLead()) && !this.isLayoutDirty) {
+        return;
+      }
+      if (this.resumeFrom && !this.resumeFrom.instance) {
+        for (let i3 = 0; i3 < this.path.length; i3++) {
+          const node = this.path[i3];
+          node.updateScroll();
+        }
+      }
+      const prevLayout = this.layout;
+      this.layout = this.measure(false);
+      this.layoutCorrected = createBox();
+      this.isLayoutDirty = false;
+      this.projectionDelta = void 0;
+      this.notifyListeners("measure", this.layout.layoutBox);
+      const { visualElement } = this.options;
+      visualElement && visualElement.notify("LayoutMeasure", this.layout.layoutBox, prevLayout ? prevLayout.layoutBox : void 0);
+    }
+    updateScroll(phase = "measure") {
+      let needsMeasurement = Boolean(this.options.layoutScroll && this.instance);
+      if (this.scroll && this.scroll.animationId === this.root.animationId && this.scroll.phase === phase) {
+        needsMeasurement = false;
+      }
+      if (needsMeasurement) {
+        this.scroll = {
+          animationId: this.root.animationId,
+          phase,
+          isRoot: checkIsScrollRoot(this.instance),
+          offset: measureScroll(this.instance)
+        };
+      }
+    }
+    resetTransform() {
+      if (!resetTransform)
+        return;
+      const isResetRequested = this.isLayoutDirty || this.shouldResetTransform;
+      const hasProjection = this.projectionDelta && !isDeltaZero(this.projectionDelta);
+      const transformTemplate = this.getTransformTemplate();
+      const transformTemplateValue = transformTemplate ? transformTemplate(this.latestValues, "") : void 0;
+      const transformTemplateHasChanged = transformTemplateValue !== this.prevTransformTemplateValue;
+      if (isResetRequested && (hasProjection || hasTransform(this.latestValues) || transformTemplateHasChanged)) {
+        resetTransform(this.instance, transformTemplateValue);
+        this.shouldResetTransform = false;
+        this.scheduleRender();
+      }
+    }
+    measure(removeTransform = true) {
+      const pageBox = this.measurePageBox();
+      let layoutBox = this.removeElementScroll(pageBox);
+      if (removeTransform) {
+        layoutBox = this.removeTransform(layoutBox);
+      }
+      roundBox(layoutBox);
+      return {
+        animationId: this.root.animationId,
+        measuredBox: pageBox,
+        layoutBox,
+        latestValues: {},
+        source: this.id
+      };
+    }
+    measurePageBox() {
+      const { visualElement } = this.options;
+      if (!visualElement)
+        return createBox();
+      const box = visualElement.measureViewportBox();
+      const { scroll } = this.root;
+      if (scroll) {
+        translateAxis(box.x, scroll.offset.x);
+        translateAxis(box.y, scroll.offset.y);
+      }
+      return box;
+    }
+    removeElementScroll(box) {
+      const boxWithoutScroll = createBox();
+      copyBoxInto(boxWithoutScroll, box);
+      for (let i3 = 0; i3 < this.path.length; i3++) {
+        const node = this.path[i3];
+        const { scroll, options: options2 } = node;
+        if (node !== this.root && scroll && options2.layoutScroll) {
+          if (scroll.isRoot) {
+            copyBoxInto(boxWithoutScroll, box);
+            const { scroll: rootScroll } = this.root;
+            if (rootScroll) {
+              translateAxis(boxWithoutScroll.x, -rootScroll.offset.x);
+              translateAxis(boxWithoutScroll.y, -rootScroll.offset.y);
+            }
+          }
+          translateAxis(boxWithoutScroll.x, scroll.offset.x);
+          translateAxis(boxWithoutScroll.y, scroll.offset.y);
+        }
+      }
+      return boxWithoutScroll;
+    }
+    applyTransform(box, transformOnly = false) {
+      const withTransforms = createBox();
+      copyBoxInto(withTransforms, box);
+      for (let i3 = 0; i3 < this.path.length; i3++) {
+        const node = this.path[i3];
+        if (!transformOnly && node.options.layoutScroll && node.scroll && node !== node.root) {
+          transformBox(withTransforms, {
+            x: -node.scroll.offset.x,
+            y: -node.scroll.offset.y
+          });
+        }
+        if (!hasTransform(node.latestValues))
+          continue;
+        transformBox(withTransforms, node.latestValues);
+      }
+      if (hasTransform(this.latestValues)) {
+        transformBox(withTransforms, this.latestValues);
+      }
+      return withTransforms;
+    }
+    removeTransform(box) {
+      const boxWithoutTransform = createBox();
+      copyBoxInto(boxWithoutTransform, box);
+      for (let i3 = 0; i3 < this.path.length; i3++) {
+        const node = this.path[i3];
+        if (!node.instance)
+          continue;
+        if (!hasTransform(node.latestValues))
+          continue;
+        hasScale(node.latestValues) && node.updateSnapshot();
+        const sourceBox = createBox();
+        const nodeBox = node.measurePageBox();
+        copyBoxInto(sourceBox, nodeBox);
+        removeBoxTransforms(boxWithoutTransform, node.latestValues, node.snapshot ? node.snapshot.layoutBox : void 0, sourceBox);
+      }
+      if (hasTransform(this.latestValues)) {
+        removeBoxTransforms(boxWithoutTransform, this.latestValues);
+      }
+      return boxWithoutTransform;
+    }
+    setTargetDelta(delta) {
+      this.targetDelta = delta;
+      this.root.scheduleUpdateProjection();
+      this.isProjectionDirty = true;
+    }
+    setOptions(options2) {
+      this.options = {
+        ...this.options,
+        ...options2,
+        crossfade: options2.crossfade !== void 0 ? options2.crossfade : true
+      };
+    }
+    clearMeasurements() {
+      this.scroll = void 0;
+      this.layout = void 0;
+      this.snapshot = void 0;
+      this.prevTransformTemplateValue = void 0;
+      this.targetDelta = void 0;
+      this.target = void 0;
+      this.isLayoutDirty = false;
+    }
+    forceRelativeParentToResolveTarget() {
+      if (!this.relativeParent)
+        return;
+      if (this.relativeParent.resolvedRelativeTargetAt !== frameData.timestamp) {
+        this.relativeParent.resolveTargetDelta(true);
+      }
+    }
+    resolveTargetDelta(forceRecalculation = false) {
+      var _a;
+      const lead = this.getLead();
+      this.isProjectionDirty || (this.isProjectionDirty = lead.isProjectionDirty);
+      this.isTransformDirty || (this.isTransformDirty = lead.isTransformDirty);
+      this.isSharedProjectionDirty || (this.isSharedProjectionDirty = lead.isSharedProjectionDirty);
+      const isShared = Boolean(this.resumingFrom) || this !== lead;
+      const canSkip = !(forceRecalculation || isShared && this.isSharedProjectionDirty || this.isProjectionDirty || ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.isProjectionDirty) || this.attemptToResolveRelativeTarget);
+      if (canSkip)
+        return;
+      const { layout: layout2, layoutId } = this.options;
+      if (!this.layout || !(layout2 || layoutId))
+        return;
+      this.resolvedRelativeTargetAt = frameData.timestamp;
+      if (!this.targetDelta && !this.relativeTarget) {
+        const relativeParent = this.getClosestProjectingParent();
+        if (relativeParent && relativeParent.layout && this.animationProgress !== 1) {
+          this.relativeParent = relativeParent;
+          this.forceRelativeParentToResolveTarget();
+          this.relativeTarget = createBox();
+          this.relativeTargetOrigin = createBox();
+          calcRelativePosition(this.relativeTargetOrigin, this.layout.layoutBox, relativeParent.layout.layoutBox);
+          copyBoxInto(this.relativeTarget, this.relativeTargetOrigin);
+        } else {
+          this.relativeParent = this.relativeTarget = void 0;
+        }
+      }
+      if (!this.relativeTarget && !this.targetDelta)
+        return;
+      if (!this.target) {
+        this.target = createBox();
+        this.targetWithTransforms = createBox();
+      }
+      if (this.relativeTarget && this.relativeTargetOrigin && this.relativeParent && this.relativeParent.target) {
+        this.forceRelativeParentToResolveTarget();
+        calcRelativeBox(this.target, this.relativeTarget, this.relativeParent.target);
+      } else if (this.targetDelta) {
+        if (Boolean(this.resumingFrom)) {
+          this.target = this.applyTransform(this.layout.layoutBox);
+        } else {
+          copyBoxInto(this.target, this.layout.layoutBox);
+        }
+        applyBoxDelta(this.target, this.targetDelta);
+      } else {
+        copyBoxInto(this.target, this.layout.layoutBox);
+      }
+      if (this.attemptToResolveRelativeTarget) {
+        this.attemptToResolveRelativeTarget = false;
+        const relativeParent = this.getClosestProjectingParent();
+        if (relativeParent && Boolean(relativeParent.resumingFrom) === Boolean(this.resumingFrom) && !relativeParent.options.layoutScroll && relativeParent.target && this.animationProgress !== 1) {
+          this.relativeParent = relativeParent;
+          this.forceRelativeParentToResolveTarget();
+          this.relativeTarget = createBox();
+          this.relativeTargetOrigin = createBox();
+          calcRelativePosition(this.relativeTargetOrigin, this.target, relativeParent.target);
+          copyBoxInto(this.relativeTarget, this.relativeTargetOrigin);
+        } else {
+          this.relativeParent = this.relativeTarget = void 0;
+        }
+      }
+      projectionFrameData.resolvedTargetDeltas++;
+    }
+    getClosestProjectingParent() {
+      if (!this.parent || hasScale(this.parent.latestValues) || has2DTranslate(this.parent.latestValues)) {
+        return void 0;
+      }
+      if (this.parent.isProjecting()) {
+        return this.parent;
+      } else {
+        return this.parent.getClosestProjectingParent();
+      }
+    }
+    isProjecting() {
+      return Boolean((this.relativeTarget || this.targetDelta || this.options.layoutRoot) && this.layout);
+    }
+    calcProjection() {
+      var _a;
+      const lead = this.getLead();
+      const isShared = Boolean(this.resumingFrom) || this !== lead;
+      let canSkip = true;
+      if (this.isProjectionDirty || ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.isProjectionDirty)) {
+        canSkip = false;
+      }
+      if (isShared && (this.isSharedProjectionDirty || this.isTransformDirty)) {
+        canSkip = false;
+      }
+      if (this.resolvedRelativeTargetAt === frameData.timestamp) {
+        canSkip = false;
+      }
+      if (canSkip)
+        return;
+      const { layout: layout2, layoutId } = this.options;
+      this.isTreeAnimating = Boolean(this.parent && this.parent.isTreeAnimating || this.currentAnimation || this.pendingAnimation);
+      if (!this.isTreeAnimating) {
+        this.targetDelta = this.relativeTarget = void 0;
+      }
+      if (!this.layout || !(layout2 || layoutId))
+        return;
+      copyBoxInto(this.layoutCorrected, this.layout.layoutBox);
+      const prevTreeScaleX = this.treeScale.x;
+      const prevTreeScaleY = this.treeScale.y;
+      applyTreeDeltas(this.layoutCorrected, this.treeScale, this.path, isShared);
+      if (lead.layout && !lead.target && (this.treeScale.x !== 1 || this.treeScale.y !== 1)) {
+        lead.target = lead.layout.layoutBox;
+      }
+      const { target } = lead;
+      if (!target) {
+        if (this.projectionTransform) {
+          this.projectionDelta = createDelta();
+          this.projectionTransform = "none";
+          this.scheduleRender();
+        }
+        return;
+      }
+      if (!this.projectionDelta) {
+        this.projectionDelta = createDelta();
+        this.projectionDeltaWithTransform = createDelta();
+      }
+      const prevProjectionTransform = this.projectionTransform;
+      calcBoxDelta(this.projectionDelta, this.layoutCorrected, target, this.latestValues);
+      this.projectionTransform = buildProjectionTransform(this.projectionDelta, this.treeScale);
+      if (this.projectionTransform !== prevProjectionTransform || this.treeScale.x !== prevTreeScaleX || this.treeScale.y !== prevTreeScaleY) {
+        this.hasProjected = true;
+        this.scheduleRender();
+        this.notifyListeners("projectionUpdate", target);
+      }
+      projectionFrameData.recalculatedProjection++;
+    }
+    hide() {
+      this.isVisible = false;
+    }
+    show() {
+      this.isVisible = true;
+    }
+    scheduleRender(notifyAll = true) {
+      this.options.scheduleRender && this.options.scheduleRender();
+      if (notifyAll) {
+        const stack = this.getStack();
+        stack && stack.scheduleRender();
+      }
+      if (this.resumingFrom && !this.resumingFrom.instance) {
+        this.resumingFrom = void 0;
+      }
+    }
+    setAnimationOrigin(delta, hasOnlyRelativeTargetChanged = false) {
+      const snapshot = this.snapshot;
+      const snapshotLatestValues = snapshot ? snapshot.latestValues : {};
+      const mixedValues = { ...this.latestValues };
+      const targetDelta = createDelta();
+      if (!this.relativeParent || !this.relativeParent.options.layoutRoot) {
+        this.relativeTarget = this.relativeTargetOrigin = void 0;
+      }
+      this.attemptToResolveRelativeTarget = !hasOnlyRelativeTargetChanged;
+      const relativeLayout = createBox();
+      const snapshotSource = snapshot ? snapshot.source : void 0;
+      const layoutSource = this.layout ? this.layout.source : void 0;
+      const isSharedLayoutAnimation = snapshotSource !== layoutSource;
+      const stack = this.getStack();
+      const isOnlyMember = !stack || stack.members.length <= 1;
+      const shouldCrossfadeOpacity = Boolean(isSharedLayoutAnimation && !isOnlyMember && this.options.crossfade === true && !this.path.some(hasOpacityCrossfade));
+      this.animationProgress = 0;
+      let prevRelativeTarget;
+      this.mixTargetDelta = (latest) => {
+        const progress2 = latest / 1e3;
+        mixAxisDelta(targetDelta.x, delta.x, progress2);
+        mixAxisDelta(targetDelta.y, delta.y, progress2);
+        this.setTargetDelta(targetDelta);
+        if (this.relativeTarget && this.relativeTargetOrigin && this.layout && this.relativeParent && this.relativeParent.layout) {
+          calcRelativePosition(relativeLayout, this.layout.layoutBox, this.relativeParent.layout.layoutBox);
+          mixBox(this.relativeTarget, this.relativeTargetOrigin, relativeLayout, progress2);
+          if (prevRelativeTarget && boxEquals(this.relativeTarget, prevRelativeTarget)) {
+            this.isProjectionDirty = false;
+          }
+          if (!prevRelativeTarget)
+            prevRelativeTarget = createBox();
+          copyBoxInto(prevRelativeTarget, this.relativeTarget);
+        }
+        if (isSharedLayoutAnimation) {
+          this.animationValues = mixedValues;
+          mixValues(mixedValues, snapshotLatestValues, this.latestValues, progress2, shouldCrossfadeOpacity, isOnlyMember);
+        }
+        this.root.scheduleUpdateProjection();
+        this.scheduleRender();
+        this.animationProgress = progress2;
+      };
+      this.mixTargetDelta(this.options.layoutRoot ? 1e3 : 0);
+    }
+    startAnimation(options2) {
+      this.notifyListeners("animationStart");
+      this.currentAnimation && this.currentAnimation.stop();
+      if (this.resumingFrom && this.resumingFrom.currentAnimation) {
+        this.resumingFrom.currentAnimation.stop();
+      }
+      if (this.pendingAnimation) {
+        cancelFrame(this.pendingAnimation);
+        this.pendingAnimation = void 0;
+      }
+      this.pendingAnimation = frame.update(() => {
+        globalProjectionState.hasAnimatedSinceResize = true;
+        this.currentAnimation = animateSingleValue(0, animationTarget, {
+          ...options2,
+          onUpdate: (latest) => {
+            this.mixTargetDelta(latest);
+            options2.onUpdate && options2.onUpdate(latest);
+          },
+          onComplete: () => {
+            options2.onComplete && options2.onComplete();
+            this.completeAnimation();
+          }
+        });
+        if (this.resumingFrom) {
+          this.resumingFrom.currentAnimation = this.currentAnimation;
+        }
+        this.pendingAnimation = void 0;
+      });
+    }
+    completeAnimation() {
+      if (this.resumingFrom) {
+        this.resumingFrom.currentAnimation = void 0;
+        this.resumingFrom.preserveOpacity = void 0;
+      }
+      const stack = this.getStack();
+      stack && stack.exitAnimationComplete();
+      this.resumingFrom = this.currentAnimation = this.animationValues = void 0;
+      this.notifyListeners("animationComplete");
+    }
+    finishAnimation() {
+      if (this.currentAnimation) {
+        this.mixTargetDelta && this.mixTargetDelta(animationTarget);
+        this.currentAnimation.stop();
+      }
+      this.completeAnimation();
+    }
+    applyTransformsToTarget() {
+      const lead = this.getLead();
+      let { targetWithTransforms, target, layout: layout2, latestValues } = lead;
+      if (!targetWithTransforms || !target || !layout2)
+        return;
+      if (this !== lead && this.layout && layout2 && shouldAnimatePositionOnly(this.options.animationType, this.layout.layoutBox, layout2.layoutBox)) {
+        target = this.target || createBox();
+        const xLength = calcLength(this.layout.layoutBox.x);
+        target.x.min = lead.target.x.min;
+        target.x.max = target.x.min + xLength;
+        const yLength = calcLength(this.layout.layoutBox.y);
+        target.y.min = lead.target.y.min;
+        target.y.max = target.y.min + yLength;
+      }
+      copyBoxInto(targetWithTransforms, target);
+      transformBox(targetWithTransforms, latestValues);
+      calcBoxDelta(this.projectionDeltaWithTransform, this.layoutCorrected, targetWithTransforms, latestValues);
+    }
+    registerSharedNode(layoutId, node) {
+      if (!this.sharedNodes.has(layoutId)) {
+        this.sharedNodes.set(layoutId, new NodeStack());
+      }
+      const stack = this.sharedNodes.get(layoutId);
+      stack.add(node);
+      const config = node.options.initialPromotionConfig;
+      node.promote({
+        transition: config ? config.transition : void 0,
+        preserveFollowOpacity: config && config.shouldPreserveFollowOpacity ? config.shouldPreserveFollowOpacity(node) : void 0
+      });
+    }
+    isLead() {
+      const stack = this.getStack();
+      return stack ? stack.lead === this : true;
+    }
+    getLead() {
+      var _a;
+      const { layoutId } = this.options;
+      return layoutId ? ((_a = this.getStack()) === null || _a === void 0 ? void 0 : _a.lead) || this : this;
+    }
+    getPrevLead() {
+      var _a;
+      const { layoutId } = this.options;
+      return layoutId ? (_a = this.getStack()) === null || _a === void 0 ? void 0 : _a.prevLead : void 0;
+    }
+    getStack() {
+      const { layoutId } = this.options;
+      if (layoutId)
+        return this.root.sharedNodes.get(layoutId);
+    }
+    promote({ needsReset, transition, preserveFollowOpacity } = {}) {
+      const stack = this.getStack();
+      if (stack)
+        stack.promote(this, preserveFollowOpacity);
+      if (needsReset) {
+        this.projectionDelta = void 0;
+        this.needsReset = true;
+      }
+      if (transition)
+        this.setOptions({ transition });
+    }
+    relegate() {
+      const stack = this.getStack();
+      if (stack) {
+        return stack.relegate(this);
+      } else {
+        return false;
+      }
+    }
+    resetRotation() {
+      const { visualElement } = this.options;
+      if (!visualElement)
+        return;
+      let hasRotate = false;
+      const { latestValues } = visualElement;
+      if (latestValues.rotate || latestValues.rotateX || latestValues.rotateY || latestValues.rotateZ) {
+        hasRotate = true;
+      }
+      if (!hasRotate)
+        return;
+      const resetValues = {};
+      for (let i3 = 0; i3 < transformAxes.length; i3++) {
+        const key = "rotate" + transformAxes[i3];
+        if (latestValues[key]) {
+          resetValues[key] = latestValues[key];
+          visualElement.setStaticValue(key, 0);
+        }
+      }
+      visualElement.render();
+      for (const key in resetValues) {
+        visualElement.setStaticValue(key, resetValues[key]);
+      }
+      visualElement.scheduleRender();
+    }
+    getProjectionStyles(styleProp = {}) {
+      var _a, _b;
+      const styles = {};
+      if (!this.instance || this.isSVG)
+        return styles;
+      if (!this.isVisible) {
+        return { visibility: "hidden" };
+      } else {
+        styles.visibility = "";
+      }
+      const transformTemplate = this.getTransformTemplate();
+      if (this.needsReset) {
+        this.needsReset = false;
+        styles.opacity = "";
+        styles.pointerEvents = resolveMotionValue(styleProp.pointerEvents) || "";
+        styles.transform = transformTemplate ? transformTemplate(this.latestValues, "") : "none";
+        return styles;
+      }
+      const lead = this.getLead();
+      if (!this.projectionDelta || !this.layout || !lead.target) {
+        const emptyStyles = {};
+        if (this.options.layoutId) {
+          emptyStyles.opacity = this.latestValues.opacity !== void 0 ? this.latestValues.opacity : 1;
+          emptyStyles.pointerEvents = resolveMotionValue(styleProp.pointerEvents) || "";
+        }
+        if (this.hasProjected && !hasTransform(this.latestValues)) {
+          emptyStyles.transform = transformTemplate ? transformTemplate({}, "") : "none";
+          this.hasProjected = false;
+        }
+        return emptyStyles;
+      }
+      const valuesToRender = lead.animationValues || lead.latestValues;
+      this.applyTransformsToTarget();
+      styles.transform = buildProjectionTransform(this.projectionDeltaWithTransform, this.treeScale, valuesToRender);
+      if (transformTemplate) {
+        styles.transform = transformTemplate(valuesToRender, styles.transform);
+      }
+      const { x: x2, y: y2 } = this.projectionDelta;
+      styles.transformOrigin = `${x2.origin * 100}% ${y2.origin * 100}% 0`;
+      if (lead.animationValues) {
+        styles.opacity = lead === this ? (_b = (_a = valuesToRender.opacity) !== null && _a !== void 0 ? _a : this.latestValues.opacity) !== null && _b !== void 0 ? _b : 1 : this.preserveOpacity ? this.latestValues.opacity : valuesToRender.opacityExit;
+      } else {
+        styles.opacity = lead === this ? valuesToRender.opacity !== void 0 ? valuesToRender.opacity : "" : valuesToRender.opacityExit !== void 0 ? valuesToRender.opacityExit : 0;
+      }
+      for (const key in scaleCorrectors) {
+        if (valuesToRender[key] === void 0)
+          continue;
+        const { correct, applyTo } = scaleCorrectors[key];
+        const corrected = styles.transform === "none" ? valuesToRender[key] : correct(valuesToRender[key], lead);
+        if (applyTo) {
+          const num = applyTo.length;
+          for (let i3 = 0; i3 < num; i3++) {
+            styles[applyTo[i3]] = corrected;
+          }
+        } else {
+          styles[key] = corrected;
+        }
+      }
+      if (this.options.layoutId) {
+        styles.pointerEvents = lead === this ? resolveMotionValue(styleProp.pointerEvents) || "" : "none";
+      }
+      return styles;
+    }
+    clearSnapshot() {
+      this.resumeFrom = this.snapshot = void 0;
+    }
+    // Only run on root
+    resetTree() {
+      this.root.nodes.forEach((node) => {
+        var _a;
+        return (_a = node.currentAnimation) === null || _a === void 0 ? void 0 : _a.stop();
+      });
+      this.root.nodes.forEach(clearMeasurements);
+      this.root.sharedNodes.clear();
+    }
+  };
+}
+function updateLayout(node) {
+  node.updateLayout();
+}
+function notifyLayoutUpdate(node) {
+  var _a;
+  const snapshot = ((_a = node.resumeFrom) === null || _a === void 0 ? void 0 : _a.snapshot) || node.snapshot;
+  if (node.isLead() && node.layout && snapshot && node.hasListeners("didUpdate")) {
+    const { layoutBox: layout2, measuredBox: measuredLayout } = node.layout;
+    const { animationType } = node.options;
+    const isShared = snapshot.source !== node.layout.source;
+    if (animationType === "size") {
+      eachAxis((axis) => {
+        const axisSnapshot = isShared ? snapshot.measuredBox[axis] : snapshot.layoutBox[axis];
+        const length = calcLength(axisSnapshot);
+        axisSnapshot.min = layout2[axis].min;
+        axisSnapshot.max = axisSnapshot.min + length;
+      });
+    } else if (shouldAnimatePositionOnly(animationType, snapshot.layoutBox, layout2)) {
+      eachAxis((axis) => {
+        const axisSnapshot = isShared ? snapshot.measuredBox[axis] : snapshot.layoutBox[axis];
+        const length = calcLength(layout2[axis]);
+        axisSnapshot.max = axisSnapshot.min + length;
+        if (node.relativeTarget && !node.currentAnimation) {
+          node.isProjectionDirty = true;
+          node.relativeTarget[axis].max = node.relativeTarget[axis].min + length;
+        }
+      });
+    }
+    const layoutDelta = createDelta();
+    calcBoxDelta(layoutDelta, layout2, snapshot.layoutBox);
+    const visualDelta = createDelta();
+    if (isShared) {
+      calcBoxDelta(visualDelta, node.applyTransform(measuredLayout, true), snapshot.measuredBox);
+    } else {
+      calcBoxDelta(visualDelta, layout2, snapshot.layoutBox);
+    }
+    const hasLayoutChanged = !isDeltaZero(layoutDelta);
+    let hasRelativeTargetChanged = false;
+    if (!node.resumeFrom) {
+      const relativeParent = node.getClosestProjectingParent();
+      if (relativeParent && !relativeParent.resumeFrom) {
+        const { snapshot: parentSnapshot, layout: parentLayout } = relativeParent;
+        if (parentSnapshot && parentLayout) {
+          const relativeSnapshot = createBox();
+          calcRelativePosition(relativeSnapshot, snapshot.layoutBox, parentSnapshot.layoutBox);
+          const relativeLayout = createBox();
+          calcRelativePosition(relativeLayout, layout2, parentLayout.layoutBox);
+          if (!boxEqualsRounded(relativeSnapshot, relativeLayout)) {
+            hasRelativeTargetChanged = true;
+          }
+          if (relativeParent.options.layoutRoot) {
+            node.relativeTarget = relativeLayout;
+            node.relativeTargetOrigin = relativeSnapshot;
+            node.relativeParent = relativeParent;
+          }
+        }
+      }
+    }
+    node.notifyListeners("didUpdate", {
+      layout: layout2,
+      snapshot,
+      delta: visualDelta,
+      layoutDelta,
+      hasLayoutChanged,
+      hasRelativeTargetChanged
+    });
+  } else if (node.isLead()) {
+    const { onExitComplete } = node.options;
+    onExitComplete && onExitComplete();
+  }
+  node.options.transition = void 0;
+}
+function propagateDirtyNodes(node) {
+  projectionFrameData.totalNodes++;
+  if (!node.parent)
+    return;
+  if (!node.isProjecting()) {
+    node.isProjectionDirty = node.parent.isProjectionDirty;
+  }
+  node.isSharedProjectionDirty || (node.isSharedProjectionDirty = Boolean(node.isProjectionDirty || node.parent.isProjectionDirty || node.parent.isSharedProjectionDirty));
+  node.isTransformDirty || (node.isTransformDirty = node.parent.isTransformDirty);
+}
+function cleanDirtyNodes(node) {
+  node.isProjectionDirty = node.isSharedProjectionDirty = node.isTransformDirty = false;
+}
+function clearSnapshot(node) {
+  node.clearSnapshot();
+}
+function clearMeasurements(node) {
+  node.clearMeasurements();
+}
+function clearIsLayoutDirty(node) {
+  node.isLayoutDirty = false;
+}
+function resetTransformStyle(node) {
+  const { visualElement } = node.options;
+  if (visualElement && visualElement.getProps().onBeforeLayoutMeasure) {
+    visualElement.notify("BeforeLayoutMeasure");
+  }
+  node.resetTransform();
+}
+function finishAnimation(node) {
+  node.finishAnimation();
+  node.targetDelta = node.relativeTarget = node.target = void 0;
+  node.isProjectionDirty = true;
+}
+function resolveTargetDelta(node) {
+  node.resolveTargetDelta();
+}
+function calcProjection(node) {
+  node.calcProjection();
+}
+function resetRotation(node) {
+  node.resetRotation();
+}
+function removeLeadSnapshots(stack) {
+  stack.removeLeadSnapshot();
+}
+function mixAxisDelta(output, delta, p2) {
+  output.translate = mix(delta.translate, 0, p2);
+  output.scale = mix(delta.scale, 1, p2);
+  output.origin = delta.origin;
+  output.originPoint = delta.originPoint;
+}
+function mixAxis(output, from, to, p2) {
+  output.min = mix(from.min, to.min, p2);
+  output.max = mix(from.max, to.max, p2);
+}
+function mixBox(output, from, to, p2) {
+  mixAxis(output.x, from.x, to.x, p2);
+  mixAxis(output.y, from.y, to.y, p2);
+}
+function hasOpacityCrossfade(node) {
+  return node.animationValues && node.animationValues.opacityExit !== void 0;
+}
+const defaultLayoutTransition = {
+  duration: 0.45,
+  ease: [0.4, 0, 0.1, 1]
+};
+const userAgentContains = (string) => typeof navigator !== "undefined" && navigator.userAgent.toLowerCase().includes(string);
+const roundPoint = userAgentContains("applewebkit/") && !userAgentContains("chrome/") ? Math.round : noop$1;
+function roundAxis(axis) {
+  axis.min = roundPoint(axis.min);
+  axis.max = roundPoint(axis.max);
+}
+function roundBox(box) {
+  roundAxis(box.x);
+  roundAxis(box.y);
+}
+function shouldAnimatePositionOnly(animationType, snapshot, layout2) {
+  return animationType === "position" || animationType === "preserve-aspect" && !isNear(aspectRatio(snapshot), aspectRatio(layout2), 0.2);
+}
+const DocumentProjectionNode = createProjectionNode({
+  attachResizeListener: (ref, notify) => addDomEvent(ref, "resize", notify),
+  measureScroll: () => ({
+    x: document.documentElement.scrollLeft || document.body.scrollLeft,
+    y: document.documentElement.scrollTop || document.body.scrollTop
+  }),
+  checkIsScrollRoot: () => true
+});
+const rootProjectionNode = {
+  current: void 0
+};
+const HTMLProjectionNode = createProjectionNode({
+  measureScroll: (instance) => ({
+    x: instance.scrollLeft,
+    y: instance.scrollTop
+  }),
+  defaultParent: () => {
+    if (!rootProjectionNode.current) {
+      const documentNode = new DocumentProjectionNode({});
+      documentNode.mount(window);
+      documentNode.setOptions({ layoutScroll: true });
+      rootProjectionNode.current = documentNode;
+    }
+    return rootProjectionNode.current;
+  },
+  resetTransform: (instance, value) => {
+    instance.style.transform = value !== void 0 ? value : "none";
+  },
+  checkIsScrollRoot: (instance) => Boolean(window.getComputedStyle(instance).position === "fixed")
+});
+const drag = {
+  pan: {
+    Feature: PanGesture
+  },
+  drag: {
+    Feature: DragGesture,
+    ProjectionNode: HTMLProjectionNode,
+    MeasureLayout
+  }
+};
+const splitCSSVariableRegex = /var\((--[a-zA-Z0-9-_]+),? ?([a-zA-Z0-9 ()%#.,-]+)?\)/;
+function parseCSSVariable(current) {
+  const match2 = splitCSSVariableRegex.exec(current);
+  if (!match2)
+    return [,];
+  const [, token, fallback] = match2;
+  return [token, fallback];
+}
+function getVariableValue(current, element, depth = 1) {
+  const [token, fallback] = parseCSSVariable(current);
+  if (!token)
+    return;
+  const resolved = window.getComputedStyle(element).getPropertyValue(token);
+  if (resolved) {
+    const trimmed = resolved.trim();
+    return isNumericalString(trimmed) ? parseFloat(trimmed) : trimmed;
+  } else if (isCSSVariableToken(fallback)) {
+    return getVariableValue(fallback, element, depth + 1);
+  } else {
+    return fallback;
+  }
+}
+function resolveCSSVariables(visualElement, { ...target }, transitionEnd) {
+  const element = visualElement.current;
+  if (!(element instanceof Element))
+    return { target, transitionEnd };
+  if (transitionEnd) {
+    transitionEnd = { ...transitionEnd };
+  }
+  visualElement.values.forEach((value) => {
+    const current = value.get();
+    if (!isCSSVariableToken(current))
+      return;
+    const resolved = getVariableValue(current, element);
+    if (resolved)
+      value.set(resolved);
+  });
+  for (const key in target) {
+    const current = target[key];
+    if (!isCSSVariableToken(current))
+      continue;
+    const resolved = getVariableValue(current, element);
+    if (!resolved)
+      continue;
+    target[key] = resolved;
+    if (!transitionEnd)
+      transitionEnd = {};
+    if (transitionEnd[key] === void 0) {
+      transitionEnd[key] = current;
+    }
+  }
+  return { target, transitionEnd };
+}
+const positionalKeys = /* @__PURE__ */ new Set([
+  "width",
+  "height",
+  "top",
+  "left",
+  "right",
+  "bottom",
+  "x",
+  "y",
+  "translateX",
+  "translateY"
+]);
+const isPositionalKey = (key) => positionalKeys.has(key);
+const hasPositionalKey = (target) => {
+  return Object.keys(target).some(isPositionalKey);
+};
+const isNumOrPxType = (v2) => v2 === number || v2 === px;
+const getPosFromMatrix = (matrix, pos) => parseFloat(matrix.split(", ")[pos]);
+const getTranslateFromMatrix = (pos2, pos3) => (_bbox, { transform }) => {
+  if (transform === "none" || !transform)
+    return 0;
+  const matrix3d = transform.match(/^matrix3d\((.+)\)$/);
+  if (matrix3d) {
+    return getPosFromMatrix(matrix3d[1], pos3);
+  } else {
+    const matrix = transform.match(/^matrix\((.+)\)$/);
+    if (matrix) {
+      return getPosFromMatrix(matrix[1], pos2);
+    } else {
+      return 0;
+    }
+  }
+};
+const transformKeys = /* @__PURE__ */ new Set(["x", "y", "z"]);
+const nonTranslationalTransformKeys = transformPropOrder.filter((key) => !transformKeys.has(key));
+function removeNonTranslationalTransform(visualElement) {
+  const removedTransforms = [];
+  nonTranslationalTransformKeys.forEach((key) => {
+    const value = visualElement.getValue(key);
+    if (value !== void 0) {
+      removedTransforms.push([key, value.get()]);
+      value.set(key.startsWith("scale") ? 1 : 0);
+    }
+  });
+  if (removedTransforms.length)
+    visualElement.render();
+  return removedTransforms;
+}
+const positionalValues = {
+  // Dimensions
+  width: ({ x: x2 }, { paddingLeft = "0", paddingRight = "0" }) => x2.max - x2.min - parseFloat(paddingLeft) - parseFloat(paddingRight),
+  height: ({ y: y2 }, { paddingTop = "0", paddingBottom = "0" }) => y2.max - y2.min - parseFloat(paddingTop) - parseFloat(paddingBottom),
+  top: (_bbox, { top }) => parseFloat(top),
+  left: (_bbox, { left }) => parseFloat(left),
+  bottom: ({ y: y2 }, { top }) => parseFloat(top) + (y2.max - y2.min),
+  right: ({ x: x2 }, { left }) => parseFloat(left) + (x2.max - x2.min),
+  // Transform
+  x: getTranslateFromMatrix(4, 13),
+  y: getTranslateFromMatrix(5, 14)
+};
+positionalValues.translateX = positionalValues.x;
+positionalValues.translateY = positionalValues.y;
+const convertChangedValueTypes = (target, visualElement, changedKeys) => {
+  const originBbox = visualElement.measureViewportBox();
+  const element = visualElement.current;
+  const elementComputedStyle = getComputedStyle(element);
+  const { display } = elementComputedStyle;
+  const origin = {};
+  if (display === "none") {
+    visualElement.setStaticValue("display", target.display || "block");
+  }
+  changedKeys.forEach((key) => {
+    origin[key] = positionalValues[key](originBbox, elementComputedStyle);
+  });
+  visualElement.render();
+  const targetBbox = visualElement.measureViewportBox();
+  changedKeys.forEach((key) => {
+    const value = visualElement.getValue(key);
+    value && value.jump(origin[key]);
+    target[key] = positionalValues[key](targetBbox, elementComputedStyle);
+  });
+  return target;
+};
+const checkAndConvertChangedValueTypes = (visualElement, target, origin = {}, transitionEnd = {}) => {
+  target = { ...target };
+  transitionEnd = { ...transitionEnd };
+  const targetPositionalKeys = Object.keys(target).filter(isPositionalKey);
+  let removedTransformValues = [];
+  let hasAttemptedToRemoveTransformValues = false;
+  const changedValueTypeKeys = [];
+  targetPositionalKeys.forEach((key) => {
+    const value = visualElement.getValue(key);
+    if (!visualElement.hasValue(key))
+      return;
+    let from = origin[key];
+    let fromType = findDimensionValueType(from);
+    const to = target[key];
+    let toType;
+    if (isKeyframesTarget(to)) {
+      const numKeyframes = to.length;
+      const fromIndex = to[0] === null ? 1 : 0;
+      from = to[fromIndex];
+      fromType = findDimensionValueType(from);
+      for (let i3 = fromIndex; i3 < numKeyframes; i3++) {
+        if (to[i3] === null)
+          break;
+        if (!toType) {
+          toType = findDimensionValueType(to[i3]);
+        } else {
+          invariant(findDimensionValueType(to[i3]) === toType);
+        }
+      }
+    } else {
+      toType = findDimensionValueType(to);
+    }
+    if (fromType !== toType) {
+      if (isNumOrPxType(fromType) && isNumOrPxType(toType)) {
+        const current = value.get();
+        if (typeof current === "string") {
+          value.set(parseFloat(current));
+        }
+        if (typeof to === "string") {
+          target[key] = parseFloat(to);
+        } else if (Array.isArray(to) && toType === px) {
+          target[key] = to.map(parseFloat);
+        }
+      } else if ((fromType === null || fromType === void 0 ? void 0 : fromType.transform) && (toType === null || toType === void 0 ? void 0 : toType.transform) && (from === 0 || to === 0)) {
+        if (from === 0) {
+          value.set(toType.transform(from));
+        } else {
+          target[key] = fromType.transform(to);
+        }
+      } else {
+        if (!hasAttemptedToRemoveTransformValues) {
+          removedTransformValues = removeNonTranslationalTransform(visualElement);
+          hasAttemptedToRemoveTransformValues = true;
+        }
+        changedValueTypeKeys.push(key);
+        transitionEnd[key] = transitionEnd[key] !== void 0 ? transitionEnd[key] : target[key];
+        value.jump(to);
+      }
+    }
+  });
+  if (changedValueTypeKeys.length) {
+    const scrollY = changedValueTypeKeys.indexOf("height") >= 0 ? window.pageYOffset : null;
+    const convertedTarget = convertChangedValueTypes(target, visualElement, changedValueTypeKeys);
+    if (removedTransformValues.length) {
+      removedTransformValues.forEach(([key, value]) => {
+        visualElement.getValue(key).set(value);
+      });
+    }
+    visualElement.render();
+    if (isBrowser && scrollY !== null) {
+      window.scrollTo({ top: scrollY });
+    }
+    return { target: convertedTarget, transitionEnd };
+  } else {
+    return { target, transitionEnd };
+  }
+};
+function unitConversion(visualElement, target, origin, transitionEnd) {
+  return hasPositionalKey(target) ? checkAndConvertChangedValueTypes(visualElement, target, origin, transitionEnd) : { target, transitionEnd };
+}
+const parseDomVariant = (visualElement, target, origin, transitionEnd) => {
+  const resolved = resolveCSSVariables(visualElement, target, transitionEnd);
+  target = resolved.target;
+  transitionEnd = resolved.transitionEnd;
+  return unitConversion(visualElement, target, origin, transitionEnd);
+};
+const prefersReducedMotion = { current: null };
+const hasReducedMotionListener = { current: false };
+function initPrefersReducedMotion() {
+  hasReducedMotionListener.current = true;
+  if (!isBrowser)
+    return;
+  if (window.matchMedia) {
+    const motionMediaQuery = window.matchMedia("(prefers-reduced-motion)");
+    const setReducedMotionPreferences = () => prefersReducedMotion.current = motionMediaQuery.matches;
+    motionMediaQuery.addListener(setReducedMotionPreferences);
+    setReducedMotionPreferences();
+  } else {
+    prefersReducedMotion.current = false;
+  }
+}
+function updateMotionValuesFromProps(element, next, prev) {
+  const { willChange } = next;
+  for (const key in next) {
+    const nextValue = next[key];
+    const prevValue = prev[key];
+    if (isMotionValue(nextValue)) {
+      element.addValue(key, nextValue);
+      if (isWillChangeMotionValue(willChange)) {
+        willChange.add(key);
+      }
+    } else if (isMotionValue(prevValue)) {
+      element.addValue(key, motionValue(nextValue, { owner: element }));
+      if (isWillChangeMotionValue(willChange)) {
+        willChange.remove(key);
+      }
+    } else if (prevValue !== nextValue) {
+      if (element.hasValue(key)) {
+        const existingValue = element.getValue(key);
+        !existingValue.hasAnimated && existingValue.set(nextValue);
+      } else {
+        const latestValue = element.getStaticValue(key);
+        element.addValue(key, motionValue(latestValue !== void 0 ? latestValue : nextValue, { owner: element }));
+      }
+    }
+  }
+  for (const key in prev) {
+    if (next[key] === void 0)
+      element.removeValue(key);
+  }
+  return next;
+}
+const visualElementStore = /* @__PURE__ */ new WeakMap();
+const featureNames = Object.keys(featureDefinitions);
+const numFeatures = featureNames.length;
+const propEventHandlers = [
+  "AnimationStart",
+  "AnimationComplete",
+  "Update",
+  "BeforeLayoutMeasure",
+  "LayoutMeasure",
+  "LayoutAnimationStart",
+  "LayoutAnimationComplete"
+];
+const numVariantProps = variantProps.length;
+class VisualElement {
+  constructor({ parent, props, presenceContext, reducedMotionConfig, visualState }, options2 = {}) {
+    this.current = null;
+    this.children = /* @__PURE__ */ new Set();
+    this.isVariantNode = false;
+    this.isControllingVariants = false;
+    this.shouldReduceMotion = null;
+    this.values = /* @__PURE__ */ new Map();
+    this.features = {};
+    this.valueSubscriptions = /* @__PURE__ */ new Map();
+    this.prevMotionValues = {};
+    this.events = {};
+    this.propEventSubscriptions = {};
+    this.notifyUpdate = () => this.notify("Update", this.latestValues);
+    this.render = () => {
+      if (!this.current)
+        return;
+      this.triggerBuild();
+      this.renderInstance(this.current, this.renderState, this.props.style, this.projection);
+    };
+    this.scheduleRender = () => frame.render(this.render, false, true);
+    const { latestValues, renderState } = visualState;
+    this.latestValues = latestValues;
+    this.baseTarget = { ...latestValues };
+    this.initialValues = props.initial ? { ...latestValues } : {};
+    this.renderState = renderState;
+    this.parent = parent;
+    this.props = props;
+    this.presenceContext = presenceContext;
+    this.depth = parent ? parent.depth + 1 : 0;
+    this.reducedMotionConfig = reducedMotionConfig;
+    this.options = options2;
+    this.isControllingVariants = isControllingVariants(props);
+    this.isVariantNode = isVariantNode(props);
+    if (this.isVariantNode) {
+      this.variantChildren = /* @__PURE__ */ new Set();
+    }
+    this.manuallyAnimateOnMount = Boolean(parent && parent.current);
+    const { willChange, ...initialMotionValues } = this.scrapeMotionValuesFromProps(props, {});
+    for (const key in initialMotionValues) {
+      const value = initialMotionValues[key];
+      if (latestValues[key] !== void 0 && isMotionValue(value)) {
+        value.set(latestValues[key], false);
+        if (isWillChangeMotionValue(willChange)) {
+          willChange.add(key);
+        }
+      }
+    }
+  }
+  /**
+   * This method takes React props and returns found MotionValues. For example, HTML
+   * MotionValues will be found within the style prop, whereas for Three.js within attribute arrays.
+   *
+   * This isn't an abstract method as it needs calling in the constructor, but it is
+   * intended to be one.
+   */
+  scrapeMotionValuesFromProps(_props, _prevProps) {
+    return {};
+  }
+  mount(instance) {
+    this.current = instance;
+    visualElementStore.set(instance, this);
+    if (this.projection && !this.projection.instance) {
+      this.projection.mount(instance);
+    }
+    if (this.parent && this.isVariantNode && !this.isControllingVariants) {
+      this.removeFromVariantTree = this.parent.addVariantChild(this);
+    }
+    this.values.forEach((value, key) => this.bindToMotionValue(key, value));
+    if (!hasReducedMotionListener.current) {
+      initPrefersReducedMotion();
+    }
+    this.shouldReduceMotion = this.reducedMotionConfig === "never" ? false : this.reducedMotionConfig === "always" ? true : prefersReducedMotion.current;
+    if (this.parent)
+      this.parent.children.add(this);
+    this.update(this.props, this.presenceContext);
+  }
+  unmount() {
+    visualElementStore.delete(this.current);
+    this.projection && this.projection.unmount();
+    cancelFrame(this.notifyUpdate);
+    cancelFrame(this.render);
+    this.valueSubscriptions.forEach((remove) => remove());
+    this.removeFromVariantTree && this.removeFromVariantTree();
+    this.parent && this.parent.children.delete(this);
+    for (const key in this.events) {
+      this.events[key].clear();
+    }
+    for (const key in this.features) {
+      this.features[key].unmount();
+    }
+    this.current = null;
+  }
+  bindToMotionValue(key, value) {
+    const valueIsTransform = transformProps.has(key);
+    const removeOnChange = value.on("change", (latestValue) => {
+      this.latestValues[key] = latestValue;
+      this.props.onUpdate && frame.update(this.notifyUpdate, false, true);
+      if (valueIsTransform && this.projection) {
+        this.projection.isTransformDirty = true;
+      }
+    });
+    const removeOnRenderRequest = value.on("renderRequest", this.scheduleRender);
+    this.valueSubscriptions.set(key, () => {
+      removeOnChange();
+      removeOnRenderRequest();
+    });
+  }
+  sortNodePosition(other) {
+    if (!this.current || !this.sortInstanceNodePosition || this.type !== other.type) {
+      return 0;
+    }
+    return this.sortInstanceNodePosition(this.current, other.current);
+  }
+  loadFeatures({ children, ...renderedProps }, isStrict, preloadedFeatures2, initialLayoutGroupConfig) {
+    let ProjectionNodeConstructor;
+    let MeasureLayout2;
+    for (let i3 = 0; i3 < numFeatures; i3++) {
+      const name = featureNames[i3];
+      const { isEnabled, Feature: FeatureConstructor, ProjectionNode, MeasureLayout: MeasureLayoutComponent } = featureDefinitions[name];
+      if (ProjectionNode)
+        ProjectionNodeConstructor = ProjectionNode;
+      if (isEnabled(renderedProps)) {
+        if (!this.features[name] && FeatureConstructor) {
+          this.features[name] = new FeatureConstructor(this);
+        }
+        if (MeasureLayoutComponent) {
+          MeasureLayout2 = MeasureLayoutComponent;
+        }
+      }
+    }
+    if (!this.projection && ProjectionNodeConstructor) {
+      this.projection = new ProjectionNodeConstructor(this.latestValues, this.parent && this.parent.projection);
+      const { layoutId, layout: layout2, drag: drag2, dragConstraints, layoutScroll, layoutRoot } = renderedProps;
+      this.projection.setOptions({
+        layoutId,
+        layout: layout2,
+        alwaysMeasureLayout: Boolean(drag2) || dragConstraints && isRefObject(dragConstraints),
+        visualElement: this,
+        scheduleRender: () => this.scheduleRender(),
+        /**
+         * TODO: Update options in an effect. This could be tricky as it'll be too late
+         * to update by the time layout animations run.
+         * We also need to fix this safeToRemove by linking it up to the one returned by usePresence,
+         * ensuring it gets called if there's no potential layout animations.
+         *
+         */
+        animationType: typeof layout2 === "string" ? layout2 : "both",
+        initialPromotionConfig: initialLayoutGroupConfig,
+        layoutScroll,
+        layoutRoot
+      });
+    }
+    return MeasureLayout2;
+  }
+  updateFeatures() {
+    for (const key in this.features) {
+      const feature = this.features[key];
+      if (feature.isMounted) {
+        feature.update();
+      } else {
+        feature.mount();
+        feature.isMounted = true;
+      }
+    }
+  }
+  triggerBuild() {
+    this.build(this.renderState, this.latestValues, this.options, this.props);
+  }
+  /**
+   * Measure the current viewport box with or without transforms.
+   * Only measures axis-aligned boxes, rotate and skew must be manually
+   * removed with a re-render to work.
+   */
+  measureViewportBox() {
+    return this.current ? this.measureInstanceViewportBox(this.current, this.props) : createBox();
+  }
+  getStaticValue(key) {
+    return this.latestValues[key];
+  }
+  setStaticValue(key, value) {
+    this.latestValues[key] = value;
+  }
+  /**
+   * Make a target animatable by Popmotion. For instance, if we're
+   * trying to animate width from 100px to 100vw we need to measure 100vw
+   * in pixels to determine what we really need to animate to. This is also
+   * pluggable to support Framer's custom value types like Color,
+   * and CSS variables.
+   */
+  makeTargetAnimatable(target, canMutate = true) {
+    return this.makeTargetAnimatableFromInstance(target, this.props, canMutate);
+  }
+  /**
+   * Update the provided props. Ensure any newly-added motion values are
+   * added to our map, old ones removed, and listeners updated.
+   */
+  update(props, presenceContext) {
+    if (props.transformTemplate || this.props.transformTemplate) {
+      this.scheduleRender();
+    }
+    this.prevProps = this.props;
+    this.props = props;
+    this.prevPresenceContext = this.presenceContext;
+    this.presenceContext = presenceContext;
+    for (let i3 = 0; i3 < propEventHandlers.length; i3++) {
+      const key = propEventHandlers[i3];
+      if (this.propEventSubscriptions[key]) {
+        this.propEventSubscriptions[key]();
+        delete this.propEventSubscriptions[key];
+      }
+      const listener = props["on" + key];
+      if (listener) {
+        this.propEventSubscriptions[key] = this.on(key, listener);
+      }
+    }
+    this.prevMotionValues = updateMotionValuesFromProps(this, this.scrapeMotionValuesFromProps(props, this.prevProps), this.prevMotionValues);
+    if (this.handleChildMotionValue) {
+      this.handleChildMotionValue();
+    }
+  }
+  getProps() {
+    return this.props;
+  }
+  /**
+   * Returns the variant definition with a given name.
+   */
+  getVariant(name) {
+    return this.props.variants ? this.props.variants[name] : void 0;
+  }
+  /**
+   * Returns the defined default transition on this component.
+   */
+  getDefaultTransition() {
+    return this.props.transition;
+  }
+  getTransformPagePoint() {
+    return this.props.transformPagePoint;
+  }
+  getClosestVariantNode() {
+    return this.isVariantNode ? this : this.parent ? this.parent.getClosestVariantNode() : void 0;
+  }
+  getVariantContext(startAtParent = false) {
+    if (startAtParent) {
+      return this.parent ? this.parent.getVariantContext() : void 0;
+    }
+    if (!this.isControllingVariants) {
+      const context2 = this.parent ? this.parent.getVariantContext() || {} : {};
+      if (this.props.initial !== void 0) {
+        context2.initial = this.props.initial;
+      }
+      return context2;
+    }
+    const context = {};
+    for (let i3 = 0; i3 < numVariantProps; i3++) {
+      const name = variantProps[i3];
+      const prop = this.props[name];
+      if (isVariantLabel(prop) || prop === false) {
+        context[name] = prop;
+      }
+    }
+    return context;
+  }
+  /**
+   * Add a child visual element to our set of children.
+   */
+  addVariantChild(child) {
+    const closestVariantNode = this.getClosestVariantNode();
+    if (closestVariantNode) {
+      closestVariantNode.variantChildren && closestVariantNode.variantChildren.add(child);
+      return () => closestVariantNode.variantChildren.delete(child);
+    }
+  }
+  /**
+   * Add a motion value and bind it to this visual element.
+   */
+  addValue(key, value) {
+    if (value !== this.values.get(key)) {
+      this.removeValue(key);
+      this.bindToMotionValue(key, value);
+    }
+    this.values.set(key, value);
+    this.latestValues[key] = value.get();
+  }
+  /**
+   * Remove a motion value and unbind any active subscriptions.
+   */
+  removeValue(key) {
+    this.values.delete(key);
+    const unsubscribe = this.valueSubscriptions.get(key);
+    if (unsubscribe) {
+      unsubscribe();
+      this.valueSubscriptions.delete(key);
+    }
+    delete this.latestValues[key];
+    this.removeValueFromRenderState(key, this.renderState);
+  }
+  /**
+   * Check whether we have a motion value for this key
+   */
+  hasValue(key) {
+    return this.values.has(key);
+  }
+  getValue(key, defaultValue) {
+    if (this.props.values && this.props.values[key]) {
+      return this.props.values[key];
+    }
+    let value = this.values.get(key);
+    if (value === void 0 && defaultValue !== void 0) {
+      value = motionValue(defaultValue, { owner: this });
+      this.addValue(key, value);
+    }
+    return value;
+  }
+  /**
+   * If we're trying to animate to a previously unencountered value,
+   * we need to check for it in our state and as a last resort read it
+   * directly from the instance (which might have performance implications).
+   */
+  readValue(key) {
+    var _a;
+    return this.latestValues[key] !== void 0 || !this.current ? this.latestValues[key] : (_a = this.getBaseTargetFromProps(this.props, key)) !== null && _a !== void 0 ? _a : this.readValueFromInstance(this.current, key, this.options);
+  }
+  /**
+   * Set the base target to later animate back to. This is currently
+   * only hydrated on creation and when we first read a value.
+   */
+  setBaseTarget(key, value) {
+    this.baseTarget[key] = value;
+  }
+  /**
+   * Find the base target for a value thats been removed from all animation
+   * props.
+   */
+  getBaseTarget(key) {
+    var _a;
+    const { initial } = this.props;
+    const valueFromInitial = typeof initial === "string" || typeof initial === "object" ? (_a = resolveVariantFromProps(this.props, initial)) === null || _a === void 0 ? void 0 : _a[key] : void 0;
+    if (initial && valueFromInitial !== void 0) {
+      return valueFromInitial;
+    }
+    const target = this.getBaseTargetFromProps(this.props, key);
+    if (target !== void 0 && !isMotionValue(target))
+      return target;
+    return this.initialValues[key] !== void 0 && valueFromInitial === void 0 ? void 0 : this.baseTarget[key];
+  }
+  on(eventName, callback) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = new SubscriptionManager();
+    }
+    return this.events[eventName].add(callback);
+  }
+  notify(eventName, ...args) {
+    if (this.events[eventName]) {
+      this.events[eventName].notify(...args);
+    }
+  }
+}
+class DOMVisualElement extends VisualElement {
+  sortInstanceNodePosition(a2, b2) {
+    return a2.compareDocumentPosition(b2) & 2 ? 1 : -1;
+  }
+  getBaseTargetFromProps(props, key) {
+    return props.style ? props.style[key] : void 0;
+  }
+  removeValueFromRenderState(key, { vars, style }) {
+    delete vars[key];
+    delete style[key];
+  }
+  makeTargetAnimatableFromInstance({ transition, transitionEnd, ...target }, { transformValues }, isMounted) {
+    let origin = getOrigin(target, transition || {}, this);
+    if (transformValues) {
+      if (transitionEnd)
+        transitionEnd = transformValues(transitionEnd);
+      if (target)
+        target = transformValues(target);
+      if (origin)
+        origin = transformValues(origin);
+    }
+    if (isMounted) {
+      checkTargetForNewValues(this, target, origin);
+      const parsed = parseDomVariant(this, target, origin, transitionEnd);
+      transitionEnd = parsed.transitionEnd;
+      target = parsed.target;
+    }
+    return {
+      transition,
+      transitionEnd,
+      ...target
+    };
+  }
+}
+function getComputedStyle$1(element) {
+  return window.getComputedStyle(element);
+}
+class HTMLVisualElement extends DOMVisualElement {
+  readValueFromInstance(instance, key) {
+    if (transformProps.has(key)) {
+      const defaultType = getDefaultValueType(key);
+      return defaultType ? defaultType.default || 0 : 0;
+    } else {
+      const computedStyle = getComputedStyle$1(instance);
+      const value = (isCSSVariableName(key) ? computedStyle.getPropertyValue(key) : computedStyle[key]) || 0;
+      return typeof value === "string" ? value.trim() : value;
+    }
+  }
+  measureInstanceViewportBox(instance, { transformPagePoint }) {
+    return measureViewportBox(instance, transformPagePoint);
+  }
+  build(renderState, latestValues, options2, props) {
+    buildHTMLStyles(renderState, latestValues, options2, props.transformTemplate);
+  }
+  scrapeMotionValuesFromProps(props, prevProps) {
+    return scrapeMotionValuesFromProps$1(props, prevProps);
+  }
+  handleChildMotionValue() {
+    if (this.childSubscription) {
+      this.childSubscription();
+      delete this.childSubscription;
+    }
+    const { children } = this.props;
+    if (isMotionValue(children)) {
+      this.childSubscription = children.on("change", (latest) => {
+        if (this.current)
+          this.current.textContent = `${latest}`;
+      });
+    }
+  }
+  renderInstance(instance, renderState, styleProp, projection) {
+    renderHTML(instance, renderState, styleProp, projection);
+  }
+}
+class SVGVisualElement extends DOMVisualElement {
+  constructor() {
+    super(...arguments);
+    this.isSVGTag = false;
+  }
+  getBaseTargetFromProps(props, key) {
+    return props[key];
+  }
+  readValueFromInstance(instance, key) {
+    if (transformProps.has(key)) {
+      const defaultType = getDefaultValueType(key);
+      return defaultType ? defaultType.default || 0 : 0;
+    }
+    key = !camelCaseAttributes.has(key) ? camelToDash(key) : key;
+    return instance.getAttribute(key);
+  }
+  measureInstanceViewportBox() {
+    return createBox();
+  }
+  scrapeMotionValuesFromProps(props, prevProps) {
+    return scrapeMotionValuesFromProps(props, prevProps);
+  }
+  build(renderState, latestValues, options2, props) {
+    buildSVGAttrs(renderState, latestValues, options2, this.isSVGTag, props.transformTemplate);
+  }
+  renderInstance(instance, renderState, styleProp, projection) {
+    renderSVG(instance, renderState, styleProp, projection);
+  }
+  mount(instance) {
+    this.isSVGTag = isSVGTag(instance.tagName);
+    super.mount(instance);
+  }
+}
+const createDomVisualElement = (Component2, options2) => {
+  return isSVGComponent(Component2) ? new SVGVisualElement(options2, { enableHardwareAcceleration: false }) : new HTMLVisualElement(options2, { enableHardwareAcceleration: true });
+};
+const layout = {
+  layout: {
+    ProjectionNode: HTMLProjectionNode,
+    MeasureLayout
+  }
+};
+const preloadedFeatures = {
+  ...animations,
+  ...gestureAnimations,
+  ...drag,
+  ...layout
+};
+const motion = /* @__PURE__ */ createMotionProxy((Component2, config) => createDomMotionConfig(Component2, config, preloadedFeatures, createDomVisualElement));
+var animateColors = function(timestamp) {
+  var wasWindowIdled = timestamp - this.previousTimeStamp > 100;
+  var isLoop = this.states[this.activeState].loop !== void 0 ? this.states[this.activeState].loop : true;
+  var progressPercent, isLooping, nextGradient;
+  if (this.previousTimeStamp === null || wasWindowIdled) {
+    this.previousTimeStamp = timestamp;
+  }
+  this.progress = this.progress + (timestamp - this.previousTimeStamp);
+  progressPercent = (this.progress / this.activetransitionSpeed * 100).toFixed(2);
+  this.previousTimeStamp = timestamp;
+  this.refreshColorsAndPos(progressPercent);
+  if (progressPercent < 100) {
+    this.animation = requestAnimationFrame(this.animateColors.bind(this));
+  } else {
+    if (this.channelsIndex < this.states[this.activeState].gradients.length - 2 || isLoop) {
+      if (this.isChangingState) {
+        this.activetransitionSpeed = this.states[this.activeState].transitionSpeed || 5e3;
+        this.isChangingState = false;
+      }
+      this.previousTimeStamp = null;
+      this.progress = 0;
+      this.channelsIndex++;
+      isLooping = false;
+      if (this.channelsIndex === this.states[this.activeState].gradients.length - 1) {
+        isLooping = true;
+      } else if (this.channelsIndex === this.states[this.activeState].gradients.length) {
+        this.channelsIndex = 0;
+      }
+      nextGradient = this.states[this.activeState].gradients[this.channelsIndex + 1] === void 0 ? this.states[this.activeState].gradients[0] : this.states[this.activeState].gradients[this.channelsIndex + 1];
+      this.setColors();
+      this.animation = requestAnimationFrame(this.animateColors.bind(this));
+      if (this.callbacks.onGradientChange) {
+        this.callbacks.onGradientChange({
+          isLooping,
+          colorsFrom: this.states[this.activeState].gradients[this.channelsIndex],
+          colorsTo: nextGradient,
+          activeState: this.activeState
+        });
+      }
+      this.canvas.dispatchEvent(this.events.gradientChange({
+        isLooping,
+        colorsFrom: this.states[this.activeState].gradients[this.channelsIndex],
+        colorsTo: nextGradient,
+        activeState: this.activeState
+      }));
+    } else {
+      cancelAnimationFrame(this.animation);
+      if (this.callbacks.onEnd)
+        this.callbacks.onEnd();
+      this.canvas.dispatchEvent(new CustomEvent("granim:end"));
+    }
+  }
+};
+var changeBlendingMode = function(newBlendingMode) {
+  this.context.clearRect(0, 0, this.x1, this.y1);
+  this.context.globalCompositeOperation = this.image.blendingMode = newBlendingMode;
+  this.validateInput("blendingMode");
+  if (this.isPaused)
+    this.refreshColorsAndPos();
+};
+var changeDirection = function(newDirection) {
+  this.context.clearRect(0, 0, this.x1, this.y1);
+  this.direction = newDirection;
+  this.validateInput("direction");
+  if (this.isPaused)
+    this.refreshColorsAndPos();
+};
+var changeState = function(newState) {
+  var _this = this;
+  if (this.activeState === newState) {
+    return;
+  }
+  if (!this.isPaused) {
+    this.isPaused = true;
+    this.pause();
+  }
+  this.channelsIndex = -1;
+  this.activetransitionSpeed = this.stateTransitionSpeed;
+  this.activeColorsDiff = [];
+  this.activeColorsPosDiff = [];
+  this.activeColors = this.getCurrentColors();
+  this.activeColorsPos = this.getCurrentColorsPos();
+  this.progress = 0;
+  this.previousTimeStamp = null;
+  this.isChangingState = true;
+  this.states[newState].gradients[0].forEach(function(gradientColor, i3, arr) {
+    var nextColors = _this.convertColorToRgba(_this.getColor(gradientColor));
+    var nextColorsPos = _this.getColorPos(gradientColor, i3);
+    var colorDiff = _this.getColorDiff(_this.activeColors[i3], nextColors);
+    var colorPosDiff = _this.getColorPosDiff(_this.activeColorsPos[i3], nextColorsPos);
+    _this.activeColorsDiff.push(colorDiff);
+    _this.activeColorsPosDiff.push(colorPosDiff);
+  });
+  this.activeState = newState;
+  this.play();
+};
+var clear = function() {
+  if (!this.isPaused) {
+    cancelAnimationFrame(this.animation);
+  } else {
+    this.isPaused = false;
+  }
+  this.isCleared = true;
+  this.context.clearRect(0, 0, this.x1, this.y1);
+};
+var regex = {
+  hexa: /^#(?:[0-9a-fA-F]{3}){1,2}$/,
+  rgba: /^rgba\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3}), ?(.?\d{1,3})\)$/,
+  rgb: /^rgb\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)$/,
+  hsla: /^hsla\((\d{1,3}), ?(\d{1,3})%, ?(\d{1,3})%, ?(.?\d{1,3})\)$/,
+  hsl: /^hsl\((\d{1,3}), ?(\d{1,3})%, ?(\d{1,3})%\)$/
+}, match;
+var convertColorToRgba = function(color2) {
+  switch (identifyColorType(color2)) {
+    default:
+      this.triggerError("colorType");
+    case "hexa":
+      return hexToRgba(color2);
+    case "rgba":
+      return [
+        parseInt(match[1], 10),
+        parseInt(match[2], 10),
+        parseInt(match[3], 10),
+        parseFloat(match[4])
+      ];
+    case "rgb":
+      return [
+        parseInt(match[1], 10),
+        parseInt(match[2], 10),
+        parseInt(match[3], 10),
+        1
+      ];
+    case "hsla":
+      return hslaToRgb(
+        parseInt(match[1], 10) / 360,
+        parseInt(match[2], 10) / 100,
+        parseInt(match[3], 10) / 100,
+        parseFloat(match[4])
+      );
+    case "hsl":
+      return hslaToRgb(
+        parseInt(match[1], 10) / 360,
+        parseInt(match[2], 10) / 100,
+        parseInt(match[3], 10) / 100,
+        1
+      );
+  }
+};
+function identifyColorType(color2) {
+  var colorTypes2 = Object.keys(regex);
+  var i3 = 0;
+  for (i3; i3 < colorTypes2.length; i3++) {
+    match = regex[colorTypes2[i3]].exec(color2);
+    if (match)
+      return colorTypes2[i3];
+  }
+  return false;
+}
+function hexToRgba(hex2) {
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex2 = hex2.replace(shorthandRegex, function(m2, r3, g2, b2) {
+    return r3 + r3 + g2 + g2 + b2 + b2;
+  });
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex2);
+  return result ? [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16),
+    1
+  ] : null;
+}
+function hue2rgb(p2, q2, t4) {
+  if (t4 < 0)
+    t4 += 1;
+  if (t4 > 1)
+    t4 -= 1;
+  if (t4 < 1 / 6)
+    return p2 + (q2 - p2) * 6 * t4;
+  if (t4 < 1 / 2)
+    return q2;
+  if (t4 < 2 / 3)
+    return p2 + (q2 - p2) * (2 / 3 - t4) * 6;
+  return p2;
+}
+function hslaToRgb(h2, s3, l2, a2) {
+  var r3, g2, b2, q2, p2;
+  if (s3 === 0) {
+    r3 = g2 = b2 = l2;
+  } else {
+    q2 = l2 < 0.5 ? l2 * (1 + s3) : l2 + s3 - l2 * s3;
+    p2 = 2 * l2 - q2;
+    r3 = hue2rgb(p2, q2, h2 + 1 / 3);
+    g2 = hue2rgb(p2, q2, h2);
+    b2 = hue2rgb(p2, q2, h2 - 1 / 3);
+  }
+  return [Math.round(r3 * 255), Math.round(g2 * 255), Math.round(b2 * 255), a2];
+}
+var destroy = function() {
+  this.onResize("removeListeners");
+  this.onScroll("removeListeners");
+  this.clear();
+};
+var eventPolyfill = function() {
+  if (typeof window.CustomEvent === "function")
+    return;
+  function CustomEvent2(event, params) {
+    params = params || { bubbles: false, cancelable: false, detail: void 0 };
+    var evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    return evt;
+  }
+  CustomEvent2.prototype = window.Event.prototype;
+  window.CustomEvent = CustomEvent2;
+};
+var getColor = function(gradientColor) {
+  if (typeof gradientColor === "string") {
+    return gradientColor;
+  } else if (typeof gradientColor === "object" && gradientColor.color) {
+    return gradientColor.color;
+  } else {
+    this.triggerError("gradient.color");
+  }
+};
+var getColorDiff = function(colorA, colorB) {
+  var i3 = 0;
+  var colorDiff = [];
+  for (i3; i3 < 4; i3++) {
+    colorDiff.push(colorB[i3] - colorA[i3]);
+  }
+  return colorDiff;
+};
+var getColorPos = function(gradientColor, i3) {
+  if (typeof gradientColor === "object" && gradientColor.pos) {
+    return gradientColor.pos;
+  } else {
+    return parseFloat(!i3 ? 0 : (1 / (this.gradientLength - 1) * i3).toFixed(2));
+  }
+};
+var getColorPosDiff = function(posA, posB) {
+  return posB - posA;
+};
+var getCurrentColors = function() {
+  var i3, j2;
+  var currentColors = [];
+  for (i3 = 0; i3 < this.currentColors.length; i3++) {
+    currentColors.push([]);
+    for (j2 = 0; j2 < 4; j2++) {
+      currentColors[i3].push(this.currentColors[i3][j2]);
+    }
+  }
+  return currentColors;
+};
+var getCurrentColorsPos = function() {
+  var currentColorsPos = [], i3;
+  for (i3 = 0; i3 < this.currentColorsPos.length; i3++) {
+    currentColorsPos.push(this.currentColorsPos[i3]);
+  }
+  return currentColorsPos;
+};
+var getDimensions = function() {
+  this.x1 = this.canvas.offsetWidth;
+  this.y1 = this.canvas.offsetHeight;
+};
+var getElement = function(element) {
+  if (element instanceof HTMLCanvasElement) {
+    this.canvas = element;
+  } else if (typeof element === "string") {
+    this.canvas = document.querySelector(element);
+  } else {
+    throw new Error("The element you used is neither a String, nor a HTMLCanvasElement");
+  }
+  if (!this.canvas) {
+    throw new Error("`" + element + "` could not be found in the DOM");
+  }
+};
+var getLightness = function() {
+  var currentColors = this.getCurrentColors();
+  var gradientAverage = null;
+  var lightnessAverage, i3;
+  var colorsAverage = currentColors.map(function(el2) {
+    return Math.max(el2[0], el2[1], el2[2]);
+  });
+  for (i3 = 0; i3 < colorsAverage.length; i3++) {
+    gradientAverage = gradientAverage === null ? colorsAverage[i3] : gradientAverage + colorsAverage[i3];
+    if (i3 === colorsAverage.length - 1) {
+      lightnessAverage = Math.round(gradientAverage / (i3 + 1));
+    }
+  }
+  return lightnessAverage >= 128 ? "light" : "dark";
+};
+var makeGradient = function() {
+  var gradient = this.setDirection();
+  var elToSetClassOnClass = document.querySelector(this.elToSetClassOn).classList;
+  var i3 = 0;
+  this.context.clearRect(0, 0, this.x1, this.y1);
+  if (this.image) {
+    this.context.drawImage(
+      this.imageNode,
+      this.imagePosition.x,
+      this.imagePosition.y,
+      this.imagePosition.width,
+      this.imagePosition.height
+    );
+  }
+  for (i3; i3 < this.currentColors.length; i3++) {
+    gradient.addColorStop(
+      this.currentColorsPos[i3],
+      "rgba(" + this.currentColors[i3][0] + ", " + this.currentColors[i3][1] + ", " + this.currentColors[i3][2] + ", " + this.currentColors[i3][3] + ")"
+    );
+  }
+  if (this.name) {
+    if (this.getLightness() === "light") {
+      elToSetClassOnClass.remove(this.name + "-dark");
+      elToSetClassOnClass.add(this.name + "-light");
+    } else {
+      elToSetClassOnClass.remove(this.name + "-light");
+      elToSetClassOnClass.add(this.name + "-dark");
+    }
+  }
+  this.context.fillStyle = gradient;
+  this.context.fillRect(0, 0, this.x1, this.y1);
+};
+var onResize = function(type) {
+  if (type === "removeListeners") {
+    window.removeEventListener("resize", this.setSizeAttributesNameSpace);
+    return;
+  }
+  window.addEventListener("resize", this.setSizeAttributesNameSpace);
+};
+var onScroll = function(type) {
+  if (type === "removeListeners") {
+    window.removeEventListener("scroll", this.pauseWhenNotInViewNameSpace);
+    return;
+  }
+  window.addEventListener("scroll", this.pauseWhenNotInViewNameSpace);
+  this.pauseWhenNotInViewNameSpace();
+};
+var pause = function(state) {
+  var isPausedBecauseNotInView = state === "isPausedBecauseNotInView";
+  if (this.isCleared)
+    return;
+  if (!isPausedBecauseNotInView)
+    this.isPaused = true;
+  cancelAnimationFrame(this.animation);
+  this.animating = false;
+};
+var pauseWhenNotInView = function() {
+  var _this = this;
+  if (this.scrollDebounceTimeout)
+    clearTimeout(this.scrollDebounceTimeout);
+  this.scrollDebounceTimeout = setTimeout(function() {
+    var elPos = _this.canvas.getBoundingClientRect();
+    _this.isCanvasInWindowView = !(elPos.bottom < 0 || elPos.right < 0 || elPos.left > window.innerWidth || elPos.top > window.innerHeight);
+    if (_this.isCanvasInWindowView) {
+      if (!_this.isPaused || _this.firstScrollInit) {
+        if (_this.image && !_this.isImgLoaded) {
+          return;
+        }
+        _this.isPausedBecauseNotInView = false;
+        _this.play("isPlayedBecauseInView");
+        _this.firstScrollInit = false;
+      }
+    } else {
+      if (!_this.image && _this.firstScrollInit) {
+        _this.refreshColorsAndPos();
+        _this.firstScrollInit = false;
+      }
+      if (!_this.isPaused && !_this.isPausedBecauseNotInView) {
+        _this.isPausedBecauseNotInView = true;
+        _this.pause("isPausedBecauseNotInView");
+      }
+    }
+  }, this.scrollDebounceThreshold);
+};
+var play = function(state) {
+  var isPlayedBecauseInView = state === "isPlayedBecauseInView";
+  if (!isPlayedBecauseInView)
+    this.isPaused = false;
+  this.isCleared = false;
+  if (!this.animating) {
+    this.animation = requestAnimationFrame(this.animateColors.bind(this));
+    this.animating = true;
+  }
+};
+var prepareImage = function() {
+  var _this = this;
+  if (!this.imagePosition) {
+    this.imagePosition = { x: 0, y: 0, width: 0, height: 0 };
+  }
+  if (this.image.blendingMode) {
+    this.context.globalCompositeOperation = this.image.blendingMode;
+  }
+  if (this.imageNode) {
+    setImagePosition();
+    return;
+  }
+  this.imageNode = new Image();
+  this.imageNode.onerror = function() {
+    throw new Error("Granim: The image source is invalid.");
+  };
+  this.imageNode.onload = function() {
+    _this.imgOriginalWidth = _this.imageNode.width;
+    _this.imgOriginalHeight = _this.imageNode.height;
+    setImagePosition();
+    _this.refreshColorsAndPos();
+    if (!_this.isPausedWhenNotInView || _this.isCanvasInWindowView) {
+      _this.animation = requestAnimationFrame(_this.animateColors.bind(_this));
+    }
+    _this.isImgLoaded = true;
+  };
+  this.imageNode.src = this.image.source;
+  function setImagePosition() {
+    var i3, currentAxis;
+    for (i3 = 0; i3 < 2; i3++) {
+      currentAxis = !i3 ? "x" : "y";
+      setImageAxisPosition(currentAxis);
+    }
+    function setImageAxisPosition(axis) {
+      var canvasWidthOrHeight = _this[axis + "1"];
+      var imgOriginalWidthOrHeight = _this[axis === "x" ? "imgOriginalWidth" : "imgOriginalHeight"];
+      var imageAlignIndex = axis === "x" ? _this.image.position[0] : _this.image.position[1];
+      var imageAxisPosition;
+      switch (imageAlignIndex) {
+        case "center":
+          imageAxisPosition = imgOriginalWidthOrHeight > canvasWidthOrHeight ? -(imgOriginalWidthOrHeight - canvasWidthOrHeight) / 2 : (canvasWidthOrHeight - imgOriginalWidthOrHeight) / 2;
+          _this.imagePosition[axis] = imageAxisPosition;
+          _this.imagePosition[axis === "x" ? "width" : "height"] = imgOriginalWidthOrHeight;
+          break;
+        case "top":
+          _this.imagePosition["y"] = 0;
+          _this.imagePosition["height"] = imgOriginalWidthOrHeight;
+          break;
+        case "bottom":
+          _this.imagePosition["y"] = canvasWidthOrHeight - imgOriginalWidthOrHeight;
+          _this.imagePosition["height"] = imgOriginalWidthOrHeight;
+          break;
+        case "right":
+          _this.imagePosition["x"] = canvasWidthOrHeight - imgOriginalWidthOrHeight;
+          _this.imagePosition["width"] = imgOriginalWidthOrHeight;
+          break;
+        case "left":
+          _this.imagePosition["x"] = 0;
+          _this.imagePosition["width"] = imgOriginalWidthOrHeight;
+          break;
+      }
+      if (_this.image.stretchMode) {
+        imageAlignIndex = axis === "x" ? _this.image.stretchMode[0] : _this.image.stretchMode[1];
+        switch (imageAlignIndex) {
+          case "none":
+            break;
+          case "stretch":
+            _this.imagePosition[axis] = 0;
+            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
+            break;
+          case "stretch-if-bigger":
+            if (imgOriginalWidthOrHeight < canvasWidthOrHeight)
+              break;
+            _this.imagePosition[axis] = 0;
+            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
+            break;
+          case "stretch-if-smaller":
+            if (imgOriginalWidthOrHeight > canvasWidthOrHeight)
+              break;
+            _this.imagePosition[axis] = 0;
+            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
+            break;
+        }
+      }
+    }
+  }
+};
+var refreshColorsAndPos = function(progressPercent) {
+  var _this = this, activeChannel, activeChannelPos, i3, j2;
+  for (i3 = 0; i3 < this.activeColors.length; i3++) {
+    for (j2 = 0; j2 < 4; j2++) {
+      activeChannel = _this.activeColors[i3][j2] + (j2 !== 3 ? Math.ceil(_this.activeColorsDiff[i3][j2] / 100 * progressPercent) : Math.round(_this.activeColorsDiff[i3][j2] / 100 * progressPercent * 100) / 100);
+      if (activeChannel <= 255 && activeChannel >= 0) {
+        _this.currentColors[i3][j2] = activeChannel;
+      }
+    }
+    activeChannelPos = parseFloat((_this.activeColorsPos[i3] + _this.activeColorsPosDiff[i3] / 100 * progressPercent).toFixed(4));
+    if (activeChannelPos <= 1 && activeChannelPos >= 0) {
+      _this.currentColorsPos[i3] = activeChannelPos;
+    }
+  }
+  this.makeGradient();
+};
+var setColors = function() {
+  var _this = this, colorDiff, colorPosDiff, nextColors, nextColorsPos;
+  if (!this.channels[this.activeState])
+    this.channels[this.activeState] = [];
+  if (this.channels[this.activeState][this.channelsIndex] !== void 0) {
+    this.activeColors = this.channels[this.activeState][this.channelsIndex].colors;
+    this.activeColorsDiff = this.channels[this.activeState][this.channelsIndex].colorsDiff;
+    this.activeColorsPos = this.channels[this.activeState][this.channelsIndex].colorsPos;
+    this.activeColorsPosDiff = this.channels[this.activeState][this.channelsIndex].colorsPosDiff;
+    return;
+  }
+  this.channels[this.activeState].push([{}]);
+  this.channels[this.activeState][this.channelsIndex].colors = [];
+  this.channels[this.activeState][this.channelsIndex].colorsDiff = [];
+  this.channels[this.activeState][this.channelsIndex].colorsPos = [];
+  this.channels[this.activeState][this.channelsIndex].colorsPosDiff = [];
+  this.activeColors = [];
+  this.activeColorsDiff = [];
+  this.activeColorsPos = [];
+  this.activeColorsPosDiff = [];
+  this.states[this.activeState].gradients[this.channelsIndex].forEach(function(color2, i3) {
+    var colorPos = _this.getColorPos(color2, i3);
+    var color2 = _this.getColor(color2);
+    var rgbaColor = _this.convertColorToRgba(color2);
+    var activeChannel = _this.channels[_this.activeState];
+    activeChannel[_this.channelsIndex].colors.push(rgbaColor);
+    _this.activeColors.push(rgbaColor);
+    activeChannel[_this.channelsIndex].colorsPos.push(colorPos);
+    _this.activeColorsPos.push(colorPos);
+    if (!_this.isCurrentColorsSet) {
+      _this.currentColors.push(_this.convertColorToRgba(color2));
+      _this.currentColorsPos.push(colorPos);
+    }
+    if (_this.channelsIndex === _this.states[_this.activeState].gradients.length - 1) {
+      colorDiff = _this.getColorDiff(
+        activeChannel[_this.channelsIndex].colors[i3],
+        activeChannel[0].colors[i3]
+      );
+      colorPosDiff = _this.getColorPosDiff(
+        activeChannel[_this.channelsIndex].colorsPos[i3],
+        activeChannel[0].colorsPos[i3]
+      );
+    } else {
+      nextColors = _this.convertColorToRgba(_this.getColor(_this.states[_this.activeState].gradients[_this.channelsIndex + 1][i3]));
+      nextColorsPos = _this.getColorPos(_this.states[_this.activeState].gradients[_this.channelsIndex + 1][i3], i3);
+      colorDiff = _this.getColorDiff(activeChannel[_this.channelsIndex].colors[i3], nextColors);
+      colorPosDiff = _this.getColorPosDiff(activeChannel[_this.channelsIndex].colorsPos[i3], nextColorsPos);
+    }
+    activeChannel[_this.channelsIndex].colorsDiff.push(colorDiff);
+    _this.activeColorsDiff.push(colorDiff);
+    activeChannel[_this.channelsIndex].colorsPosDiff.push(colorPosDiff);
+    _this.activeColorsPosDiff.push(colorPosDiff);
+  });
+  this.activetransitionSpeed = this.states[this.activeState].transitionSpeed || 5e3;
+  this.isCurrentColorsSet = true;
+};
+var setDirection = function() {
+  var ctx = this.context;
+  switch (this.direction) {
+    case "diagonal":
+      return ctx.createLinearGradient(0, 0, this.x1, this.y1);
+    case "left-right":
+      return ctx.createLinearGradient(0, 0, this.x1, 0);
+    case "top-bottom":
+      return ctx.createLinearGradient(this.x1 / 2, 0, this.x1 / 2, this.y1);
+    case "radial":
+      return ctx.createRadialGradient(this.x1 / 2, this.y1 / 2, this.x1 / 2, this.x1 / 2, this.y1 / 2, 0);
+    case "custom":
+      return ctx.createLinearGradient(
+        getCustomCoordinateInPixels(this.customDirection.x0, this.x1),
+        getCustomCoordinateInPixels(this.customDirection.y0, this.y1),
+        getCustomCoordinateInPixels(this.customDirection.x1, this.x1),
+        getCustomCoordinateInPixels(this.customDirection.y1, this.y1)
+      );
+  }
+};
+function getCustomCoordinateInPixels(coordinate, size) {
+  return coordinate.indexOf("%") > -1 ? size / 100 * parseInt(coordinate.split("%")[0], 10) : parseInt(coordinate.split("px")[0], 10);
+}
+var setSizeAttributes = function() {
+  this.getDimensions();
+  this.canvas.setAttribute("width", this.x1);
+  this.canvas.setAttribute("height", this.y1);
+  if (this.image)
+    this.prepareImage();
+  this.refreshColorsAndPos();
+};
+var triggerError = function(element) {
+  var siteURL = "https://sarcadass.github.io/granim.js/api.html";
+  throw new Error('Granim: Input error on "' + element + '" option.\nCheck the API ' + siteURL + ".");
+};
+var validateInput = function(inputType) {
+  var xPositionValues = ["left", "center", "right"];
+  var yPositionValues = ["top", "center", "bottom"];
+  var stretchModeValues = ["none", "stretch", "stretch-if-smaller", "stretch-if-bigger"];
+  var blendingModeValues = [
+    "multiply",
+    "screen",
+    "normal",
+    "overlay",
+    "darken",
+    "lighten",
+    "lighter",
+    "color-dodge",
+    "color-burn",
+    "hard-light",
+    "soft-light",
+    "difference",
+    "exclusion",
+    "hue",
+    "saturation",
+    "color",
+    "luminosity"
+  ];
+  var directionValues = ["diagonal", "left-right", "top-bottom", "radial", "custom"];
+  switch (inputType) {
+    case "image":
+      if (!Array.isArray(this.image.position) || this.image.position.length !== 2 || xPositionValues.indexOf(this.image.position[0]) === -1 || yPositionValues.indexOf(this.image.position[1]) === -1) {
+        this.triggerError("image.position");
+      }
+      if (this.image.stretchMode) {
+        if (!Array.isArray(this.image.stretchMode) || this.image.stretchMode.length !== 2 || stretchModeValues.indexOf(this.image.stretchMode[0]) === -1 || stretchModeValues.indexOf(this.image.stretchMode[1]) === -1) {
+          this.triggerError("image.stretchMode");
+        }
+      }
+      break;
+    case "blendingMode":
+      if (blendingModeValues.indexOf(this.image.blendingMode) === -1) {
+        this.clear();
+        this.triggerError("blendingMode");
+      }
+      break;
+    case "direction":
+      if (directionValues.indexOf(this.direction) === -1) {
+        this.triggerError("direction");
+      } else {
+        if (this.direction === "custom") {
+          if (!areDefinedInPixelsOrPercentage([
+            this.customDirection.x0,
+            this.customDirection.x1,
+            this.customDirection.y0,
+            this.customDirection.y1
+          ])) {
+            this.triggerError("customDirection");
+          }
+        }
+      }
+      break;
+  }
+};
+function areDefinedInPixelsOrPercentage(array) {
+  var definedInPixelsOrPercentage = true, i3 = 0, value;
+  while (definedInPixelsOrPercentage && i3 < array.length) {
+    value = array[i3];
+    if (typeof value !== "string") {
+      definedInPixelsOrPercentage = false;
+    } else {
+      var splittedValue = null;
+      var unit = null;
+      if (value.indexOf("px") !== -1)
+        unit = "px";
+      if (value.indexOf("%") !== -1)
+        unit = "%";
+      splittedValue = value.split(unit).filter(function(value2) {
+        return value2.length > 0;
+      });
+      if (!unit || splittedValue.length > 2 || !splittedValue[0] || splittedValue[1] || !/^-?\d+\.?\d*$/.test(splittedValue[0])) {
+        definedInPixelsOrPercentage = false;
+      }
+    }
+    i3++;
+  }
+  return definedInPixelsOrPercentage;
+}
+function Granim$1(options2) {
+  this.getElement(options2.element);
+  this.x1 = 0;
+  this.y1 = 0;
+  this.name = options2.name || false;
+  this.elToSetClassOn = options2.elToSetClassOn || "body";
+  this.direction = options2.direction || "diagonal";
+  this.customDirection = options2.customDirection || {};
+  this.validateInput("direction");
+  this.isPausedWhenNotInView = options2.isPausedWhenNotInView || false;
+  this.states = options2.states;
+  this.stateTransitionSpeed = options2.stateTransitionSpeed || 1e3;
+  this.previousTimeStamp = null;
+  this.progress = 0;
+  this.isPaused = false;
+  this.isCleared = false;
+  this.isPausedBecauseNotInView = false;
+  this.context = this.canvas.getContext("2d");
+  this.channels = {};
+  this.channelsIndex = 0;
+  this.activeState = options2.defaultStateName || "default-state";
+  this.isChangingState = false;
+  this.currentColors = [];
+  this.currentColorsPos = [];
+  this.activetransitionSpeed = null;
+  this.eventPolyfill();
+  this.scrollDebounceThreshold = options2.scrollDebounceThreshold || 300;
+  this.scrollDebounceTimeout = null;
+  this.isImgLoaded = false;
+  this.isCanvasInWindowView = false;
+  this.firstScrollInit = true;
+  this.animating = false;
+  this.gradientLength = this.states[this.activeState].gradients[0].length;
+  if (options2.image && options2.image.source) {
+    this.image = {
+      source: options2.image.source,
+      position: options2.image.position || ["center", "center"],
+      stretchMode: options2.image.stretchMode || false,
+      blendingMode: options2.image.blendingMode || false
+    };
+  }
+  this.events = {
+    start: new CustomEvent("granim:start"),
+    end: new CustomEvent("granim:end"),
+    gradientChange: function(details) {
+      return new CustomEvent("granim:gradientChange", {
+        detail: {
+          isLooping: details.isLooping,
+          colorsFrom: details.colorsFrom,
+          colorsTo: details.colorsTo,
+          activeState: details.activeState
+        },
+        bubbles: false,
+        cancelable: false
+      });
+    }
+  };
+  this.callbacks = {
+    onStart: typeof options2.onStart === "function" ? options2.onStart : false,
+    onGradientChange: typeof options2.onGradientChange === "function" ? options2.onGradientChange : false,
+    onEnd: typeof options2.onEnd === "function" ? options2.onEnd : false
+  };
+  this.getDimensions();
+  this.canvas.setAttribute("width", this.x1);
+  this.canvas.setAttribute("height", this.y1);
+  this.setColors();
+  if (this.image) {
+    this.validateInput("image");
+    this.prepareImage();
+  }
+  this.pauseWhenNotInViewNameSpace = this.pauseWhenNotInView.bind(this);
+  this.setSizeAttributesNameSpace = this.setSizeAttributes.bind(this);
+  this.onResize();
+  if (this.isPausedWhenNotInView) {
+    this.onScroll();
+  } else {
+    if (!this.image) {
+      this.refreshColorsAndPos();
+      this.animation = requestAnimationFrame(this.animateColors.bind(this));
+      this.animating = true;
+    }
+  }
+  if (this.callbacks.onStart)
+    this.callbacks.onStart();
+  this.canvas.dispatchEvent(this.events.start);
+}
+Granim$1.prototype.animateColors = animateColors;
+Granim$1.prototype.changeBlendingMode = changeBlendingMode;
+Granim$1.prototype.changeDirection = changeDirection;
+Granim$1.prototype.changeState = changeState;
+Granim$1.prototype.clear = clear;
+Granim$1.prototype.convertColorToRgba = convertColorToRgba;
+Granim$1.prototype.destroy = destroy;
+Granim$1.prototype.eventPolyfill = eventPolyfill;
+Granim$1.prototype.getColor = getColor;
+Granim$1.prototype.getColorDiff = getColorDiff;
+Granim$1.prototype.getColorPos = getColorPos;
+Granim$1.prototype.getColorPosDiff = getColorPosDiff;
+Granim$1.prototype.getCurrentColors = getCurrentColors;
+Granim$1.prototype.getCurrentColorsPos = getCurrentColorsPos;
+Granim$1.prototype.getDimensions = getDimensions;
+Granim$1.prototype.getElement = getElement;
+Granim$1.prototype.getLightness = getLightness;
+Granim$1.prototype.makeGradient = makeGradient;
+Granim$1.prototype.onResize = onResize;
+Granim$1.prototype.onScroll = onScroll;
+Granim$1.prototype.pause = pause;
+Granim$1.prototype.pauseWhenNotInView = pauseWhenNotInView;
+Granim$1.prototype.play = play;
+Granim$1.prototype.prepareImage = prepareImage;
+Granim$1.prototype.refreshColorsAndPos = refreshColorsAndPos;
+Granim$1.prototype.setColors = setColors;
+Granim$1.prototype.setDirection = setDirection;
+Granim$1.prototype.setSizeAttributes = setSizeAttributes;
+Granim$1.prototype.triggerError = triggerError;
+Granim$1.prototype.validateInput = validateInput;
+var Granim_1 = Granim$1;
+var granim = Granim_1;
+const Granim = /* @__PURE__ */ getDefaultExportFromCjs(granim);
+const useThemeStore = create()(
+  (set2) => ({
+    authWallpaperDark: false,
+    setAuthWallpaperDark: (authWallpaperDark) => set2(() => ({
+      authWallpaperDark
+    }))
+  })
+);
+const AuthWallpaper = () => {
+  const canvasRef = reactExports.useRef(null);
+  const setAuthWallpaperDark = useThemeStore((state) => state.setAuthWallpaperDark);
+  reactExports.useEffect(() => {
+    let g2;
+    if (canvasRef.current) {
+      g2 = new Granim({
+        element: canvasRef.current,
+        direction: "diagonal",
+        states: {
+          "default-state": {
+            gradients: [
+              ["#00d2ff", "#3a7bd5"],
+              ["#4776E6", "#8E54E9"],
+              ["#000428", "#004e92"],
+              ["#FF512F", "#DD2476"],
+              ["#fd746c", "#ff9068"],
+              ["#6a3093", "#a044ff"],
+              ["#76b852", "#8DC26F"],
+              ["#005C97", "#363795"]
+            ]
+          }
+        },
+        onGradientChange: (e3) => {
+          const isDark = compareSlices(e3.colorsTo, ["#000428", "#004e92"]);
+          setAuthWallpaperDark(isDark);
+          console.debug("isDark", isDark);
+        }
+      });
+    }
+    return () => {
+      if (g2) {
+        g2.destroy();
+      }
+    };
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "canvas",
+    {
+      ref: canvasRef,
+      className: "absolute w-full h-full -z-10",
+      style: { position: "fixed" }
+    }
+  );
+};
+const shakeAnimation = {
+  x: [0, -500, 500, -500, 500, 0],
+  y: [0, 0, 0, 0, 0, 0]
+};
+function Auth() {
+  const setVerified = useAuthStore((state) => state.setVerified);
+  const setPassword = useAuthStore((state) => state.setPassword);
+  const authWallpaperDark = useThemeStore((state) => state.authWallpaperDark);
+  const [value, setValue] = reactExports.useState("");
+  const [isError, setIsError] = reactExports.useState(false);
+  const validatePassword = (password) => {
+    if (password === "ppp") {
+      setVerified(true);
+      setPassword(password);
+      return true;
+    }
+    return false;
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!validatePassword(value)) {
+      setIsError(true);
+      setValue("");
+    } else {
+      setIsError(false);
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(AuthWallpaper, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "flex flex-col items-center justify-center h-screen w-screen overflow-hidden gap-14 transition-colors",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-borel text-6xl lg:text-9xl  tracking-widest z-10 transition duration-5000 " + (authWallpaperDark ? "text-equal-200" : "text-equal-800"), children: "Let's talk" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("form", { className: "z-10 max-w-3/4 w-96 mb-[25vh]", onSubmit: handleSubmit, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.input,
+            {
+              type: "password",
+              inputMode: "url",
+              id: "password",
+              value,
+              autoComplete: "current-password",
+              animate: isError ? shakeAnimation : {},
+              transition: { stiffness: 300, damping: 30 },
+              onChange: (e3) => {
+                setValue(e3.target.value);
+                setIsError(false);
+              },
+              className: "appearance-none w-full h-16 rounded-lg outline-0 shadow-md caret-transparent text-6xl text-center tracking-widest bg-white bg-opacity-10 backdrop-blur placeholder:text-equal-200 transition duration-5000" + (authWallpaperDark ? "text-equal-200" : "text-equal-800")
+            }
+          ) })
+        ]
+      }
+    )
+  ] });
+}
+const App$1 = "";
+function e$3(e3, t4, s3, i3) {
+  return new (s3 || (s3 = Promise))(function(r3, n2) {
+    function o3(e4) {
+      try {
+        c2(i3.next(e4));
+      } catch (e5) {
+        n2(e5);
+      }
+    }
+    function a2(e4) {
+      try {
+        c2(i3.throw(e4));
+      } catch (e5) {
+        n2(e5);
+      }
+    }
+    function c2(e4) {
+      var t5;
+      e4.done ? r3(e4.value) : (t5 = e4.value, t5 instanceof s3 ? t5 : new s3(function(e5) {
+        e5(t5);
+      })).then(o3, a2);
+    }
+    c2((i3 = i3.apply(e3, t4 || [])).next());
+  });
+}
+"function" == typeof SuppressedError && SuppressedError;
+let t$4 = class t {
+  constructor() {
+    this.listeners = {};
+  }
+  on(e3, t4) {
+    return this.listeners[e3] || (this.listeners[e3] = /* @__PURE__ */ new Set()), this.listeners[e3].add(t4), () => this.un(e3, t4);
+  }
+  once(e3, t4) {
+    const s3 = this.on(e3, t4), i3 = this.on(e3, () => {
+      s3(), i3();
+    });
+    return s3;
+  }
+  un(e3, t4) {
+    this.listeners[e3] && (t4 ? this.listeners[e3].delete(t4) : delete this.listeners[e3]);
+  }
+  unAll() {
+    this.listeners = {};
+  }
+  emit(e3, ...t4) {
+    this.listeners[e3] && this.listeners[e3].forEach((e4) => e4(...t4));
+  }
+};
+let s$7 = class s extends t$4 {
+  constructor(e3) {
+    super(), this.subscriptions = [], this.options = e3;
+  }
+  onInit() {
+  }
+  init(e3) {
+    this.wavesurfer = e3, this.onInit();
+  }
+  destroy() {
+    this.emit("destroy"), this.subscriptions.forEach((e3) => e3());
+  }
+};
+const i$5 = ["audio/webm", "audio/wav", "audio/mpeg", "audio/mp4", "audio/mp3"];
+let r$2 = class r extends s$7 {
+  constructor() {
+    super(...arguments), this.stream = null, this.mediaRecorder = null;
+  }
+  static create(e3) {
+    return new r(e3 || {});
+  }
+  renderMicStream(e3) {
+    const t4 = new AudioContext(), s3 = t4.createMediaStreamSource(e3), i3 = t4.createAnalyser();
+    s3.connect(i3);
+    const r3 = i3.frequencyBinCount, n2 = new Float32Array(r3), o3 = r3 / t4.sampleRate;
+    let a2;
+    const c2 = () => {
+      i3.getFloatTimeDomainData(n2), this.wavesurfer && (this.wavesurfer.options.cursorWidth = 0, this.wavesurfer.options.interact = false, this.wavesurfer.load("", [n2], o3)), a2 = requestAnimationFrame(c2);
+    };
+    return c2(), () => {
+      cancelAnimationFrame(a2), null == s3 || s3.disconnect(), null == t4 || t4.close();
+    };
+  }
+  startMic() {
+    return e$3(this, void 0, void 0, function* () {
+      let e3;
+      try {
+        e3 = yield navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (e4) {
+        throw new Error("Error accessing the microphone: " + e4.message);
+      }
+      const t4 = this.renderMicStream(e3);
+      return this.subscriptions.push(this.once("destroy", t4)), this.stream = e3, e3;
+    });
+  }
+  stopMic() {
+    this.stream && (this.stream.getTracks().forEach((e3) => e3.stop()), this.stream = null);
+  }
+  startRecording() {
+    return e$3(this, void 0, void 0, function* () {
+      const e3 = this.stream || (yield this.startMic()), t4 = this.mediaRecorder || new MediaRecorder(e3, { mimeType: this.options.mimeType || i$5.find((e4) => MediaRecorder.isTypeSupported(e4)), audioBitsPerSecond: this.options.audioBitsPerSecond });
+      this.mediaRecorder = t4, this.stopRecording();
+      const s3 = [];
+      t4.ondataavailable = (e4) => {
+        e4.data.size > 0 && s3.push(e4.data);
+      }, t4.onstop = () => {
+        var e4;
+        const i3 = new Blob(s3, { type: t4.mimeType });
+        this.emit("record-end", i3), false !== this.options.renderRecordedAudio && (null === (e4 = this.wavesurfer) || void 0 === e4 || e4.load(URL.createObjectURL(i3)));
+      }, t4.start(), this.emit("record-start");
+    });
+  }
+  isRecording() {
+    var e3;
+    return "recording" === (null === (e3 = this.mediaRecorder) || void 0 === e3 ? void 0 : e3.state);
+  }
+  stopRecording() {
+    var e3;
+    this.isRecording() && (null === (e3 = this.mediaRecorder) || void 0 === e3 || e3.stop());
+  }
+  destroy() {
+    super.destroy(), this.stopRecording(), this.stopMic();
+  }
+};
+class MyRecorder {
+  constructor(recordingMimeType) {
+    __publicField(this, "r");
+    __publicField(this, "recodingStatus");
+    __publicField(this, "onStartF");
+    __publicField(this, "onDoneF");
+    __publicField(this, "onCancelF");
+    this.r = r$2.create({
+      mimeType: recordingMimeType == null ? void 0 : recordingMimeType.mimeType,
+      audioBitsPerSecond: 1e5
+    });
+    this.recodingStatus = "init-idle";
+    this.onStartF = () => {
+    };
+    this.onDoneF = (_blob) => {
+    };
+    this.onCancelF = (_blob) => {
+    };
+    this.r.on("record-start", () => {
+      var _a;
+      switch (this.recodingStatus) {
+        case "recording":
+          (_a = this.onStartF) == null ? void 0 : _a.call(this);
+          break;
+        case "init-idle":
+        case "done":
+        case "canceled":
+          throw new Error("recorder has not started");
+      }
+    });
+    this.r.on("record-end", (blob) => {
+      var _a, _b;
+      switch (this.recodingStatus) {
+        case "recording":
+          throw new Error("recorder has not stopped");
+        case "init-idle":
+          throw new Error("recorder is at illegal state");
+        case "done":
+          (_a = this.onDoneF) == null ? void 0 : _a.call(this, blob);
+          break;
+        case "canceled":
+          (_b = this.onCancelF) == null ? void 0 : _b.call(this, blob);
+          break;
+      }
+    });
+  }
+  onStart(f2) {
+    this.onStartF = f2;
+  }
+  onDone(f2) {
+    this.onDoneF = f2;
+  }
+  onCancel(f2) {
+    this.onCancelF = f2;
+  }
+  start() {
+    this.recodingStatus = "recording";
+    return this.r.startRecording();
+  }
+  done() {
+    this.recodingStatus = "done";
+    this.r.stopRecording();
+  }
+  cancel() {
+    this.recodingStatus = "canceled";
+    this.r.stopRecording();
+  }
+  toggleRecord(c2) {
+    if (this.r.isRecording()) {
+      this.done();
+    } else {
+      this.start().catch(c2);
+    }
+  }
+}
+const useRecorderStore = create(
+  (set2) => ({
+    isRecording: false,
+    duration: 0,
+    recordingMimeType: chooseAudioMimeType(),
+    recorder: new MyRecorder(chooseAudioMimeType()),
+    setIsRecording: (isRecording) => set2((state) => ({
+      ...state,
+      isRecording
+    })),
+    setDuration: (duration) => set2((state) => ({
+      ...state,
+      duration
+    })),
+    incrDuration: (incr) => set2((state) => ({
+      ...state,
+      duration: state.duration + incr
+    }))
+  })
+);
+const useTextAreaStore = create(() => ({ inputAreaIsLarge: false }));
+const useInputStore = create(() => ({ inputText: "" }));
+const useSendingTextStore = create(() => ({ sendingText: "" }));
+const emptyBlob = new Blob([], { type: "audio/mp3" });
+const useSendingAudioStore = create(() => ({ sendingAudio: emptyBlob }));
+const Recorder = () => {
+  const isRecording = useRecorderStore((state) => state.isRecording);
+  const recorder = useRecorderStore((state) => state.recorder);
+  const setIsRecording = useRecorderStore((state) => state.setIsRecording);
+  const recordDuration = useRecorderStore((state) => state.duration);
+  reactExports.useEffect(() => {
+    recorder.onDone((blob) => {
+      setIsRecording(false);
+      useSendingAudioStore.setState({ sendingAudio: blob });
+    });
+    recorder.onStart(() => {
+      setIsRecording(true);
+    });
+    recorder.onCancel(() => {
+      setIsRecording(false);
+    });
+  }, []);
+  const handleClick = () => {
+    recorder.toggleRecord((e3) => {
+      console.error("failed to start recorder", e3);
+    });
+  };
+  const handleTouchStart = () => {
+    console.debug("handleTouchStart");
+    recorder.start().catch(
+      (e3) => {
+        console.error("failed to start recorder", e3);
+      }
+    );
+  };
+  const handleTouchEnd = () => {
+    console.debug("handleTouchEnd");
+    recorder.done();
+  };
+  const handleTouchCancel = () => {
+    console.debug("handleTouchCancel");
+    recorder.cancel();
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      onClick: handleClick,
+      onTouchStart: handleTouchStart,
+      onTouchEnd: handleTouchEnd,
+      onTouchCancel: handleTouchCancel,
+      className: "rounded-lg p-1 gap-2 w-full h-10  select-none",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: joinClassNames("flex gap-3 justify-center items-center", isRecording ? "hidden" : ""), children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "svg",
+            {
+              xmlns: "http://www.w3.org/2000/svg",
+              fill: "none",
+              viewBox: "0 0 24 24",
+              strokeWidth: "1.5",
+              stroke: "currentColor",
+              className: "w-6 h-6 text-neutral-900",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "path",
+                {
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round",
+                  d: "M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "prose text-equal-500", children: [
+            "Hold ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("kbd", { className: "border rounded-md text-lg text-equal-600 bg-white px-1.5 py-0.5", children: "spacebar" }),
+            " to speak"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: joinClassNames("flex justify-evenly items-center", isRecording ? "" : "hidden"), children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-slate-500 text-sm bg-white rounded-full px-2", children: [
+            "Press any key to ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline text-red-300", children: "cancel" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-center items-center", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "svg",
+              {
+                xmlns: "http://www.w3.org/2000/svg",
+                viewBox: "0 0 24 24",
+                fill: "currentColor",
+                className: "w-6 h-6 text-red-400",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "path",
+                    {
+                      d: "M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z"
+                    }
+                  )
+                ]
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose text-2xl  text-red-400 bg-white rounded-lg px-2", children: timeElapsedMMSS(recordDuration) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-slate-500 text-sm bg-white rounded-full px-2", children: [
+            "Release to ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline text-blue-500", children: "send" })
+          ] })
+        ] })
+      ]
+    }
+  );
+};
 const useConvStore = create()(
   devtools(
     persist((set2, get2) => ({
@@ -9223,9 +17198,9 @@ class Renderer extends EventEmitter {
       const endX = (scrollLeft + clientWidth) / scrollWidth;
       this.emit("scroll", startX, endX);
     });
-    const delay = this.createDelay(100);
+    const delay2 = this.createDelay(100);
     this.resizeObserver = new ResizeObserver(() => {
-      delay(() => this.reRender());
+      delay2(() => this.reRender());
     });
     this.resizeObserver.observe(this.scrollContainer);
   }
@@ -9354,18 +17329,18 @@ class Renderer extends EventEmitter {
     };
   }
   // Convert array of color values to linear gradient
-  convertColorValues(color) {
-    if (!Array.isArray(color))
-      return color || "";
-    if (color.length < 2)
-      return color[0] || "";
+  convertColorValues(color2) {
+    if (!Array.isArray(color2))
+      return color2 || "";
+    if (color2.length < 2)
+      return color2[0] || "";
     const canvasElement = document.createElement("canvas");
     const ctx = canvasElement.getContext("2d");
     const gradient = ctx.createLinearGradient(0, 0, 0, canvasElement.height);
-    const colorStopPercentage = 1 / (color.length - 1);
-    color.forEach((color2, index2) => {
+    const colorStopPercentage = 1 / (color2.length - 1);
+    color2.forEach((color3, index2) => {
       const offset = index2 * colorStopPercentage;
-      gradient.addColorStop(offset, color2);
+      gradient.addColorStop(offset, color3);
     });
     return gradient;
   }
@@ -9492,7 +17467,7 @@ class Renderer extends EventEmitter {
     this.progressWrapper.appendChild(progressContainer);
     const { scrollLeft, scrollWidth, clientWidth } = this.scrollContainer;
     const len = channelData[0].length;
-    const scale = len / scrollWidth;
+    const scale2 = len / scrollWidth;
     let viewportWidth = Math.min(Renderer.MAX_CANVAS_WIDTH, clientWidth);
     if (options2.barWidth || options2.barGap) {
       const barWidth = options2.barWidth || 0.5;
@@ -9502,8 +17477,8 @@ class Renderer extends EventEmitter {
         viewportWidth = Math.floor(viewportWidth / totalBarWidth) * totalBarWidth;
       }
     }
-    const start = Math.floor(Math.abs(scrollLeft) * scale);
-    const end = Math.floor(start + viewportWidth * scale);
+    const start = Math.floor(Math.abs(scrollLeft) * scale2);
+    const end = Math.floor(start + viewportWidth * scale2);
     const viewportLen = end - start;
     const draw = (start2, end2) => {
       this.renderSingleCanvas(channelData, options2, width, height, Math.max(0, start2), Math.min(end2, len), canvasContainer, progressContainer);
@@ -9574,9 +17549,9 @@ class Renderer extends EventEmitter {
     this.options.minPxPerSec = minPxPerSec;
     this.reRender();
   }
-  scrollIntoView(progress, isPlaying = false) {
+  scrollIntoView(progress2, isPlaying = false) {
     const { clientWidth, scrollLeft, scrollWidth } = this.scrollContainer;
-    const progressWidth = scrollWidth * progress;
+    const progressWidth = scrollWidth * progress2;
     const center = clientWidth / 2;
     const minScroll = isPlaying && this.options.autoCenter && !this.isDragging ? center : clientWidth;
     if (progressWidth > scrollLeft + minScroll || progressWidth < scrollLeft) {
@@ -9601,14 +17576,14 @@ class Renderer extends EventEmitter {
       this.emit("scroll", startX, endX);
     }
   }
-  renderProgress(progress, isPlaying) {
-    if (isNaN(progress))
+  renderProgress(progress2, isPlaying) {
+    if (isNaN(progress2))
       return;
-    this.progressWrapper.style.width = `${progress * 100}%`;
-    this.cursor.style.left = `${progress * 100}%`;
-    this.cursor.style.marginLeft = Math.round(progress * 100) === 100 ? `-${this.options.cursorWidth}px` : "";
+    this.progressWrapper.style.width = `${progress2 * 100}%`;
+    this.cursor.style.left = `${progress2 * 100}%`;
+    this.cursor.style.marginLeft = Math.round(progress2 * 100) === 100 ? `-${this.options.cursorWidth}px` : "";
     if (this.isScrolling && this.options.autoScroll) {
-      this.scrollIntoView(progress, isPlaying);
+      this.scrollIntoView(progress2, isPlaying);
     }
   }
 }
@@ -9864,10 +17839,10 @@ class WaveSurfer extends Player {
     for (let i3 = 0; i3 < channelsLen; i3++) {
       const data = this.decodedData.getChannelData(i3);
       const length = Math.min(data.length, maxLength);
-      const scale = data.length / length;
+      const scale2 = data.length / length;
       const sampledData = [];
       for (let j2 = 0; j2 < length; j2++) {
-        const n2 = Math.round(j2 * scale);
+        const n2 = Math.round(j2 * scale2);
         const val = data[n2];
         sampledData.push(Math.round(val * precision) / precision);
       }
@@ -9888,8 +17863,8 @@ class WaveSurfer extends Player {
     this.options.interact = isInteractive;
   }
   /** Seek to a percentage of audio as [0..1] (0 = beginning, 1 = end) */
-  seekTo(progress) {
-    const time = this.getDuration() * progress;
+  seekTo(progress2) {
+    const time = this.getDuration() * progress2;
     this.setTime(time);
   }
   /** Play or pause the audio */
@@ -10270,28 +18245,6 @@ const usePlayingStore = create(
     }
   })
 );
-const selfColor = {
-  boxBg: "bg-blue-600",
-  playBg: "bg-blue-grey",
-  play: "white",
-  pause: "text-white",
-  wave: "rgb(128, 154, 241)",
-  progress: "rgb(213, 221, 250)",
-  hoverLine: "white",
-  labelBg: "#94a3b8",
-  label: "white"
-};
-const assistantColor = {
-  boxBg: "bg-equal-200",
-  playBg: "bg-white",
-  play: "#5e5e5e",
-  pause: "text-gray-500",
-  wave: "#8c8c8c",
-  progress: "#2f2f2f",
-  hoverLine: "black",
-  labelBg: "#d1d5db",
-  label: "black"
-};
 const Audio = ({ audio, self: self2 }) => {
   const [audioUrl, setAudioUrl] = reactExports.useState("");
   reactExports.useEffect(() => {
@@ -10342,12 +18295,12 @@ const Wave = ({ url, audioIndex, self: self2 }) => {
   const playingAudioIndex = usePlayingStore((state) => state.playingAudioIndex);
   const forceLock = usePlayingStore((state) => state.forceLock);
   const unLock = usePlayingStore((state) => state.unLock);
-  const color = self2 ? selfColor : assistantColor;
+  const color2 = self2 ? selfColor : assistantColor;
   reactExports.useEffect(() => {
     wavesurfer.current = WaveSurfer.create({
       container: waveformRef.current,
-      waveColor: color.wave,
-      progressColor: color.progress,
+      waveColor: color2.wave,
+      progressColor: color2.progress,
       cursorWidth: 0,
       barWidth: 4,
       barGap: 2,
@@ -10356,10 +18309,10 @@ const Wave = ({ url, audioIndex, self: self2 }) => {
       url,
       plugins: [
         i$4.create({
-          lineColor: color.hoverLine,
+          lineColor: color2.hoverLine,
           lineWidth: 1,
-          labelBackground: color.labelBg,
-          labelColor: color.label,
+          labelBackground: color2.labelBg,
+          labelColor: color2.label,
           labelSize: "11px"
         })
       ]
@@ -10395,18 +18348,18 @@ const Wave = ({ url, audioIndex, self: self2 }) => {
       wavesurfer.current.pause();
     }
   }, [playingAudioIndex, audioIndex]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded-2xl items-center p-1 gap-2 " + color.boxBg, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded-2xl items-center p-1 gap-2 " + color2.boxBg, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "flex justify-center items-center rounded-full w-10 h-10 shrink-0 " + color.playBg,
+        className: "flex justify-center items-center rounded-full w-10 h-10 shrink-0 " + color2.playBg,
         onClick: playPause,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { hidden: playingAudioIndex === audioIndex, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             "svg",
             {
               xmlns: "http://www.w3.org/2000/svg",
-              fill: color.play,
+              fill: color2.play,
               viewBox: "0 0 24 24",
               className: "w-6 h-6",
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -10426,7 +18379,7 @@ const Wave = ({ url, audioIndex, self: self2 }) => {
               viewBox: "0 0 24 24",
               strokeWidth: 4,
               stroke: "currentColor",
-              className: "w-6 h-6 " + color.pause,
+              className: "w-6 h-6 " + color2.pause,
               children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M15.75 5.25v13.5m-7.5-13.5v13.5" })
             }
           ) })
@@ -10435,6 +18388,28 @@ const Wave = ({ url, audioIndex, self: self2 }) => {
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: waveformRef, className: "w-full h-10" })
   ] });
+};
+const selfColor = {
+  boxBg: "bg-blue-600",
+  playBg: "bg-blue-grey",
+  play: "white",
+  pause: "text-white",
+  wave: "rgb(128, 154, 241)",
+  progress: "rgb(213, 221, 250)",
+  hoverLine: "white",
+  labelBg: "#94a3b8",
+  label: "white"
+};
+const assistantColor = {
+  boxBg: "bg-equal-200",
+  playBg: "bg-white",
+  play: "#5e5e5e",
+  pause: "text-gray-500",
+  wave: "#8c8c8c",
+  progress: "#2f2f2f",
+  hoverLine: "black",
+  labelBg: "#d1d5db",
+  label: "black"
 };
 var Component = {};
 var toggleSelection = function() {
@@ -11314,7 +19289,7 @@ const AssistantText = ({ text }) => {
         }
       );
     case "error":
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
         " ",
         text.errorMessage
       ] });
@@ -11334,7 +19309,7 @@ const SelfText = ({ text }) => {
     case "typing":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(RichOpText, { text });
     case "error":
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "self-end w-auto px-2 py-1.5", children: [
         " ",
         text.errorMessage
       ] });
@@ -11343,6 +19318,28 @@ const SelfText = ({ text }) => {
       return null;
   }
 };
+class MessageErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error2) {
+    return { hasError: true, error: error2 };
+  }
+  componentDidCatch(error2, errorInfo) {
+    console.error("Error caught by ErrorBoundary:", error2, errorInfo);
+  }
+  render() {
+    var _a;
+    if (this.state.hasError) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Something went wrong." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: (_a = this.state.error) == null ? void 0 : _a.message })
+      ] });
+    }
+    return this.props.children;
+  }
+}
 const MessageList = () => {
   const qaSlice = useConvStore((state) => state.qaSlice);
   const scrollRef = reactExports.useRef(null);
@@ -11352,44 +19349,55 @@ const MessageList = () => {
       scrollRef.current.scrollTop = scrollHeight;
     }
   }, [qaSlice]);
+  console.debug("qaSlice ids", qaSlice.map((it2) => it2.id));
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-y-auto  overflow-x-hidden w-full", ref: scrollRef, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-5 rounded-lg w-full justify-end", children: qaSlice.map(
-    (qa2) => qaDiv(qa2)
+    (qa2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Qa, { qa: qa2 }, qa2.id)
   ) }) });
 };
-function qaDiv(qa2) {
+const Qa = ({ qa: qa2 }) => {
   var _a;
   const renderOrder = ["queText", "queAudio", "ansText", "ansAudio"];
   const statusSlice = [qa2.que.text.status, ((_a = qa2.que.audio) == null ? void 0 : _a.status) ?? "", qa2.ans.text.status, qa2.ans.audio.status];
-  let thereIsAPendingAlready = false;
-  for (let i3 = 0; i3 < statusSlice.length; i3++) {
-    if (["sending", "receiving", "error"].includes(statusSlice[i3])) {
-      if (thereIsAPendingAlready) {
-        renderOrder[i3] = void 0;
-      } else {
-        thereIsAPendingAlready = true;
-      }
-    }
-  }
   if (!qa2.que.textFirst) {
     [renderOrder[0], renderOrder[1]] = [renderOrder[1], renderOrder[0]];
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-1 mr-2", id: "message-list", children: renderOrder.map(
+  const newOrder = [];
+  let thereIsAPendingAlready = false;
+  for (let i3 = 0; i3 < statusSlice.length; i3++) {
+    if (["sending", "receiving", "error"].includes(statusSlice[i3])) {
+      if (!thereIsAPendingAlready) {
+        newOrder.push(renderOrder[i3]);
+        thereIsAPendingAlready = true;
+      }
+    } else {
+      newOrder.push(renderOrder[i3]);
+    }
+  }
+  console.debug("message renderOrder", newOrder);
+  console.debug("qa", qa2);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(MessageErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-1 mr-2", children: newOrder.map(
     (render) => {
       switch (render) {
         case "queText":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(SelfText, { text: qa2.que.text });
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(SelfText, { text: qa2.que.text }, "que.text");
         case "queAudio":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg max-w-1/2 md:max-w-2/5 w-full text-neutral-900 self-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Audio, { audio: qa2.que.audio, self: true }) });
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg max-w-1/2 md:max-w-2/5 w-full text-neutral-900 self-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Audio, { audio: qa2.que.audio, self: true }, "que.audio") });
         case "ansText":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(AssistantText, { text: qa2.ans.text });
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(AssistantText, { text: qa2.ans.text }, "ans.text");
         case "ansAudio":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg max-w-1/2 md:max-w-2/5 w-full text-neutral-900", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Audio, { audio: qa2.ans.audio, self: false }) });
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg max-w-1/2 md:max-w-2/5 w-full text-neutral-900", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Audio, { audio: qa2.ans.audio, self: false }, "ans.audio") });
+        default:
+          console.error("impossible render case", render);
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { hidden: true }, "impossible render case");
       }
     }
-  ) }, qa2.id);
-}
+  ) }) });
+};
 const TextArea = () => {
   const inputAreaIsLarge = useTextAreaStore((state) => state.inputAreaIsLarge);
+  const arrowButtonRef = reactExports.useRef(null);
+  const sendButtonRef = reactExports.useRef(null);
+  const textAreaRef = reactExports.useRef(null);
   const stopPropagation = (event) => {
     console.log("stopPropagation", event.code);
     event.stopPropagation();
@@ -11397,6 +19405,9 @@ const TextArea = () => {
   const inputText = useInputStore((state) => state.inputText);
   const [isComposing, setIsComposing] = reactExports.useState(false);
   const sendAndClearText = () => {
+    if (sendButtonRef.current) {
+      sendButtonRef.current.blur();
+    }
     const it2 = useInputStore.getState().inputText;
     if (it2) {
       useSendingTextStore.setState({ sendingText: it2 });
@@ -11407,6 +19418,10 @@ const TextArea = () => {
     if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && !isComposing) {
       event.preventDefault();
       sendAndClearText();
+    } else if (event.key === "Escape" && !isComposing) {
+      if (textAreaRef.current) {
+        textAreaRef.current.blur();
+      }
     } else {
       event.stopPropagation();
     }
@@ -11417,12 +19432,19 @@ const TextArea = () => {
   const handleCompositionEnd = () => {
     setIsComposing(false);
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center w-full mt-auto bottom-0 max-w-4xl backdrop-blur bg-opacity-75", children: [
+  const handleClick = () => {
+    useTextAreaStore.setState({ inputAreaIsLarge: !inputAreaIsLarge });
+    if (arrowButtonRef) {
+      arrowButtonRef.current.blur();
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center w-full mt-auto bottom-0 max-w-4xl", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
       {
-        className: "rounded-full bg-equal-200 flex items-center justify-center w-10 -mb-1 ",
-        onClick: () => useTextAreaStore.setState({ inputAreaIsLarge: !inputAreaIsLarge }),
+        ref: arrowButtonRef,
+        className: "rounded-full flex items-center justify-center w-10 -mb-1 ",
+        onClick: handleClick,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "svg",
           {
@@ -11431,7 +19453,7 @@ const TextArea = () => {
             viewBox: "0 0 24 24",
             strokeWidth: 1.5,
             stroke: "currentColor",
-            className: "text-equal-400 w-6 h-6 mb-0.5",
+            className: "text-slate-400 w-6 h-6 mb-0.5",
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "path",
               {
@@ -11448,7 +19470,8 @@ const TextArea = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "textarea",
         {
-          className: "w-full outline-0 rounded-lg resize-none bg-equal-200 pl-2 py-1 mt-auto ",
+          ref: textAreaRef,
+          className: "w-full outline-0 rounded-xl resize-none bg-white pl-2 py-1 lg:p-3 mt-auto ",
           rows: inputAreaIsLarge ? 8 : 2,
           onKeyUp: stopPropagation,
           value: inputText,
@@ -11462,6 +19485,7 @@ const TextArea = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
+          ref: sendButtonRef,
           className: "-ml-8 mb-1 self-end capitalize text-equal-700 ",
           onClick: sendAndClearText,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -11569,9 +19593,9 @@ function toDate(argument) {
     return /* @__PURE__ */ new Date(NaN);
   }
 }
-function addLeadingZeros(number, targetLength) {
-  var sign = number < 0 ? "-" : "";
-  var output = Math.abs(number).toString();
+function addLeadingZeros(number2, targetLength) {
+  var sign = number2 < 0 ? "-" : "";
+  var output = Math.abs(number2).toString();
   while (output.length < targetLength) {
     output = "0" + output;
   }
@@ -11761,41 +19785,6 @@ const newQueAns = (id2, textFirst, queText, audio) => {
     createdAt: formatISO(/* @__PURE__ */ new Date())
   };
 };
-const streamIdLength = 32;
-const audioPlayerMimeType = "audio/mpeg";
-const contentTimeoutSeconds = 30;
-const minSpeakTimeMillis = 500;
-const historyOptions = [
-  { value: 1, mark: "1" },
-  { value: 2, mark: "2" },
-  { value: 3, mark: "3" },
-  { value: 4, mark: "4" },
-  { value: 5, mark: "5" },
-  { value: 6, mark: "6" },
-  { value: 7, mark: "7" },
-  { value: 8, mark: "8" },
-  { value: 9, mark: "9" },
-  { value: 10, mark: "10" },
-  { value: 20, mark: "20" },
-  { value: 30, mark: "30" },
-  { value: 40, mark: "40" },
-  { value: 50, mark: "50" },
-  { value: 100, mark: "100" }
-];
-const useSSEStore = create()(
-  devtools(
-    persist(
-      () => ({
-        streamId: randomHash(streamIdLength)
-      }),
-      {
-        name: "sse",
-        storage: createJSONStorage(() => zustandStorage)
-        // (optional) by default the 'localStorage' is used
-      }
-    )
-  )
-);
 function bind(fn, thisArg) {
   return function wrap2() {
     return fn.apply(thisArg, arguments);
@@ -11937,7 +19926,7 @@ const inherits = (constructor, superConstructor, props, descriptors2) => {
   });
   props && Object.assign(constructor.prototype, props);
 };
-const toFlatObject = (sourceObj, destObj, filter2, propFilter) => {
+const toFlatObject = (sourceObj, destObj, filter3, propFilter) => {
   let props;
   let i3;
   let prop;
@@ -11955,8 +19944,8 @@ const toFlatObject = (sourceObj, destObj, filter2, propFilter) => {
         merged[prop] = true;
       }
     }
-    sourceObj = filter2 !== false && getPrototypeOf(sourceObj);
-  } while (sourceObj && (!filter2 || filter2(sourceObj, destObj)) && sourceObj !== Object.prototype);
+    sourceObj = filter3 !== false && getPrototypeOf(sourceObj);
+  } while (sourceObj && (!filter3 || filter3(sourceObj, destObj)) && sourceObj !== Object.prototype);
   return destObj;
 };
 const endsWith = (str, searchString, position) => {
@@ -12216,7 +20205,7 @@ Object.defineProperties(AxiosError, descriptors);
 Object.defineProperty(prototype$1, "isAxiosError", { value: true });
 AxiosError.from = (error2, code, config, request, response, customProps) => {
   const axiosError = Object.create(prototype$1);
-  utils.toFlatObject(error2, axiosError, function filter2(obj) {
+  utils.toFlatObject(error2, axiosError, function filter3(obj) {
     return obj !== Error.prototype;
   }, (prop) => {
     return prop !== "isAxiosError";
@@ -12245,7 +20234,7 @@ function renderKey(path, key, dots) {
 function isFlatArray(arr) {
   return utils.isArray(arr) && !arr.some(isVisitable);
 }
-const predicates = utils.toFlatObject(utils, {}, null, function filter(prop) {
+const predicates = utils.toFlatObject(utils, {}, null, function filter2(prop) {
   return /^is[A-Z]/.test(prop);
 });
 function toFormData(obj, formData, options2) {
@@ -12350,8 +20339,8 @@ function encode$1(str) {
     "%20": "+",
     "%00": "\0"
   };
-  return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match) {
-    return charMap[match];
+  return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match2) {
+    return charMap[match2];
   });
 }
 function AxiosURLSearchParams(params, options2) {
@@ -12498,8 +20487,8 @@ function toURLEncodedForm(data, options2) {
   }, options2));
 }
 function parsePropPath(name) {
-  return utils.matchAll(/\w+|\[(\w*)]/g, name).map((match) => {
-    return match[0] === "[]" ? "" : match[1] || match[0];
+  return utils.matchAll(/\w+|\[(\w*)]/g, name).map((match2) => {
+    return match2[0] === "[]" ? "" : match2[1] || match2[0];
   });
 }
 function arrayToObject(arr) {
@@ -12709,27 +20698,27 @@ function normalizeValue(value) {
 function parseTokens(str) {
   const tokens = /* @__PURE__ */ Object.create(null);
   const tokensRE = /([^\s,;=]+)\s*(?:=\s*([^,;]+))?/g;
-  let match;
-  while (match = tokensRE.exec(str)) {
-    tokens[match[1]] = match[2];
+  let match2;
+  while (match2 = tokensRE.exec(str)) {
+    tokens[match2[1]] = match2[2];
   }
   return tokens;
 }
 const isValidHeaderName = (str) => /^[-_a-zA-Z0-9^`|~,!#$%&'*+.]+$/.test(str.trim());
-function matchHeaderValue(context, value, header, filter2, isHeaderNameFilter) {
-  if (utils.isFunction(filter2)) {
-    return filter2.call(this, value, header);
+function matchHeaderValue(context, value, header, filter3, isHeaderNameFilter) {
+  if (utils.isFunction(filter3)) {
+    return filter3.call(this, value, header);
   }
   if (isHeaderNameFilter) {
     value = header;
   }
   if (!utils.isString(value))
     return;
-  if (utils.isString(filter2)) {
-    return value.indexOf(filter2) !== -1;
+  if (utils.isString(filter3)) {
+    return value.indexOf(filter3) !== -1;
   }
-  if (utils.isRegExp(filter2)) {
-    return filter2.test(value);
+  if (utils.isRegExp(filter3)) {
+    return filter3.test(value);
   }
 }
 function formatHeader(header) {
@@ -12969,8 +20958,8 @@ const cookies = platform.isStandardBrowserEnv ? (
         document.cookie = cookie.join("; ");
       },
       read: function read(name) {
-        const match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
-        return match ? decodeURIComponent(match[3]) : null;
+        const match2 = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
+        return match2 ? decodeURIComponent(match2[3]) : null;
       },
       remove: function remove(name) {
         this.write(name, "", Date.now() - 864e5);
@@ -13043,8 +21032,8 @@ const isURLSameOrigin = platform.isStandardBrowserEnv ? (
   }()
 );
 function parseProtocol(url) {
-  const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
-  return match && match[1] || "";
+  const match2 = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
+  return match2 && match2[1] || "";
 }
 function speedometer(samplesCount, min) {
   samplesCount = samplesCount || 10;
@@ -13799,6 +21788,41 @@ axios.getAdapter = adapters.getAdapter;
 axios.HttpStatusCode = HttpStatusCode$1;
 axios.default = axios;
 const axios$1 = axios;
+const streamIdLength = 32;
+const audioPlayerMimeType = "audio/mpeg";
+const contentTimeoutSeconds = 30;
+const minSpeakTimeMillis = 500;
+const historyOptions = [
+  { value: 1, mark: "1" },
+  { value: 2, mark: "2" },
+  { value: 3, mark: "3" },
+  { value: 4, mark: "4" },
+  { value: 5, mark: "5" },
+  { value: 6, mark: "6" },
+  { value: 7, mark: "7" },
+  { value: 8, mark: "8" },
+  { value: 9, mark: "9" },
+  { value: 10, mark: "10" },
+  { value: 20, mark: "20" },
+  { value: 30, mark: "30" },
+  { value: 40, mark: "40" },
+  { value: 50, mark: "50" },
+  { value: 100, mark: "100" }
+];
+const useSSEStore = create()(
+  devtools(
+    persist(
+      () => ({
+        streamId: randomHash(streamIdLength)
+      }),
+      {
+        name: "sse",
+        storage: createJSONStorage(() => zustandStorage)
+        // (optional) by default the 'localStorage' is used
+      }
+    )
+  )
+);
 function SSEEndpoint() {
   let ep = {}.VITE_REACT_APP_SSE_ENDPOINT;
   if (!ep) {
@@ -13867,14 +21891,14 @@ const SubscribeSendingAudio = () => {
         }
       }
     ).catch((e3) => {
-      updateQueAudio(id2, error(getQueAudio(id2), e3));
+      updateQueAudio(id2, error(getQueAudio(id2), e3.message));
     });
     const audioId = v4();
     addBlob({ id: audioId, blob: sendingAudio }).then(() => {
       console.debug("saved audio blob, audioId: ", audioId);
       updateQueAudio(id2, newAudioId(getQueAudio(id2), audioId));
     }).catch((e3) => {
-      console.error("saved audio blob, audioId:", id2, e3);
+      console.error("saved audio blob, audioId:", id2, e3.message);
     });
   }, [sendingAudio]);
   return null;
@@ -13909,7 +21933,7 @@ const SubscriberSendingText = () => {
         console.debug(useConvStore.getState());
       }
     ).catch((e3) => {
-      updateQueText(id2, error$1(getQueText(id2), e3));
+      updateQueText(id2, error$1(getQueText(id2), e3.message));
     });
   }, [sendingText]);
   return null;
@@ -13941,7 +21965,7 @@ const TimeoutContentDetection = () => {
           updateAnsAudio(qa2.id, error(qa2.ans.audio, "timeout"));
         }
       }
-    }, 2);
+    }, 2e3);
     return () => {
       if (interval) {
         clearInterval(interval);
@@ -15035,7 +23059,7 @@ const MySwitch = ({ switchColor, enabled, setEnabled }) => {
     {
       checked: enabled,
       onChange: setEnabled,
-      className: `${enabled ? switchColor : "bg-gray-200"}
+      className: `${enabled ? switchColor : "bg-neutral-400"}
           relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`,
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Use setting" }),
@@ -15078,7 +23102,11 @@ const DiscreteRange = ({ options: options2, value, setValue, bgColor }) => {
   }, [options2, bgColor, value, setValue]);
   const handleMouseLeaveFirstElement = (event) => {
     if (useMouseStore.getState().isMouseDown) {
-      event.currentTarget.getBoundingClientRect();
+      const { clientY } = event;
+      const { right } = event.currentTarget.getBoundingClientRect();
+      if (clientY < right) {
+        setValue(0);
+      }
     }
   };
   const handleMouseEnterChild = (oc2) => {
@@ -15089,11 +23117,11 @@ const DiscreteRange = ({ options: options2, value, setValue, bgColor }) => {
   const handleMouseDownChild = (oc2) => {
     setValue(oc2.option.value);
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-grow items-center divide-x h-full bg-white", children: opColors.map(
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap items-center divide-x divide-opacity-0 h-full bg-white", children: opColors.map(
     (oc2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: "flex justify-center items-center w-full " + (oc2.inRange ? bgColor : ""),
+        className: "flex justify-center items-center flex-grow " + (oc2.inRange ? bgColor : ""),
         onMouseLeave: oc2.index == 0 ? handleMouseLeaveFirstElement : () => {
         },
         onMouseDown: () => handleMouseDownChild(oc2),
@@ -15154,9 +23182,9 @@ function ListBox() {
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       Nt.Button,
       {
-        className: "relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 sm:text-sm sm:leading-6",
+        className: "relative w-full cursor-default rounded-2xl bg-white py-0.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 sm:text-sm sm:leading-6",
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-3 block truncate", children: selected.name }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex items-center truncate", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-3", children: selected.name }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "span",
             {
@@ -15178,31 +23206,31 @@ function ListBox() {
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Nt.Options,
           {
-            className: "absolute z-10 mt-1 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
+            className: "absolute w-full rounded-xl text-base\n                            shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm\n                            bg-white bg-opacity-70 backdrop-blur",
             children: options.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
               Nt.Option,
               {
                 value: option,
                 className: ({ active }) => joinClassNames(
                   active ? "bg-blue-600 text-white" : "text-gray-900",
-                  "relative cursor-default select-none py-0.5 pl-3 pr-0.5"
+                  "rounded-lg relative cursor-default select-none py-0.5 pl-3 pr-0.5"
                 ),
                 children: ({ selected: selected2, active }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                   selected2 ? /* @__PURE__ */ jsxRuntimeExports.jsx(CheckIcon$1, { className: joinClassNames(
                     active ? "text-white" : "text-gray-900",
                     "absolute inset-x-0 left-0 h-5 w-5"
                   ), "aria-hidden": "true" }) : null,
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center w-full ", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "span",
                     {
-                      className: joinClassNames(selected2 ? "font-semibold" : "font-normal", "flex justify-between w-full items-center ml-3 truncate"),
+                      className: joinClassNames(selected2 ? "font-semibold" : "font-normal", "flex flex-wrap justify-between items-center w-full ml-3"),
                       children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "", children: option.name }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "m-0", children: option.name }),
                         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-center gap-1 ", children: option.tags.map(
                           (tag) => /* @__PURE__ */ jsxRuntimeExports.jsx(
                             "span",
                             {
-                              className: "bg-gray-400 text-white rounded-full px-1 text-xs",
+                              className: "bg-gray-400 text-white rounded-md px-1 text-xs",
                               children: tag
                             }
                           )
@@ -15277,14 +23305,14 @@ const Setting = () => {
   const setHistoryEnabled = useSettingStore((state) => state.setHistoryEnabled);
   const maxHistory = useSettingStore((state) => state.maxHistory);
   const setMaxHistory = useSettingStore((state) => state.setMaxHistory);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col w-full items-end justify-center gap-5 p-1 select-none", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col w-full items-center justify-between gap-2 px-3 pt-2 pb-4 rounded-lg bg-blue-200", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose text-lg text-equal-600", children: "LLM" }) }),
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col w-full items-end justify-center gap-5 select-none", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col w-full items-center justify-between gap-2 px-3 pt-2 pb-4 rounded-xl bg-gray-white bg-white bg-opacity-60", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose text-lg text-neutral-600", children: "LLM" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center bg-white rounded-lg w-full px-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose", children: "Send History" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose text-neutral-600", children: "Send History" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(MySwitch, { enabled: historyEnabled, setEnabled: setHistoryEnabled, switchColor: "bg-blue-600" })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-full w-full overflow-hidden " + (historyEnabled ? "" : "hidden"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-xl overflow-hidden w-full  " + (historyEnabled ? "" : "hidden"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         DiscreteRange,
         {
           options: historyOptions,
@@ -15295,10 +23323,10 @@ const Setting = () => {
       ) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center bg-white rounded-lg w-full px-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose", children: "Model" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full ml-3 py-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ListBox, {}) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full md:ml-3 py-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ListBox, {}) })
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col w-full items-center justify-between gap-2 px-3 pt-2 pb-4 rounded-lg bg-blue-200", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col w-full items-center justify-between gap-2 px-3 pt-2 pb-4 rounded-xl bg-white bg-opacity-60 ", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose text-lg text-equal-600", children: "Text to Speech" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-center bg-white rounded-lg w-full px-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose", children: "Language" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-center bg-white rounded-lg w-full px-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose", children: "Speed" }) })
@@ -15307,7 +23335,11 @@ const Setting = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", {})
   ] });
 };
-function App() {
+const HomeWallpaper$1 = "";
+function HomeWallpaper() {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-wallpaper w-full h-full -z-10" });
+}
+function Home() {
   const isRecording = useRecorderStore((state) => state.isRecording);
   const recorder = useRecorderStore((state) => state.recorder);
   const incrRecordDuration = useRecorderStore((state) => state.incrDuration);
@@ -15365,31 +23397,45 @@ function App() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center h-screen w-screen overflow-hidden divide-x bg-equal-800", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(HomeWallpaper, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "flex flex-col items-center max-w-4xl w-full h-full rounded-l-lg justify-between gap-1 p-2 bg-white",
+        className: "home flex items-center justify-center h-screen w-screen overflow-hidden gap-2 lg:p-3",
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MessageList, {}),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              className: "flex flex-col items-center w-full mt-auto bottom-0 backdrop-blur bg-opacity-75",
+              className: "flex flex-col items-center max-w-4xl w-full h-full rounded-lg justify-between gap-1 p-2 bg-white bg-opacity-60",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(TextArea, {}),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center w-full mt-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Recorder, {}) })
+                /* @__PURE__ */ jsxRuntimeExports.jsx(MessageList, {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "flex flex-col rounded-lg items-center gap-2 w-full px-2 mt-auto bottom-0",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(TextArea, {}),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center w-full mt-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Recorder, {}) })
+                    ]
+                  }
+                )
               ]
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(SSE, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Workers, {})
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-full w-full max-w-1/4 hidden sm:block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Setting, {}) })
         ]
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col items-end h-full max-w-1/4 w-full rounded-r-lg bg-gray-200", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Setting, {}) })
+    /* @__PURE__ */ jsxRuntimeExports.jsx(SSE, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Workers, {})
   ] });
+}
+function App() {
+  const verified = useAuthStore((state) => state.verified);
+  return verified ? /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(Auth, {});
 }
 client.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
+//# sourceMappingURL=index-9f5999d9.js.map
