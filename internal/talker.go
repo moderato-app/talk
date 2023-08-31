@@ -10,7 +10,7 @@ import (
 	"github.com/haguro/elevenlabs-go"
 	"github.com/proxoar/talk/internal/config"
 	"github.com/proxoar/talk/pkg/client"
-	"github.com/proxoar/talk/pkg/client/tune"
+	"github.com/proxoar/talk/pkg/client/ability"
 	"github.com/proxoar/talk/pkg/providers"
 	"github.com/proxoar/talk/pkg/providers/chatgpt"
 	"github.com/sashabaranov/go-openai"
@@ -89,11 +89,11 @@ func (t *Talker) ProvidersMustFunction() {
 	t.TextToSpeech.MustFunction(ctx)
 }
 
-func (t *Talker) Tunability(ctx context.Context) (*tune.Tunability, error) {
-	llmTun, err := t.LLM.Tunability(ctx)
+func (t *Talker) Ability(ctx context.Context) (*ability.Ability, error) {
+	llmTun, err := t.LLM.Ability(ctx)
 	if err != nil {
-		t.logger.Sugar().Error("failed to get LLM tunability", err)
+		t.logger.Sugar().Error("failed to get LLM Ability", err)
 		return nil, err
 	}
-	return &tune.Tunability{LLM: llmTun}, nil
+	return &ability.Ability{LLM: llmTun}, nil
 }

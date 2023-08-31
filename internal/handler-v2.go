@@ -83,13 +83,13 @@ func (s *SSEHandler) PostAudioConv(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (s *SSEHandler) GetLLMTunability(c echo.Context) error {
-	tunability, err := s.talker.LLM.Tunability(c.Request().Context())
+func (s *SSEHandler) GetLLMAbility(c echo.Context) error {
+	Ability, err := s.talker.LLM.Ability(c.Request().Context())
 	if err != nil {
-		s.logger.Error("failed to get tunability of LLM", zap.Error(err))
+		s.logger.Error("failed to get Ability of LLM", zap.Error(err))
 		return err
 	}
-	return c.JSON(http.StatusOK, tunability)
+	return c.JSON(http.StatusOK, Ability)
 }
 
 func (s *SSEHandler) Stat(c echo.Context) error {
