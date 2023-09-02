@@ -9,7 +9,6 @@ require (
 	github.com/haguro/elevenlabs-go v0.2.2
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/labstack/gommon v0.4.0
-	github.com/microcosm-cc/bluemonday v1.0.25
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sashabaranov/go-openai v1.14.2
 	github.com/spf13/pflag v1.0.5
