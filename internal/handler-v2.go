@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/proxoar/talk/internal/api"
 	"github.com/proxoar/talk/internal/middleware"
+	"github.com/proxoar/talk/pkg/ability"
 	"github.com/proxoar/talk/pkg/client"
 	"go.uber.org/zap"
 )
@@ -38,6 +39,7 @@ var TTSZhCNOption = client.VOption{
 
 func (s *SSEHandler) PostConv(c echo.Context) error {
 	conv := new(api.Conversation)
+	s.logger.Sugar().Debug("PostConv body:", conv)
 	err := c.Bind(conv)
 	if err != nil {
 		return err
@@ -84,12 +86,13 @@ func (s *SSEHandler) PostAudioConv(c echo.Context) error {
 }
 
 func (s *SSEHandler) GetLLMAbility(c echo.Context) error {
-	Ability, err := s.talker.LLM.Ability(c.Request().Context())
+	a := ability.LLMAb{}
+	err := s.talker.LLM.SetAbility(c.Request().Context(), &a)
 	if err != nil {
 		s.logger.Error("failed to get Ability of LLM", zap.Error(err))
 		return err
 	}
-	return c.JSON(http.StatusOK, Ability)
+	return c.JSON(http.StatusOK, a)
 }
 
 func (s *SSEHandler) Stat(c echo.Context) error {

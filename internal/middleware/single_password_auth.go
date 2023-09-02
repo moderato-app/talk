@@ -3,14 +3,12 @@ package middleware
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/microcosm-cc/bluemonday"
 )
 
 type (
@@ -77,8 +75,6 @@ func SPAuthWithConfig(config SPAuthConfig) echo.MiddlewareFunc {
 		passMap[hash] = pass
 	}
 
-	sanitizer := bluemonday.UGCPolicy()
-
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if config.Skipper(c) {
@@ -98,8 +94,7 @@ func SPAuthWithConfig(config SPAuthConfig) echo.MiddlewareFunc {
 
 				password, ok := passMap[hash]
 				if ok {
-					pxxd := sanitizer.Sanitize(password)
-					fmt.Printf(pxxd + " has passed single-password-auth")
+					c.Logger().Debug(maskPassword(password) + " has passed single-password-auth")
 					return next(c)
 				} else {
 					return echo.NewHTTPError(http.StatusUnauthorized, "wrong password")
@@ -108,4 +103,19 @@ func SPAuthWithConfig(config SPAuthConfig) echo.MiddlewareFunc {
 			return echo.NewHTTPError(http.StatusUnauthorized, "single-password-auth malformed")
 		}
 	}
+}
+
+// maskPassword replace the middle part of a password with ***
+//
+// if pass is too short, just return it
+func maskPassword(pass string) string {
+	res := make([]byte, len(pass))
+	for i := 0; i < len(pass); i++ {
+		if len(pass)/4 < i && i < len(pass)*3/4 {
+			res[i] = '*'
+		} else {
+			res[i] = pass[i]
+		}
+	}
+	return string(res)
 }

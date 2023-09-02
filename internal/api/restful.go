@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/proxoar/talk/pkg/client/ability"
+	"github.com/proxoar/talk/pkg/ability"
 )
 
 var RestfulValidator *validator.Validate
@@ -23,7 +23,7 @@ func init() {
 type Conversation struct {
 	Id         string             `json:"id" validate:"required"` // unique ID for every Q&A
 	Ms         []Message          `json:"ms" validate:"msIsNotEmpty,dive"`
-	TuneOption ability.TuneOption `json:"TuneOption" validate:"required"`
+	TalkOption ability.TalkOption `json:"talkOption" validate:"required"`
 }
 
 type Message struct {

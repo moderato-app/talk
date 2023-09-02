@@ -9,10 +9,9 @@ import (
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 	"github.com/haguro/elevenlabs-go"
 	"github.com/proxoar/talk/internal/config"
+	"github.com/proxoar/talk/pkg/ability"
 	"github.com/proxoar/talk/pkg/client"
-	"github.com/proxoar/talk/pkg/client/ability"
 	"github.com/proxoar/talk/pkg/providers"
-	"github.com/proxoar/talk/pkg/providers/chatgpt"
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
 	"google.golang.org/api/option"
@@ -30,16 +29,16 @@ func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*
 	var stt client.SpeechToText
 	var tts client.TextToSpeech
 
-	// choose an LLM provider
+	// choose an LLMAb provider
 	if cfg := tc.Llm.OpenAIChatGPT; cfg.APIKey != "" {
 		// by default, the underlying http.Client utilizes the proxy from the environment.
 		c := openai.NewClient(cfg.APIKey)
-		llm = &chatgpt.ChatGPT{
+		llm = &providers.ChatGPT{
 			Client: c,
 			Logger: logger,
 		}
 	} else {
-		return nil, errors.New("no LLM provider was found")
+		return nil, errors.New("no LLMAb provider was found")
 	}
 
 	// choose a text-to-speech provider
@@ -89,11 +88,13 @@ func (t *Talker) ProvidersMustFunction() {
 	t.TextToSpeech.MustFunction(ctx)
 }
 
-func (t *Talker) Ability(ctx context.Context) (*ability.Ability, error) {
-	llmTun, err := t.LLM.Ability(ctx)
+func (t *Talker) Ability(ctx context.Context) (ability.Ability, error) {
+	a := ability.LLMAb{}
+	err := t.LLM.SetAbility(ctx, &a)
 	if err != nil {
-		t.logger.Sugar().Error("failed to get LLM Ability", err)
-		return nil, err
+		t.logger.Sugar().Error("failed to get LLMAb Ability", err)
+		return ability.Ability{}, err
 	}
-	return &ability.Ability{LLM: llmTun}, nil
+
+	return ability.Ability{LLM: a}, nil
 }

@@ -47,12 +47,16 @@ func (s *SSEHandler) emitAbility(streamID string, _ *sse.Subscriber) {
 // 3. Send the answer to a text-to-speech server and obtains the corresponding audio
 // 4. Send the audio to the client
 func (s *SSEHandler) conv(ctx context.Context, streamId string, conv *Conversation) {
+	if conv.TalkOption.LLM == nil || conv.TalkOption.LLM.ChatGPT == nil {
+		s.logger.Sugar().Debug("client did not provide ChatGPT option, will not ask LLM for an answer")
+		return
+	}
 	ms := make([]client.Message, len(conv.Ms))
 	for i, m := range conv.Ms {
 		ms[i] = client.Message{Role: m.Role, Content: m.Content}
 	}
 	// 1. Ask LLM for an answer
-	ch := s.talker.LLM.CompletionStream(ctx, ms, conv.TuneOption.LLM)
+	ch := s.talker.LLM.CompletionStream(ctx, ms, *conv.TalkOption.LLM)
 	content := ""
 	// 2. Send the answer to the client
 	for {
