@@ -57,11 +57,11 @@ func StartServer() {
 		sh.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})
+	api.Use(middleware2.StreamId)
 	api.POST("/conversation", sh.PostConv)
 	api.POST("/audio-conversation", sh.PostAudioConv)
 	api.GET("/Ability/llm", sh.GetLLMAbility)
 	api.GET("/health", sh.Health)
-	api.Use(middleware2.StreamId)
 
 	//route static files
 	w, err := fs.Sub(talk.Web, "web")
