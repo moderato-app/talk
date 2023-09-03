@@ -68,8 +68,7 @@ func (g *GoogleTTS) Voices(ctx context.Context, langCode string) ([]client.Voice
 }
 
 func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId string, o client.VOption) ([]byte, error) {
-	g.Logger.Info("text to speech...")
-	g.Logger.Sugar().Debugf("TextToSpeech %s %s %+v", text, voiceId, o)
+	g.Logger.Sugar().Infow("text to speech...", "voiceId", voiceId, "option", o)
 	req := texttospeechpb.SynthesizeSpeechRequest{
 		Input: &texttospeechpb.SynthesisInput{
 			InputSource: &texttospeechpb.SynthesisInput_Text{Text: text},
@@ -91,7 +90,7 @@ func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId strin
 	if err != nil {
 		return nil, fmt.Errorf("SynthesizeSpeech: %v", err)
 	}
-	g.Logger.Sugar().Debug("text to speech result, audio bytes length:", len(resp.AudioContent))
+	g.Logger.Sugar().Infow("text to speech result audio bytes length: ", len(resp.AudioContent))
 	return resp.AudioContent, nil
 }
 

@@ -13206,16 +13206,6 @@ const timeElapsedMMSS = (duration) => {
 const padZero = (num) => {
   return num.toString().padStart(2, "0");
 };
-const historyMessages = (qaSlice, maxHistory2) => {
-  if (maxHistory2 <= 0) {
-    return [];
-  }
-  let messages = [];
-  qaSlice.map((qa2) => qa2.que.text).filter((t3) => t3.status == "received").forEach((t3) => messages.push({ role: "user", content: t3.text }));
-  qaSlice.map((qa2) => qa2.ans.text).filter((t3) => t3.status == "received").forEach((t3) => messages.push({ role: "assistant", content: t3.text }));
-  messages = messages.slice(-maxHistory2);
-  return messages;
-};
 function currentProtocolHostPortPath() {
   const protocol = window.location.protocol;
   const hostname = window.location.hostname;
@@ -13235,14 +13225,8 @@ function randomHash(length) {
   }
   return hash;
 }
-const popularMimeTypes = [
-  { mimeType: "audio/webm; codecs=vp9", fileName: "audio.webm" },
-  { mimeType: "audio/webm; codecs=opus", fileName: "audio.webm" },
-  { mimeType: "audio/webm", fileName: "audio.webm" },
-  { mimeType: "audio/mp4", fileName: "audio.mp4" }
-];
-function chooseAudioMimeType() {
-  const find = popularMimeTypes.find((m2) => MediaRecorder.isTypeSupported(m2.mimeType));
+function chooseAudioMimeType(mimeTypes) {
+  const find = mimeTypes.find((m2) => MediaRecorder.isTypeSupported(m2.mimeType));
   console.debug("found mimeType: ", find);
   return find;
 }
@@ -13845,6 +13829,12 @@ function del(key, customStore = defaultGetStore()) {
     return promisifyRequest$1(store.transaction);
   });
 }
+function clear$1(customStore = defaultGetStore()) {
+  return customStore("readwrite", (store) => {
+    store.clear();
+    return promisifyRequest$1(store.transaction);
+  });
+}
 const zustandStorage = {
   getItem: async (name) => {
     console.debug("[Persist] retrieving", name);
@@ -13857,6 +13847,10 @@ const zustandStorage = {
   removeItem: async (name) => {
     console.debug("[Persist] deleting ", name);
     await del(name);
+  },
+  clear: async () => {
+    console.debug("[Persist] clearing");
+    await clear$1();
   }
 };
 const useAuthStore = create()(
@@ -20177,14 +20171,842 @@ const preloadedFeatures = {
   ...layout
 };
 const motion = /* @__PURE__ */ createMotionProxy((Component2, config) => createDomMotionConfig(Component2, config, preloadedFeatures, createDomVisualElement));
-const useThemeStore = create()(
-  (set2) => ({
-    authWallpaperDark: false,
-    setAuthWallpaperDark: (authWallpaperDark) => set2(() => ({
-      authWallpaperDark
-    }))
-  })
-);
+const wallpaper = "";
+var animateColors = function(timestamp) {
+  var wasWindowIdled = timestamp - this.previousTimeStamp > 100;
+  var isLoop = this.states[this.activeState].loop !== void 0 ? this.states[this.activeState].loop : true;
+  var progressPercent, isLooping, nextGradient;
+  if (this.previousTimeStamp === null || wasWindowIdled) {
+    this.previousTimeStamp = timestamp;
+  }
+  this.progress = this.progress + (timestamp - this.previousTimeStamp);
+  progressPercent = (this.progress / this.activetransitionSpeed * 100).toFixed(2);
+  this.previousTimeStamp = timestamp;
+  this.refreshColorsAndPos(progressPercent);
+  if (progressPercent < 100) {
+    this.animation = requestAnimationFrame(this.animateColors.bind(this));
+  } else {
+    if (this.channelsIndex < this.states[this.activeState].gradients.length - 2 || isLoop) {
+      if (this.isChangingState) {
+        this.activetransitionSpeed = this.states[this.activeState].transitionSpeed || 5e3;
+        this.isChangingState = false;
+      }
+      this.previousTimeStamp = null;
+      this.progress = 0;
+      this.channelsIndex++;
+      isLooping = false;
+      if (this.channelsIndex === this.states[this.activeState].gradients.length - 1) {
+        isLooping = true;
+      } else if (this.channelsIndex === this.states[this.activeState].gradients.length) {
+        this.channelsIndex = 0;
+      }
+      nextGradient = this.states[this.activeState].gradients[this.channelsIndex + 1] === void 0 ? this.states[this.activeState].gradients[0] : this.states[this.activeState].gradients[this.channelsIndex + 1];
+      this.setColors();
+      this.animation = requestAnimationFrame(this.animateColors.bind(this));
+      if (this.callbacks.onGradientChange) {
+        this.callbacks.onGradientChange({
+          isLooping,
+          colorsFrom: this.states[this.activeState].gradients[this.channelsIndex],
+          colorsTo: nextGradient,
+          activeState: this.activeState
+        });
+      }
+      this.canvas.dispatchEvent(this.events.gradientChange({
+        isLooping,
+        colorsFrom: this.states[this.activeState].gradients[this.channelsIndex],
+        colorsTo: nextGradient,
+        activeState: this.activeState
+      }));
+    } else {
+      cancelAnimationFrame(this.animation);
+      if (this.callbacks.onEnd)
+        this.callbacks.onEnd();
+      this.canvas.dispatchEvent(new CustomEvent("granim:end"));
+    }
+  }
+};
+var changeBlendingMode = function(newBlendingMode) {
+  this.context.clearRect(0, 0, this.x1, this.y1);
+  this.context.globalCompositeOperation = this.image.blendingMode = newBlendingMode;
+  this.validateInput("blendingMode");
+  if (this.isPaused)
+    this.refreshColorsAndPos();
+};
+var changeDirection = function(newDirection) {
+  this.context.clearRect(0, 0, this.x1, this.y1);
+  this.direction = newDirection;
+  this.validateInput("direction");
+  if (this.isPaused)
+    this.refreshColorsAndPos();
+};
+var changeState = function(newState) {
+  var _this = this;
+  if (this.activeState === newState) {
+    return;
+  }
+  if (!this.isPaused) {
+    this.isPaused = true;
+    this.pause();
+  }
+  this.channelsIndex = -1;
+  this.activetransitionSpeed = this.stateTransitionSpeed;
+  this.activeColorsDiff = [];
+  this.activeColorsPosDiff = [];
+  this.activeColors = this.getCurrentColors();
+  this.activeColorsPos = this.getCurrentColorsPos();
+  this.progress = 0;
+  this.previousTimeStamp = null;
+  this.isChangingState = true;
+  this.states[newState].gradients[0].forEach(function(gradientColor, i2, arr) {
+    var nextColors = _this.convertColorToRgba(_this.getColor(gradientColor));
+    var nextColorsPos = _this.getColorPos(gradientColor, i2);
+    var colorDiff = _this.getColorDiff(_this.activeColors[i2], nextColors);
+    var colorPosDiff = _this.getColorPosDiff(_this.activeColorsPos[i2], nextColorsPos);
+    _this.activeColorsDiff.push(colorDiff);
+    _this.activeColorsPosDiff.push(colorPosDiff);
+  });
+  this.activeState = newState;
+  this.play();
+};
+var clear = function() {
+  if (!this.isPaused) {
+    cancelAnimationFrame(this.animation);
+  } else {
+    this.isPaused = false;
+  }
+  this.isCleared = true;
+  this.context.clearRect(0, 0, this.x1, this.y1);
+};
+var regex = {
+  hexa: /^#(?:[0-9a-fA-F]{3}){1,2}$/,
+  rgba: /^rgba\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3}), ?(.?\d{1,3})\)$/,
+  rgb: /^rgb\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)$/,
+  hsla: /^hsla\((\d{1,3}), ?(\d{1,3})%, ?(\d{1,3})%, ?(.?\d{1,3})\)$/,
+  hsl: /^hsl\((\d{1,3}), ?(\d{1,3})%, ?(\d{1,3})%\)$/
+}, match;
+var convertColorToRgba = function(color2) {
+  switch (identifyColorType(color2)) {
+    default:
+      this.triggerError("colorType");
+    case "hexa":
+      return hexToRgba(color2);
+    case "rgba":
+      return [
+        parseInt(match[1], 10),
+        parseInt(match[2], 10),
+        parseInt(match[3], 10),
+        parseFloat(match[4])
+      ];
+    case "rgb":
+      return [
+        parseInt(match[1], 10),
+        parseInt(match[2], 10),
+        parseInt(match[3], 10),
+        1
+      ];
+    case "hsla":
+      return hslaToRgb(
+        parseInt(match[1], 10) / 360,
+        parseInt(match[2], 10) / 100,
+        parseInt(match[3], 10) / 100,
+        parseFloat(match[4])
+      );
+    case "hsl":
+      return hslaToRgb(
+        parseInt(match[1], 10) / 360,
+        parseInt(match[2], 10) / 100,
+        parseInt(match[3], 10) / 100,
+        1
+      );
+  }
+};
+function identifyColorType(color2) {
+  var colorTypes2 = Object.keys(regex);
+  var i2 = 0;
+  for (i2; i2 < colorTypes2.length; i2++) {
+    match = regex[colorTypes2[i2]].exec(color2);
+    if (match)
+      return colorTypes2[i2];
+  }
+  return false;
+}
+function hexToRgba(hex2) {
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex2 = hex2.replace(shorthandRegex, function(m2, r3, g2, b2) {
+    return r3 + r3 + g2 + g2 + b2 + b2;
+  });
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex2);
+  return result ? [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16),
+    1
+  ] : null;
+}
+function hue2rgb(p2, q2, t3) {
+  if (t3 < 0)
+    t3 += 1;
+  if (t3 > 1)
+    t3 -= 1;
+  if (t3 < 1 / 6)
+    return p2 + (q2 - p2) * 6 * t3;
+  if (t3 < 1 / 2)
+    return q2;
+  if (t3 < 2 / 3)
+    return p2 + (q2 - p2) * (2 / 3 - t3) * 6;
+  return p2;
+}
+function hslaToRgb(h2, s3, l2, a2) {
+  var r3, g2, b2, q2, p2;
+  if (s3 === 0) {
+    r3 = g2 = b2 = l2;
+  } else {
+    q2 = l2 < 0.5 ? l2 * (1 + s3) : l2 + s3 - l2 * s3;
+    p2 = 2 * l2 - q2;
+    r3 = hue2rgb(p2, q2, h2 + 1 / 3);
+    g2 = hue2rgb(p2, q2, h2);
+    b2 = hue2rgb(p2, q2, h2 - 1 / 3);
+  }
+  return [Math.round(r3 * 255), Math.round(g2 * 255), Math.round(b2 * 255), a2];
+}
+var destroy = function() {
+  this.onResize("removeListeners");
+  this.onScroll("removeListeners");
+  this.clear();
+};
+var eventPolyfill = function() {
+  if (typeof window.CustomEvent === "function")
+    return;
+  function CustomEvent2(event, params) {
+    params = params || { bubbles: false, cancelable: false, detail: void 0 };
+    var evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    return evt;
+  }
+  CustomEvent2.prototype = window.Event.prototype;
+  window.CustomEvent = CustomEvent2;
+};
+var getColor = function(gradientColor) {
+  if (typeof gradientColor === "string") {
+    return gradientColor;
+  } else if (typeof gradientColor === "object" && gradientColor.color) {
+    return gradientColor.color;
+  } else {
+    this.triggerError("gradient.color");
+  }
+};
+var getColorDiff = function(colorA, colorB) {
+  var i2 = 0;
+  var colorDiff = [];
+  for (i2; i2 < 4; i2++) {
+    colorDiff.push(colorB[i2] - colorA[i2]);
+  }
+  return colorDiff;
+};
+var getColorPos = function(gradientColor, i2) {
+  if (typeof gradientColor === "object" && gradientColor.pos) {
+    return gradientColor.pos;
+  } else {
+    return parseFloat(!i2 ? 0 : (1 / (this.gradientLength - 1) * i2).toFixed(2));
+  }
+};
+var getColorPosDiff = function(posA, posB) {
+  return posB - posA;
+};
+var getCurrentColors = function() {
+  var i2, j2;
+  var currentColors = [];
+  for (i2 = 0; i2 < this.currentColors.length; i2++) {
+    currentColors.push([]);
+    for (j2 = 0; j2 < 4; j2++) {
+      currentColors[i2].push(this.currentColors[i2][j2]);
+    }
+  }
+  return currentColors;
+};
+var getCurrentColorsPos = function() {
+  var currentColorsPos = [], i2;
+  for (i2 = 0; i2 < this.currentColorsPos.length; i2++) {
+    currentColorsPos.push(this.currentColorsPos[i2]);
+  }
+  return currentColorsPos;
+};
+var getDimensions = function() {
+  this.x1 = this.canvas.offsetWidth;
+  this.y1 = this.canvas.offsetHeight;
+};
+var getElement = function(element) {
+  if (element instanceof HTMLCanvasElement) {
+    this.canvas = element;
+  } else if (typeof element === "string") {
+    this.canvas = document.querySelector(element);
+  } else {
+    throw new Error("The element you used is neither a String, nor a HTMLCanvasElement");
+  }
+  if (!this.canvas) {
+    throw new Error("`" + element + "` could not be found in the DOM");
+  }
+};
+var getLightness = function() {
+  var currentColors = this.getCurrentColors();
+  var gradientAverage = null;
+  var lightnessAverage, i2;
+  var colorsAverage = currentColors.map(function(el2) {
+    return Math.max(el2[0], el2[1], el2[2]);
+  });
+  for (i2 = 0; i2 < colorsAverage.length; i2++) {
+    gradientAverage = gradientAverage === null ? colorsAverage[i2] : gradientAverage + colorsAverage[i2];
+    if (i2 === colorsAverage.length - 1) {
+      lightnessAverage = Math.round(gradientAverage / (i2 + 1));
+    }
+  }
+  return lightnessAverage >= 128 ? "light" : "dark";
+};
+var makeGradient = function() {
+  var gradient = this.setDirection();
+  var elToSetClassOnClass = document.querySelector(this.elToSetClassOn).classList;
+  var i2 = 0;
+  this.context.clearRect(0, 0, this.x1, this.y1);
+  if (this.image) {
+    this.context.drawImage(
+      this.imageNode,
+      this.imagePosition.x,
+      this.imagePosition.y,
+      this.imagePosition.width,
+      this.imagePosition.height
+    );
+  }
+  for (i2; i2 < this.currentColors.length; i2++) {
+    gradient.addColorStop(
+      this.currentColorsPos[i2],
+      "rgba(" + this.currentColors[i2][0] + ", " + this.currentColors[i2][1] + ", " + this.currentColors[i2][2] + ", " + this.currentColors[i2][3] + ")"
+    );
+  }
+  if (this.name) {
+    if (this.getLightness() === "light") {
+      elToSetClassOnClass.remove(this.name + "-dark");
+      elToSetClassOnClass.add(this.name + "-light");
+    } else {
+      elToSetClassOnClass.remove(this.name + "-light");
+      elToSetClassOnClass.add(this.name + "-dark");
+    }
+  }
+  this.context.fillStyle = gradient;
+  this.context.fillRect(0, 0, this.x1, this.y1);
+};
+var onResize = function(type) {
+  if (type === "removeListeners") {
+    window.removeEventListener("resize", this.setSizeAttributesNameSpace);
+    return;
+  }
+  window.addEventListener("resize", this.setSizeAttributesNameSpace);
+};
+var onScroll = function(type) {
+  if (type === "removeListeners") {
+    window.removeEventListener("scroll", this.pauseWhenNotInViewNameSpace);
+    return;
+  }
+  window.addEventListener("scroll", this.pauseWhenNotInViewNameSpace);
+  this.pauseWhenNotInViewNameSpace();
+};
+var pause = function(state) {
+  var isPausedBecauseNotInView = state === "isPausedBecauseNotInView";
+  if (this.isCleared)
+    return;
+  if (!isPausedBecauseNotInView)
+    this.isPaused = true;
+  cancelAnimationFrame(this.animation);
+  this.animating = false;
+};
+var pauseWhenNotInView = function() {
+  var _this = this;
+  if (this.scrollDebounceTimeout)
+    clearTimeout(this.scrollDebounceTimeout);
+  this.scrollDebounceTimeout = setTimeout(function() {
+    var elPos = _this.canvas.getBoundingClientRect();
+    _this.isCanvasInWindowView = !(elPos.bottom < 0 || elPos.right < 0 || elPos.left > window.innerWidth || elPos.top > window.innerHeight);
+    if (_this.isCanvasInWindowView) {
+      if (!_this.isPaused || _this.firstScrollInit) {
+        if (_this.image && !_this.isImgLoaded) {
+          return;
+        }
+        _this.isPausedBecauseNotInView = false;
+        _this.play("isPlayedBecauseInView");
+        _this.firstScrollInit = false;
+      }
+    } else {
+      if (!_this.image && _this.firstScrollInit) {
+        _this.refreshColorsAndPos();
+        _this.firstScrollInit = false;
+      }
+      if (!_this.isPaused && !_this.isPausedBecauseNotInView) {
+        _this.isPausedBecauseNotInView = true;
+        _this.pause("isPausedBecauseNotInView");
+      }
+    }
+  }, this.scrollDebounceThreshold);
+};
+var play = function(state) {
+  var isPlayedBecauseInView = state === "isPlayedBecauseInView";
+  if (!isPlayedBecauseInView)
+    this.isPaused = false;
+  this.isCleared = false;
+  if (!this.animating) {
+    this.animation = requestAnimationFrame(this.animateColors.bind(this));
+    this.animating = true;
+  }
+};
+var prepareImage = function() {
+  var _this = this;
+  if (!this.imagePosition) {
+    this.imagePosition = { x: 0, y: 0, width: 0, height: 0 };
+  }
+  if (this.image.blendingMode) {
+    this.context.globalCompositeOperation = this.image.blendingMode;
+  }
+  if (this.imageNode) {
+    setImagePosition();
+    return;
+  }
+  this.imageNode = new Image();
+  this.imageNode.onerror = function() {
+    throw new Error("Granim: The image source is invalid.");
+  };
+  this.imageNode.onload = function() {
+    _this.imgOriginalWidth = _this.imageNode.width;
+    _this.imgOriginalHeight = _this.imageNode.height;
+    setImagePosition();
+    _this.refreshColorsAndPos();
+    if (!_this.isPausedWhenNotInView || _this.isCanvasInWindowView) {
+      _this.animation = requestAnimationFrame(_this.animateColors.bind(_this));
+    }
+    _this.isImgLoaded = true;
+  };
+  this.imageNode.src = this.image.source;
+  function setImagePosition() {
+    var i2, currentAxis;
+    for (i2 = 0; i2 < 2; i2++) {
+      currentAxis = !i2 ? "x" : "y";
+      setImageAxisPosition(currentAxis);
+    }
+    function setImageAxisPosition(axis) {
+      var canvasWidthOrHeight = _this[axis + "1"];
+      var imgOriginalWidthOrHeight = _this[axis === "x" ? "imgOriginalWidth" : "imgOriginalHeight"];
+      var imageAlignIndex = axis === "x" ? _this.image.position[0] : _this.image.position[1];
+      var imageAxisPosition;
+      switch (imageAlignIndex) {
+        case "center":
+          imageAxisPosition = imgOriginalWidthOrHeight > canvasWidthOrHeight ? -(imgOriginalWidthOrHeight - canvasWidthOrHeight) / 2 : (canvasWidthOrHeight - imgOriginalWidthOrHeight) / 2;
+          _this.imagePosition[axis] = imageAxisPosition;
+          _this.imagePosition[axis === "x" ? "width" : "height"] = imgOriginalWidthOrHeight;
+          break;
+        case "top":
+          _this.imagePosition["y"] = 0;
+          _this.imagePosition["height"] = imgOriginalWidthOrHeight;
+          break;
+        case "bottom":
+          _this.imagePosition["y"] = canvasWidthOrHeight - imgOriginalWidthOrHeight;
+          _this.imagePosition["height"] = imgOriginalWidthOrHeight;
+          break;
+        case "right":
+          _this.imagePosition["x"] = canvasWidthOrHeight - imgOriginalWidthOrHeight;
+          _this.imagePosition["width"] = imgOriginalWidthOrHeight;
+          break;
+        case "left":
+          _this.imagePosition["x"] = 0;
+          _this.imagePosition["width"] = imgOriginalWidthOrHeight;
+          break;
+      }
+      if (_this.image.stretchMode) {
+        imageAlignIndex = axis === "x" ? _this.image.stretchMode[0] : _this.image.stretchMode[1];
+        switch (imageAlignIndex) {
+          case "none":
+            break;
+          case "stretch":
+            _this.imagePosition[axis] = 0;
+            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
+            break;
+          case "stretch-if-bigger":
+            if (imgOriginalWidthOrHeight < canvasWidthOrHeight)
+              break;
+            _this.imagePosition[axis] = 0;
+            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
+            break;
+          case "stretch-if-smaller":
+            if (imgOriginalWidthOrHeight > canvasWidthOrHeight)
+              break;
+            _this.imagePosition[axis] = 0;
+            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
+            break;
+        }
+      }
+    }
+  }
+};
+var refreshColorsAndPos = function(progressPercent) {
+  var _this = this, activeChannel, activeChannelPos, i2, j2;
+  for (i2 = 0; i2 < this.activeColors.length; i2++) {
+    for (j2 = 0; j2 < 4; j2++) {
+      activeChannel = _this.activeColors[i2][j2] + (j2 !== 3 ? Math.ceil(_this.activeColorsDiff[i2][j2] / 100 * progressPercent) : Math.round(_this.activeColorsDiff[i2][j2] / 100 * progressPercent * 100) / 100);
+      if (activeChannel <= 255 && activeChannel >= 0) {
+        _this.currentColors[i2][j2] = activeChannel;
+      }
+    }
+    activeChannelPos = parseFloat((_this.activeColorsPos[i2] + _this.activeColorsPosDiff[i2] / 100 * progressPercent).toFixed(4));
+    if (activeChannelPos <= 1 && activeChannelPos >= 0) {
+      _this.currentColorsPos[i2] = activeChannelPos;
+    }
+  }
+  this.makeGradient();
+};
+var setColors = function() {
+  var _this = this, colorDiff, colorPosDiff, nextColors, nextColorsPos;
+  if (!this.channels[this.activeState])
+    this.channels[this.activeState] = [];
+  if (this.channels[this.activeState][this.channelsIndex] !== void 0) {
+    this.activeColors = this.channels[this.activeState][this.channelsIndex].colors;
+    this.activeColorsDiff = this.channels[this.activeState][this.channelsIndex].colorsDiff;
+    this.activeColorsPos = this.channels[this.activeState][this.channelsIndex].colorsPos;
+    this.activeColorsPosDiff = this.channels[this.activeState][this.channelsIndex].colorsPosDiff;
+    return;
+  }
+  this.channels[this.activeState].push([{}]);
+  this.channels[this.activeState][this.channelsIndex].colors = [];
+  this.channels[this.activeState][this.channelsIndex].colorsDiff = [];
+  this.channels[this.activeState][this.channelsIndex].colorsPos = [];
+  this.channels[this.activeState][this.channelsIndex].colorsPosDiff = [];
+  this.activeColors = [];
+  this.activeColorsDiff = [];
+  this.activeColorsPos = [];
+  this.activeColorsPosDiff = [];
+  this.states[this.activeState].gradients[this.channelsIndex].forEach(function(color2, i2) {
+    var colorPos = _this.getColorPos(color2, i2);
+    var color2 = _this.getColor(color2);
+    var rgbaColor = _this.convertColorToRgba(color2);
+    var activeChannel = _this.channels[_this.activeState];
+    activeChannel[_this.channelsIndex].colors.push(rgbaColor);
+    _this.activeColors.push(rgbaColor);
+    activeChannel[_this.channelsIndex].colorsPos.push(colorPos);
+    _this.activeColorsPos.push(colorPos);
+    if (!_this.isCurrentColorsSet) {
+      _this.currentColors.push(_this.convertColorToRgba(color2));
+      _this.currentColorsPos.push(colorPos);
+    }
+    if (_this.channelsIndex === _this.states[_this.activeState].gradients.length - 1) {
+      colorDiff = _this.getColorDiff(
+        activeChannel[_this.channelsIndex].colors[i2],
+        activeChannel[0].colors[i2]
+      );
+      colorPosDiff = _this.getColorPosDiff(
+        activeChannel[_this.channelsIndex].colorsPos[i2],
+        activeChannel[0].colorsPos[i2]
+      );
+    } else {
+      nextColors = _this.convertColorToRgba(_this.getColor(_this.states[_this.activeState].gradients[_this.channelsIndex + 1][i2]));
+      nextColorsPos = _this.getColorPos(_this.states[_this.activeState].gradients[_this.channelsIndex + 1][i2], i2);
+      colorDiff = _this.getColorDiff(activeChannel[_this.channelsIndex].colors[i2], nextColors);
+      colorPosDiff = _this.getColorPosDiff(activeChannel[_this.channelsIndex].colorsPos[i2], nextColorsPos);
+    }
+    activeChannel[_this.channelsIndex].colorsDiff.push(colorDiff);
+    _this.activeColorsDiff.push(colorDiff);
+    activeChannel[_this.channelsIndex].colorsPosDiff.push(colorPosDiff);
+    _this.activeColorsPosDiff.push(colorPosDiff);
+  });
+  this.activetransitionSpeed = this.states[this.activeState].transitionSpeed || 5e3;
+  this.isCurrentColorsSet = true;
+};
+var setDirection = function() {
+  var ctx = this.context;
+  switch (this.direction) {
+    case "diagonal":
+      return ctx.createLinearGradient(0, 0, this.x1, this.y1);
+    case "left-right":
+      return ctx.createLinearGradient(0, 0, this.x1, 0);
+    case "top-bottom":
+      return ctx.createLinearGradient(this.x1 / 2, 0, this.x1 / 2, this.y1);
+    case "radial":
+      return ctx.createRadialGradient(this.x1 / 2, this.y1 / 2, this.x1 / 2, this.x1 / 2, this.y1 / 2, 0);
+    case "custom":
+      return ctx.createLinearGradient(
+        getCustomCoordinateInPixels(this.customDirection.x0, this.x1),
+        getCustomCoordinateInPixels(this.customDirection.y0, this.y1),
+        getCustomCoordinateInPixels(this.customDirection.x1, this.x1),
+        getCustomCoordinateInPixels(this.customDirection.y1, this.y1)
+      );
+  }
+};
+function getCustomCoordinateInPixels(coordinate, size) {
+  return coordinate.indexOf("%") > -1 ? size / 100 * parseInt(coordinate.split("%")[0], 10) : parseInt(coordinate.split("px")[0], 10);
+}
+var setSizeAttributes = function() {
+  this.getDimensions();
+  this.canvas.setAttribute("width", this.x1);
+  this.canvas.setAttribute("height", this.y1);
+  if (this.image)
+    this.prepareImage();
+  this.refreshColorsAndPos();
+};
+var triggerError = function(element) {
+  var siteURL = "https://sarcadass.github.io/granim.js/api.html";
+  throw new Error('Granim: Input error on "' + element + '" option.\nCheck the API ' + siteURL + ".");
+};
+var validateInput = function(inputType) {
+  var xPositionValues = ["left", "center", "right"];
+  var yPositionValues = ["top", "center", "bottom"];
+  var stretchModeValues = ["none", "stretch", "stretch-if-smaller", "stretch-if-bigger"];
+  var blendingModeValues = [
+    "multiply",
+    "screen",
+    "normal",
+    "overlay",
+    "darken",
+    "lighten",
+    "lighter",
+    "color-dodge",
+    "color-burn",
+    "hard-light",
+    "soft-light",
+    "difference",
+    "exclusion",
+    "hue",
+    "saturation",
+    "color",
+    "luminosity"
+  ];
+  var directionValues = ["diagonal", "left-right", "top-bottom", "radial", "custom"];
+  switch (inputType) {
+    case "image":
+      if (!Array.isArray(this.image.position) || this.image.position.length !== 2 || xPositionValues.indexOf(this.image.position[0]) === -1 || yPositionValues.indexOf(this.image.position[1]) === -1) {
+        this.triggerError("image.position");
+      }
+      if (this.image.stretchMode) {
+        if (!Array.isArray(this.image.stretchMode) || this.image.stretchMode.length !== 2 || stretchModeValues.indexOf(this.image.stretchMode[0]) === -1 || stretchModeValues.indexOf(this.image.stretchMode[1]) === -1) {
+          this.triggerError("image.stretchMode");
+        }
+      }
+      break;
+    case "blendingMode":
+      if (blendingModeValues.indexOf(this.image.blendingMode) === -1) {
+        this.clear();
+        this.triggerError("blendingMode");
+      }
+      break;
+    case "direction":
+      if (directionValues.indexOf(this.direction) === -1) {
+        this.triggerError("direction");
+      } else {
+        if (this.direction === "custom") {
+          if (!areDefinedInPixelsOrPercentage([
+            this.customDirection.x0,
+            this.customDirection.x1,
+            this.customDirection.y0,
+            this.customDirection.y1
+          ])) {
+            this.triggerError("customDirection");
+          }
+        }
+      }
+      break;
+  }
+};
+function areDefinedInPixelsOrPercentage(array) {
+  var definedInPixelsOrPercentage = true, i2 = 0, value;
+  while (definedInPixelsOrPercentage && i2 < array.length) {
+    value = array[i2];
+    if (typeof value !== "string") {
+      definedInPixelsOrPercentage = false;
+    } else {
+      var splittedValue = null;
+      var unit = null;
+      if (value.indexOf("px") !== -1)
+        unit = "px";
+      if (value.indexOf("%") !== -1)
+        unit = "%";
+      splittedValue = value.split(unit).filter(function(value2) {
+        return value2.length > 0;
+      });
+      if (!unit || splittedValue.length > 2 || !splittedValue[0] || splittedValue[1] || !/^-?\d+\.?\d*$/.test(splittedValue[0])) {
+        definedInPixelsOrPercentage = false;
+      }
+    }
+    i2++;
+  }
+  return definedInPixelsOrPercentage;
+}
+function Granim$1(options) {
+  this.getElement(options.element);
+  this.x1 = 0;
+  this.y1 = 0;
+  this.name = options.name || false;
+  this.elToSetClassOn = options.elToSetClassOn || "body";
+  this.direction = options.direction || "diagonal";
+  this.customDirection = options.customDirection || {};
+  this.validateInput("direction");
+  this.isPausedWhenNotInView = options.isPausedWhenNotInView || false;
+  this.states = options.states;
+  this.stateTransitionSpeed = options.stateTransitionSpeed || 1e3;
+  this.previousTimeStamp = null;
+  this.progress = 0;
+  this.isPaused = false;
+  this.isCleared = false;
+  this.isPausedBecauseNotInView = false;
+  this.context = this.canvas.getContext("2d");
+  this.channels = {};
+  this.channelsIndex = 0;
+  this.activeState = options.defaultStateName || "default-state";
+  this.isChangingState = false;
+  this.currentColors = [];
+  this.currentColorsPos = [];
+  this.activetransitionSpeed = null;
+  this.eventPolyfill();
+  this.scrollDebounceThreshold = options.scrollDebounceThreshold || 300;
+  this.scrollDebounceTimeout = null;
+  this.isImgLoaded = false;
+  this.isCanvasInWindowView = false;
+  this.firstScrollInit = true;
+  this.animating = false;
+  this.gradientLength = this.states[this.activeState].gradients[0].length;
+  if (options.image && options.image.source) {
+    this.image = {
+      source: options.image.source,
+      position: options.image.position || ["center", "center"],
+      stretchMode: options.image.stretchMode || false,
+      blendingMode: options.image.blendingMode || false
+    };
+  }
+  this.events = {
+    start: new CustomEvent("granim:start"),
+    end: new CustomEvent("granim:end"),
+    gradientChange: function(details) {
+      return new CustomEvent("granim:gradientChange", {
+        detail: {
+          isLooping: details.isLooping,
+          colorsFrom: details.colorsFrom,
+          colorsTo: details.colorsTo,
+          activeState: details.activeState
+        },
+        bubbles: false,
+        cancelable: false
+      });
+    }
+  };
+  this.callbacks = {
+    onStart: typeof options.onStart === "function" ? options.onStart : false,
+    onGradientChange: typeof options.onGradientChange === "function" ? options.onGradientChange : false,
+    onEnd: typeof options.onEnd === "function" ? options.onEnd : false
+  };
+  this.getDimensions();
+  this.canvas.setAttribute("width", this.x1);
+  this.canvas.setAttribute("height", this.y1);
+  this.setColors();
+  if (this.image) {
+    this.validateInput("image");
+    this.prepareImage();
+  }
+  this.pauseWhenNotInViewNameSpace = this.pauseWhenNotInView.bind(this);
+  this.setSizeAttributesNameSpace = this.setSizeAttributes.bind(this);
+  this.onResize();
+  if (this.isPausedWhenNotInView) {
+    this.onScroll();
+  } else {
+    if (!this.image) {
+      this.refreshColorsAndPos();
+      this.animation = requestAnimationFrame(this.animateColors.bind(this));
+      this.animating = true;
+    }
+  }
+  if (this.callbacks.onStart)
+    this.callbacks.onStart();
+  this.canvas.dispatchEvent(this.events.start);
+}
+Granim$1.prototype.animateColors = animateColors;
+Granim$1.prototype.changeBlendingMode = changeBlendingMode;
+Granim$1.prototype.changeDirection = changeDirection;
+Granim$1.prototype.changeState = changeState;
+Granim$1.prototype.clear = clear;
+Granim$1.prototype.convertColorToRgba = convertColorToRgba;
+Granim$1.prototype.destroy = destroy;
+Granim$1.prototype.eventPolyfill = eventPolyfill;
+Granim$1.prototype.getColor = getColor;
+Granim$1.prototype.getColorDiff = getColorDiff;
+Granim$1.prototype.getColorPos = getColorPos;
+Granim$1.prototype.getColorPosDiff = getColorPosDiff;
+Granim$1.prototype.getCurrentColors = getCurrentColors;
+Granim$1.prototype.getCurrentColorsPos = getCurrentColorsPos;
+Granim$1.prototype.getDimensions = getDimensions;
+Granim$1.prototype.getElement = getElement;
+Granim$1.prototype.getLightness = getLightness;
+Granim$1.prototype.makeGradient = makeGradient;
+Granim$1.prototype.onResize = onResize;
+Granim$1.prototype.onScroll = onScroll;
+Granim$1.prototype.pause = pause;
+Granim$1.prototype.pauseWhenNotInView = pauseWhenNotInView;
+Granim$1.prototype.play = play;
+Granim$1.prototype.prepareImage = prepareImage;
+Granim$1.prototype.refreshColorsAndPos = refreshColorsAndPos;
+Granim$1.prototype.setColors = setColors;
+Granim$1.prototype.setDirection = setDirection;
+Granim$1.prototype.setSizeAttributes = setSizeAttributes;
+Granim$1.prototype.triggerError = triggerError;
+Granim$1.prototype.validateInput = validateInput;
+var Granim_1 = Granim$1;
+var granim = Granim_1;
+const Granim = /* @__PURE__ */ getDefaultExportFromCjs(granim);
+const WallpaperAuth = ({ setDark }) => {
+  const canvasRef = reactExports.useRef(null);
+  const dark = ["#000428", "#004e92"];
+  reactExports.useEffect(() => {
+    let granim2;
+    if (canvasRef.current) {
+      granim2 = new Granim({
+        element: canvasRef.current,
+        direction: "diagonal",
+        states: {
+          "default-state": {
+            gradients: [
+              ["#00d2ff", "#3a7bd5"],
+              ["#4776E6", "#8E54E9"],
+              dark,
+              ["#FF512F", "#DD2476"],
+              ["#fd746c", "#ff9068"],
+              ["#6a3093", "#a044ff"],
+              ["#76b852", "#8DC26F"],
+              ["#005C97", "#363795"]
+            ]
+          }
+        },
+        onGradientChange: (e2) => {
+          const isDark = compareSlices(e2.colorsTo, dark);
+          setDark(isDark);
+        }
+      });
+    }
+    return () => {
+      if (granim2) {
+        granim2.destroy();
+      }
+    };
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "canvas",
+    {
+      ref: canvasRef,
+      className: "absolute w-full h-full -z-50",
+      style: { position: "fixed" }
+    }
+  );
+};
+function WallpaperWalkInGreen() {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "bg-walk-in-green bg-cover bg-center fixed -mt-5 -ml-5 w-screen-105 h-screen-105 blur-lg brightness-75 -z-50"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-noise opacity-80 fixed h-full w-full contrast-200 brightness-200 -z-50" })
+  ] });
+}
 function bind(fn, thisArg) {
   return function wrap2() {
     return fn.apply(thisArg, arguments);
@@ -22188,908 +23010,76 @@ axios.getAdapter = adapters.getAdapter;
 axios.HttpStatusCode = HttpStatusCode$1;
 axios.default = axios;
 const axios$1 = axios;
-const streamIdLength = 32;
-const audioPlayerMimeType = "audio/mpeg";
-const contentTimeoutSeconds = 30;
-const minSpeakTimeMillis = 500;
-const useSSEStore = create()(
-  devtools(
-    persist(
-      () => ({
-        streamId: randomHash(streamIdLength)
-      }),
-      {
-        name: "sse",
-        storage: createJSONStorage(() => zustandStorage)
-        // (optional) by default the 'localStorage' is used
-      }
-    )
-  )
-);
-function SSEEndpoint() {
-  const ep = joinUrl(Endpoint(), "events");
-  console.debug("SSEEndpoint:", ep);
-  return ep;
-}
-function Endpoint() {
-  let ep = {}.VITE_REACT_APP_ENDPOINT;
-  if (ep) {
-    return ep;
-  }
-  ep = joinUrl(currentProtocolHostPortPath(), "api");
-  console.debug("RestfulEndpoint:", ep);
-  return ep;
-}
-const axiosInstance = axios$1.create({
-  baseURL: Endpoint(),
-  timeout: 5e3
-});
-axiosInstance.interceptors.request.use((config) => {
-  config.headers["stream-id"] = useSSEStore.getState().streamId;
-  config.headers["Authorization"] = "Bearer " + useAuthStore.getState().getPasswordHash();
-  return config;
-});
-axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      useAuthStore.setState({ ...useAuthStore.getState, verified: false });
-      console.info("Unauthorized", error.response);
-    }
-    return Promise.reject(error);
-  }
-);
-const postConv = async (conv) => {
-  return axiosInstance.post("conversation", conv);
-};
-const postAudioConv = async (audio, fileName, conv) => {
-  const formData = new FormData();
-  formData.append("audio", audio, fileName);
-  formData.append("conversation", JSON.stringify(conv));
-  return axiosInstance.postForm("audio-conversation", formData);
-};
-const getHealth = async () => {
-  return axiosInstance.get("health");
-};
-const wallpaper = "";
-var animateColors = function(timestamp) {
-  var wasWindowIdled = timestamp - this.previousTimeStamp > 100;
-  var isLoop = this.states[this.activeState].loop !== void 0 ? this.states[this.activeState].loop : true;
-  var progressPercent, isLooping, nextGradient;
-  if (this.previousTimeStamp === null || wasWindowIdled) {
-    this.previousTimeStamp = timestamp;
-  }
-  this.progress = this.progress + (timestamp - this.previousTimeStamp);
-  progressPercent = (this.progress / this.activetransitionSpeed * 100).toFixed(2);
-  this.previousTimeStamp = timestamp;
-  this.refreshColorsAndPos(progressPercent);
-  if (progressPercent < 100) {
-    this.animation = requestAnimationFrame(this.animateColors.bind(this));
-  } else {
-    if (this.channelsIndex < this.states[this.activeState].gradients.length - 2 || isLoop) {
-      if (this.isChangingState) {
-        this.activetransitionSpeed = this.states[this.activeState].transitionSpeed || 5e3;
-        this.isChangingState = false;
-      }
-      this.previousTimeStamp = null;
-      this.progress = 0;
-      this.channelsIndex++;
-      isLooping = false;
-      if (this.channelsIndex === this.states[this.activeState].gradients.length - 1) {
-        isLooping = true;
-      } else if (this.channelsIndex === this.states[this.activeState].gradients.length) {
-        this.channelsIndex = 0;
-      }
-      nextGradient = this.states[this.activeState].gradients[this.channelsIndex + 1] === void 0 ? this.states[this.activeState].gradients[0] : this.states[this.activeState].gradients[this.channelsIndex + 1];
-      this.setColors();
-      this.animation = requestAnimationFrame(this.animateColors.bind(this));
-      if (this.callbacks.onGradientChange) {
-        this.callbacks.onGradientChange({
-          isLooping,
-          colorsFrom: this.states[this.activeState].gradients[this.channelsIndex],
-          colorsTo: nextGradient,
-          activeState: this.activeState
-        });
-      }
-      this.canvas.dispatchEvent(this.events.gradientChange({
-        isLooping,
-        colorsFrom: this.states[this.activeState].gradients[this.channelsIndex],
-        colorsTo: nextGradient,
-        activeState: this.activeState
-      }));
-    } else {
-      cancelAnimationFrame(this.animation);
-      if (this.callbacks.onEnd)
-        this.callbacks.onEnd();
-      this.canvas.dispatchEvent(new CustomEvent("granim:end"));
-    }
-  }
-};
-var changeBlendingMode = function(newBlendingMode) {
-  this.context.clearRect(0, 0, this.x1, this.y1);
-  this.context.globalCompositeOperation = this.image.blendingMode = newBlendingMode;
-  this.validateInput("blendingMode");
-  if (this.isPaused)
-    this.refreshColorsAndPos();
-};
-var changeDirection = function(newDirection) {
-  this.context.clearRect(0, 0, this.x1, this.y1);
-  this.direction = newDirection;
-  this.validateInput("direction");
-  if (this.isPaused)
-    this.refreshColorsAndPos();
-};
-var changeState = function(newState) {
-  var _this = this;
-  if (this.activeState === newState) {
-    return;
-  }
-  if (!this.isPaused) {
-    this.isPaused = true;
-    this.pause();
-  }
-  this.channelsIndex = -1;
-  this.activetransitionSpeed = this.stateTransitionSpeed;
-  this.activeColorsDiff = [];
-  this.activeColorsPosDiff = [];
-  this.activeColors = this.getCurrentColors();
-  this.activeColorsPos = this.getCurrentColorsPos();
-  this.progress = 0;
-  this.previousTimeStamp = null;
-  this.isChangingState = true;
-  this.states[newState].gradients[0].forEach(function(gradientColor, i2, arr) {
-    var nextColors = _this.convertColorToRgba(_this.getColor(gradientColor));
-    var nextColorsPos = _this.getColorPos(gradientColor, i2);
-    var colorDiff = _this.getColorDiff(_this.activeColors[i2], nextColors);
-    var colorPosDiff = _this.getColorPosDiff(_this.activeColorsPos[i2], nextColorsPos);
-    _this.activeColorsDiff.push(colorDiff);
-    _this.activeColorsPosDiff.push(colorPosDiff);
-  });
-  this.activeState = newState;
-  this.play();
-};
-var clear = function() {
-  if (!this.isPaused) {
-    cancelAnimationFrame(this.animation);
-  } else {
-    this.isPaused = false;
-  }
-  this.isCleared = true;
-  this.context.clearRect(0, 0, this.x1, this.y1);
-};
-var regex = {
-  hexa: /^#(?:[0-9a-fA-F]{3}){1,2}$/,
-  rgba: /^rgba\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3}), ?(.?\d{1,3})\)$/,
-  rgb: /^rgb\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)$/,
-  hsla: /^hsla\((\d{1,3}), ?(\d{1,3})%, ?(\d{1,3})%, ?(.?\d{1,3})\)$/,
-  hsl: /^hsl\((\d{1,3}), ?(\d{1,3})%, ?(\d{1,3})%\)$/
-}, match;
-var convertColorToRgba = function(color2) {
-  switch (identifyColorType(color2)) {
-    default:
-      this.triggerError("colorType");
-    case "hexa":
-      return hexToRgba(color2);
-    case "rgba":
-      return [
-        parseInt(match[1], 10),
-        parseInt(match[2], 10),
-        parseInt(match[3], 10),
-        parseFloat(match[4])
-      ];
-    case "rgb":
-      return [
-        parseInt(match[1], 10),
-        parseInt(match[2], 10),
-        parseInt(match[3], 10),
-        1
-      ];
-    case "hsla":
-      return hslaToRgb(
-        parseInt(match[1], 10) / 360,
-        parseInt(match[2], 10) / 100,
-        parseInt(match[3], 10) / 100,
-        parseFloat(match[4])
-      );
-    case "hsl":
-      return hslaToRgb(
-        parseInt(match[1], 10) / 360,
-        parseInt(match[2], 10) / 100,
-        parseInt(match[3], 10) / 100,
-        1
-      );
-  }
-};
-function identifyColorType(color2) {
-  var colorTypes2 = Object.keys(regex);
-  var i2 = 0;
-  for (i2; i2 < colorTypes2.length; i2++) {
-    match = regex[colorTypes2[i2]].exec(color2);
-    if (match)
-      return colorTypes2[i2];
-  }
-  return false;
-}
-function hexToRgba(hex2) {
-  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex2 = hex2.replace(shorthandRegex, function(m2, r3, g2, b2) {
-    return r3 + r3 + g2 + g2 + b2 + b2;
-  });
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex2);
-  return result ? [
-    parseInt(result[1], 16),
-    parseInt(result[2], 16),
-    parseInt(result[3], 16),
-    1
-  ] : null;
-}
-function hue2rgb(p2, q2, t3) {
-  if (t3 < 0)
-    t3 += 1;
-  if (t3 > 1)
-    t3 -= 1;
-  if (t3 < 1 / 6)
-    return p2 + (q2 - p2) * 6 * t3;
-  if (t3 < 1 / 2)
-    return q2;
-  if (t3 < 2 / 3)
-    return p2 + (q2 - p2) * (2 / 3 - t3) * 6;
-  return p2;
-}
-function hslaToRgb(h2, s3, l2, a2) {
-  var r3, g2, b2, q2, p2;
-  if (s3 === 0) {
-    r3 = g2 = b2 = l2;
-  } else {
-    q2 = l2 < 0.5 ? l2 * (1 + s3) : l2 + s3 - l2 * s3;
-    p2 = 2 * l2 - q2;
-    r3 = hue2rgb(p2, q2, h2 + 1 / 3);
-    g2 = hue2rgb(p2, q2, h2);
-    b2 = hue2rgb(p2, q2, h2 - 1 / 3);
-  }
-  return [Math.round(r3 * 255), Math.round(g2 * 255), Math.round(b2 * 255), a2];
-}
-var destroy = function() {
-  this.onResize("removeListeners");
-  this.onScroll("removeListeners");
-  this.clear();
-};
-var eventPolyfill = function() {
-  if (typeof window.CustomEvent === "function")
-    return;
-  function CustomEvent2(event, params) {
-    params = params || { bubbles: false, cancelable: false, detail: void 0 };
-    var evt = document.createEvent("CustomEvent");
-    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-    return evt;
-  }
-  CustomEvent2.prototype = window.Event.prototype;
-  window.CustomEvent = CustomEvent2;
-};
-var getColor = function(gradientColor) {
-  if (typeof gradientColor === "string") {
-    return gradientColor;
-  } else if (typeof gradientColor === "object" && gradientColor.color) {
-    return gradientColor.color;
-  } else {
-    this.triggerError("gradient.color");
-  }
-};
-var getColorDiff = function(colorA, colorB) {
-  var i2 = 0;
-  var colorDiff = [];
-  for (i2; i2 < 4; i2++) {
-    colorDiff.push(colorB[i2] - colorA[i2]);
-  }
-  return colorDiff;
-};
-var getColorPos = function(gradientColor, i2) {
-  if (typeof gradientColor === "object" && gradientColor.pos) {
-    return gradientColor.pos;
-  } else {
-    return parseFloat(!i2 ? 0 : (1 / (this.gradientLength - 1) * i2).toFixed(2));
-  }
-};
-var getColorPosDiff = function(posA, posB) {
-  return posB - posA;
-};
-var getCurrentColors = function() {
-  var i2, j2;
-  var currentColors = [];
-  for (i2 = 0; i2 < this.currentColors.length; i2++) {
-    currentColors.push([]);
-    for (j2 = 0; j2 < 4; j2++) {
-      currentColors[i2].push(this.currentColors[i2][j2]);
-    }
-  }
-  return currentColors;
-};
-var getCurrentColorsPos = function() {
-  var currentColorsPos = [], i2;
-  for (i2 = 0; i2 < this.currentColorsPos.length; i2++) {
-    currentColorsPos.push(this.currentColorsPos[i2]);
-  }
-  return currentColorsPos;
-};
-var getDimensions = function() {
-  this.x1 = this.canvas.offsetWidth;
-  this.y1 = this.canvas.offsetHeight;
-};
-var getElement = function(element) {
-  if (element instanceof HTMLCanvasElement) {
-    this.canvas = element;
-  } else if (typeof element === "string") {
-    this.canvas = document.querySelector(element);
-  } else {
-    throw new Error("The element you used is neither a String, nor a HTMLCanvasElement");
-  }
-  if (!this.canvas) {
-    throw new Error("`" + element + "` could not be found in the DOM");
-  }
-};
-var getLightness = function() {
-  var currentColors = this.getCurrentColors();
-  var gradientAverage = null;
-  var lightnessAverage, i2;
-  var colorsAverage = currentColors.map(function(el2) {
-    return Math.max(el2[0], el2[1], el2[2]);
-  });
-  for (i2 = 0; i2 < colorsAverage.length; i2++) {
-    gradientAverage = gradientAverage === null ? colorsAverage[i2] : gradientAverage + colorsAverage[i2];
-    if (i2 === colorsAverage.length - 1) {
-      lightnessAverage = Math.round(gradientAverage / (i2 + 1));
-    }
-  }
-  return lightnessAverage >= 128 ? "light" : "dark";
-};
-var makeGradient = function() {
-  var gradient = this.setDirection();
-  var elToSetClassOnClass = document.querySelector(this.elToSetClassOn).classList;
-  var i2 = 0;
-  this.context.clearRect(0, 0, this.x1, this.y1);
-  if (this.image) {
-    this.context.drawImage(
-      this.imageNode,
-      this.imagePosition.x,
-      this.imagePosition.y,
-      this.imagePosition.width,
-      this.imagePosition.height
-    );
-  }
-  for (i2; i2 < this.currentColors.length; i2++) {
-    gradient.addColorStop(
-      this.currentColorsPos[i2],
-      "rgba(" + this.currentColors[i2][0] + ", " + this.currentColors[i2][1] + ", " + this.currentColors[i2][2] + ", " + this.currentColors[i2][3] + ")"
-    );
-  }
-  if (this.name) {
-    if (this.getLightness() === "light") {
-      elToSetClassOnClass.remove(this.name + "-dark");
-      elToSetClassOnClass.add(this.name + "-light");
-    } else {
-      elToSetClassOnClass.remove(this.name + "-light");
-      elToSetClassOnClass.add(this.name + "-dark");
-    }
-  }
-  this.context.fillStyle = gradient;
-  this.context.fillRect(0, 0, this.x1, this.y1);
-};
-var onResize = function(type) {
-  if (type === "removeListeners") {
-    window.removeEventListener("resize", this.setSizeAttributesNameSpace);
-    return;
-  }
-  window.addEventListener("resize", this.setSizeAttributesNameSpace);
-};
-var onScroll = function(type) {
-  if (type === "removeListeners") {
-    window.removeEventListener("scroll", this.pauseWhenNotInViewNameSpace);
-    return;
-  }
-  window.addEventListener("scroll", this.pauseWhenNotInViewNameSpace);
-  this.pauseWhenNotInViewNameSpace();
-};
-var pause = function(state) {
-  var isPausedBecauseNotInView = state === "isPausedBecauseNotInView";
-  if (this.isCleared)
-    return;
-  if (!isPausedBecauseNotInView)
-    this.isPaused = true;
-  cancelAnimationFrame(this.animation);
-  this.animating = false;
-};
-var pauseWhenNotInView = function() {
-  var _this = this;
-  if (this.scrollDebounceTimeout)
-    clearTimeout(this.scrollDebounceTimeout);
-  this.scrollDebounceTimeout = setTimeout(function() {
-    var elPos = _this.canvas.getBoundingClientRect();
-    _this.isCanvasInWindowView = !(elPos.bottom < 0 || elPos.right < 0 || elPos.left > window.innerWidth || elPos.top > window.innerHeight);
-    if (_this.isCanvasInWindowView) {
-      if (!_this.isPaused || _this.firstScrollInit) {
-        if (_this.image && !_this.isImgLoaded) {
-          return;
-        }
-        _this.isPausedBecauseNotInView = false;
-        _this.play("isPlayedBecauseInView");
-        _this.firstScrollInit = false;
-      }
-    } else {
-      if (!_this.image && _this.firstScrollInit) {
-        _this.refreshColorsAndPos();
-        _this.firstScrollInit = false;
-      }
-      if (!_this.isPaused && !_this.isPausedBecauseNotInView) {
-        _this.isPausedBecauseNotInView = true;
-        _this.pause("isPausedBecauseNotInView");
-      }
-    }
-  }, this.scrollDebounceThreshold);
-};
-var play = function(state) {
-  var isPlayedBecauseInView = state === "isPlayedBecauseInView";
-  if (!isPlayedBecauseInView)
-    this.isPaused = false;
-  this.isCleared = false;
-  if (!this.animating) {
-    this.animation = requestAnimationFrame(this.animateColors.bind(this));
-    this.animating = true;
-  }
-};
-var prepareImage = function() {
-  var _this = this;
-  if (!this.imagePosition) {
-    this.imagePosition = { x: 0, y: 0, width: 0, height: 0 };
-  }
-  if (this.image.blendingMode) {
-    this.context.globalCompositeOperation = this.image.blendingMode;
-  }
-  if (this.imageNode) {
-    setImagePosition();
-    return;
-  }
-  this.imageNode = new Image();
-  this.imageNode.onerror = function() {
-    throw new Error("Granim: The image source is invalid.");
+const toTalkOption = (ability) => {
+  return {
+    llm: ability.llm.available ? {
+      chatGPT: toChatGPTOption(ability.llm.chatGPT)
+    } : void 0
   };
-  this.imageNode.onload = function() {
-    _this.imgOriginalWidth = _this.imageNode.width;
-    _this.imgOriginalHeight = _this.imageNode.height;
-    setImagePosition();
-    _this.refreshColorsAndPos();
-    if (!_this.isPausedWhenNotInView || _this.isCanvasInWindowView) {
-      _this.animation = requestAnimationFrame(_this.animateColors.bind(_this));
-    }
-    _this.isImgLoaded = true;
-  };
-  this.imageNode.src = this.image.source;
-  function setImagePosition() {
-    var i2, currentAxis;
-    for (i2 = 0; i2 < 2; i2++) {
-      currentAxis = !i2 ? "x" : "y";
-      setImageAxisPosition(currentAxis);
-    }
-    function setImageAxisPosition(axis) {
-      var canvasWidthOrHeight = _this[axis + "1"];
-      var imgOriginalWidthOrHeight = _this[axis === "x" ? "imgOriginalWidth" : "imgOriginalHeight"];
-      var imageAlignIndex = axis === "x" ? _this.image.position[0] : _this.image.position[1];
-      var imageAxisPosition;
-      switch (imageAlignIndex) {
-        case "center":
-          imageAxisPosition = imgOriginalWidthOrHeight > canvasWidthOrHeight ? -(imgOriginalWidthOrHeight - canvasWidthOrHeight) / 2 : (canvasWidthOrHeight - imgOriginalWidthOrHeight) / 2;
-          _this.imagePosition[axis] = imageAxisPosition;
-          _this.imagePosition[axis === "x" ? "width" : "height"] = imgOriginalWidthOrHeight;
-          break;
-        case "top":
-          _this.imagePosition["y"] = 0;
-          _this.imagePosition["height"] = imgOriginalWidthOrHeight;
-          break;
-        case "bottom":
-          _this.imagePosition["y"] = canvasWidthOrHeight - imgOriginalWidthOrHeight;
-          _this.imagePosition["height"] = imgOriginalWidthOrHeight;
-          break;
-        case "right":
-          _this.imagePosition["x"] = canvasWidthOrHeight - imgOriginalWidthOrHeight;
-          _this.imagePosition["width"] = imgOriginalWidthOrHeight;
-          break;
-        case "left":
-          _this.imagePosition["x"] = 0;
-          _this.imagePosition["width"] = imgOriginalWidthOrHeight;
-          break;
-      }
-      if (_this.image.stretchMode) {
-        imageAlignIndex = axis === "x" ? _this.image.stretchMode[0] : _this.image.stretchMode[1];
-        switch (imageAlignIndex) {
-          case "none":
-            break;
-          case "stretch":
-            _this.imagePosition[axis] = 0;
-            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
-            break;
-          case "stretch-if-bigger":
-            if (imgOriginalWidthOrHeight < canvasWidthOrHeight)
-              break;
-            _this.imagePosition[axis] = 0;
-            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
-            break;
-          case "stretch-if-smaller":
-            if (imgOriginalWidthOrHeight > canvasWidthOrHeight)
-              break;
-            _this.imagePosition[axis] = 0;
-            _this.imagePosition[axis === "x" ? "width" : "height"] = canvasWidthOrHeight;
-            break;
-        }
-      }
-    }
-  }
 };
-var refreshColorsAndPos = function(progressPercent) {
-  var _this = this, activeChannel, activeChannelPos, i2, j2;
-  for (i2 = 0; i2 < this.activeColors.length; i2++) {
-    for (j2 = 0; j2 < 4; j2++) {
-      activeChannel = _this.activeColors[i2][j2] + (j2 !== 3 ? Math.ceil(_this.activeColorsDiff[i2][j2] / 100 * progressPercent) : Math.round(_this.activeColorsDiff[i2][j2] / 100 * progressPercent * 100) / 100);
-      if (activeChannel <= 255 && activeChannel >= 0) {
-        _this.currentColors[i2][j2] = activeChannel;
-      }
-    }
-    activeChannelPos = parseFloat((_this.activeColorsPos[i2] + _this.activeColorsPosDiff[i2] / 100 * progressPercent).toFixed(4));
-    if (activeChannelPos <= 1 && activeChannelPos >= 0) {
-      _this.currentColorsPos[i2] = activeChannelPos;
-    }
+class RestfulAPI {
+  constructor(axiosInstance) {
+    __publicField(this, "axios");
+    this.axios = axiosInstance;
   }
-  this.makeGradient();
-};
-var setColors = function() {
-  var _this = this, colorDiff, colorPosDiff, nextColors, nextColorsPos;
-  if (!this.channels[this.activeState])
-    this.channels[this.activeState] = [];
-  if (this.channels[this.activeState][this.channelsIndex] !== void 0) {
-    this.activeColors = this.channels[this.activeState][this.channelsIndex].colors;
-    this.activeColorsDiff = this.channels[this.activeState][this.channelsIndex].colorsDiff;
-    this.activeColorsPos = this.channels[this.activeState][this.channelsIndex].colorsPos;
-    this.activeColorsPosDiff = this.channels[this.activeState][this.channelsIndex].colorsPosDiff;
-    return;
+  async postConv(conv) {
+    return this.axios.post("conversation", conv);
   }
-  this.channels[this.activeState].push([{}]);
-  this.channels[this.activeState][this.channelsIndex].colors = [];
-  this.channels[this.activeState][this.channelsIndex].colorsDiff = [];
-  this.channels[this.activeState][this.channelsIndex].colorsPos = [];
-  this.channels[this.activeState][this.channelsIndex].colorsPosDiff = [];
-  this.activeColors = [];
-  this.activeColorsDiff = [];
-  this.activeColorsPos = [];
-  this.activeColorsPosDiff = [];
-  this.states[this.activeState].gradients[this.channelsIndex].forEach(function(color2, i2) {
-    var colorPos = _this.getColorPos(color2, i2);
-    var color2 = _this.getColor(color2);
-    var rgbaColor = _this.convertColorToRgba(color2);
-    var activeChannel = _this.channels[_this.activeState];
-    activeChannel[_this.channelsIndex].colors.push(rgbaColor);
-    _this.activeColors.push(rgbaColor);
-    activeChannel[_this.channelsIndex].colorsPos.push(colorPos);
-    _this.activeColorsPos.push(colorPos);
-    if (!_this.isCurrentColorsSet) {
-      _this.currentColors.push(_this.convertColorToRgba(color2));
-      _this.currentColorsPos.push(colorPos);
-    }
-    if (_this.channelsIndex === _this.states[_this.activeState].gradients.length - 1) {
-      colorDiff = _this.getColorDiff(
-        activeChannel[_this.channelsIndex].colors[i2],
-        activeChannel[0].colors[i2]
-      );
-      colorPosDiff = _this.getColorPosDiff(
-        activeChannel[_this.channelsIndex].colorsPos[i2],
-        activeChannel[0].colorsPos[i2]
-      );
-    } else {
-      nextColors = _this.convertColorToRgba(_this.getColor(_this.states[_this.activeState].gradients[_this.channelsIndex + 1][i2]));
-      nextColorsPos = _this.getColorPos(_this.states[_this.activeState].gradients[_this.channelsIndex + 1][i2], i2);
-      colorDiff = _this.getColorDiff(activeChannel[_this.channelsIndex].colors[i2], nextColors);
-      colorPosDiff = _this.getColorPosDiff(activeChannel[_this.channelsIndex].colorsPos[i2], nextColorsPos);
-    }
-    activeChannel[_this.channelsIndex].colorsDiff.push(colorDiff);
-    _this.activeColorsDiff.push(colorDiff);
-    activeChannel[_this.channelsIndex].colorsPosDiff.push(colorPosDiff);
-    _this.activeColorsPosDiff.push(colorPosDiff);
+  async postAudioConv(audio, fileName, conv) {
+    const formData = new FormData();
+    formData.append("audio", audio, fileName);
+    formData.append("conversation", JSON.stringify(conv));
+    return this.axios.postForm("audio-conversation", formData);
+  }
+  async getHealth(password) {
+    return this.axios.get("health", {
+      headers: password ? {
+        "Authorization": "Bearer " + generateHash(password)
+      } : {}
+    });
+  }
+}
+const defaultRestfulAPI = () => {
+  const axiosInstance = axios$1.create({
+    baseURL: "https://240.0.0.0",
+    // black hole,see https://superuser.com/questions/698244/ip-address-that-is-the-equivalent-of-dev-null
+    timeout: 2e3
   });
-  this.activetransitionSpeed = this.states[this.activeState].transitionSpeed || 5e3;
-  this.isCurrentColorsSet = true;
-};
-var setDirection = function() {
-  var ctx = this.context;
-  switch (this.direction) {
-    case "diagonal":
-      return ctx.createLinearGradient(0, 0, this.x1, this.y1);
-    case "left-right":
-      return ctx.createLinearGradient(0, 0, this.x1, 0);
-    case "top-bottom":
-      return ctx.createLinearGradient(this.x1 / 2, 0, this.x1 / 2, this.y1);
-    case "radial":
-      return ctx.createRadialGradient(this.x1 / 2, this.y1 / 2, this.x1 / 2, this.x1 / 2, this.y1 / 2, 0);
-    case "custom":
-      return ctx.createLinearGradient(
-        getCustomCoordinateInPixels(this.customDirection.x0, this.x1),
-        getCustomCoordinateInPixels(this.customDirection.y0, this.y1),
-        getCustomCoordinateInPixels(this.customDirection.x1, this.x1),
-        getCustomCoordinateInPixels(this.customDirection.y1, this.y1)
-      );
-  }
-};
-function getCustomCoordinateInPixels(coordinate, size) {
-  return coordinate.indexOf("%") > -1 ? size / 100 * parseInt(coordinate.split("%")[0], 10) : parseInt(coordinate.split("px")[0], 10);
-}
-var setSizeAttributes = function() {
-  this.getDimensions();
-  this.canvas.setAttribute("width", this.x1);
-  this.canvas.setAttribute("height", this.y1);
-  if (this.image)
-    this.prepareImage();
-  this.refreshColorsAndPos();
-};
-var triggerError = function(element) {
-  var siteURL = "https://sarcadass.github.io/granim.js/api.html";
-  throw new Error('Granim: Input error on "' + element + '" option.\nCheck the API ' + siteURL + ".");
-};
-var validateInput = function(inputType) {
-  var xPositionValues = ["left", "center", "right"];
-  var yPositionValues = ["top", "center", "bottom"];
-  var stretchModeValues = ["none", "stretch", "stretch-if-smaller", "stretch-if-bigger"];
-  var blendingModeValues = [
-    "multiply",
-    "screen",
-    "normal",
-    "overlay",
-    "darken",
-    "lighten",
-    "lighter",
-    "color-dodge",
-    "color-burn",
-    "hard-light",
-    "soft-light",
-    "difference",
-    "exclusion",
-    "hue",
-    "saturation",
-    "color",
-    "luminosity"
-  ];
-  var directionValues = ["diagonal", "left-right", "top-bottom", "radial", "custom"];
-  switch (inputType) {
-    case "image":
-      if (!Array.isArray(this.image.position) || this.image.position.length !== 2 || xPositionValues.indexOf(this.image.position[0]) === -1 || yPositionValues.indexOf(this.image.position[1]) === -1) {
-        this.triggerError("image.position");
-      }
-      if (this.image.stretchMode) {
-        if (!Array.isArray(this.image.stretchMode) || this.image.stretchMode.length !== 2 || stretchModeValues.indexOf(this.image.stretchMode[0]) === -1 || stretchModeValues.indexOf(this.image.stretchMode[1]) === -1) {
-          this.triggerError("image.stretchMode");
-        }
-      }
-      break;
-    case "blendingMode":
-      if (blendingModeValues.indexOf(this.image.blendingMode) === -1) {
-        this.clear();
-        this.triggerError("blendingMode");
-      }
-      break;
-    case "direction":
-      if (directionValues.indexOf(this.direction) === -1) {
-        this.triggerError("direction");
-      } else {
-        if (this.direction === "custom") {
-          if (!areDefinedInPixelsOrPercentage([
-            this.customDirection.x0,
-            this.customDirection.x1,
-            this.customDirection.y0,
-            this.customDirection.y1
-          ])) {
-            this.triggerError("customDirection");
-          }
-        }
-      }
-      break;
-  }
-};
-function areDefinedInPixelsOrPercentage(array) {
-  var definedInPixelsOrPercentage = true, i2 = 0, value;
-  while (definedInPixelsOrPercentage && i2 < array.length) {
-    value = array[i2];
-    if (typeof value !== "string") {
-      definedInPixelsOrPercentage = false;
-    } else {
-      var splittedValue = null;
-      var unit = null;
-      if (value.indexOf("px") !== -1)
-        unit = "px";
-      if (value.indexOf("%") !== -1)
-        unit = "%";
-      splittedValue = value.split(unit).filter(function(value2) {
-        return value2.length > 0;
-      });
-      if (!unit || splittedValue.length > 2 || !splittedValue[0] || splittedValue[1] || !/^-?\d+\.?\d*$/.test(splittedValue[0])) {
-        definedInPixelsOrPercentage = false;
-      }
-    }
-    i2++;
-  }
-  return definedInPixelsOrPercentage;
-}
-function Granim$1(options) {
-  this.getElement(options.element);
-  this.x1 = 0;
-  this.y1 = 0;
-  this.name = options.name || false;
-  this.elToSetClassOn = options.elToSetClassOn || "body";
-  this.direction = options.direction || "diagonal";
-  this.customDirection = options.customDirection || {};
-  this.validateInput("direction");
-  this.isPausedWhenNotInView = options.isPausedWhenNotInView || false;
-  this.states = options.states;
-  this.stateTransitionSpeed = options.stateTransitionSpeed || 1e3;
-  this.previousTimeStamp = null;
-  this.progress = 0;
-  this.isPaused = false;
-  this.isCleared = false;
-  this.isPausedBecauseNotInView = false;
-  this.context = this.canvas.getContext("2d");
-  this.channels = {};
-  this.channelsIndex = 0;
-  this.activeState = options.defaultStateName || "default-state";
-  this.isChangingState = false;
-  this.currentColors = [];
-  this.currentColorsPos = [];
-  this.activetransitionSpeed = null;
-  this.eventPolyfill();
-  this.scrollDebounceThreshold = options.scrollDebounceThreshold || 300;
-  this.scrollDebounceTimeout = null;
-  this.isImgLoaded = false;
-  this.isCanvasInWindowView = false;
-  this.firstScrollInit = true;
-  this.animating = false;
-  this.gradientLength = this.states[this.activeState].gradients[0].length;
-  if (options.image && options.image.source) {
-    this.image = {
-      source: options.image.source,
-      position: options.image.position || ["center", "center"],
-      stretchMode: options.image.stretchMode || false,
-      blendingMode: options.image.blendingMode || false
-    };
-  }
-  this.events = {
-    start: new CustomEvent("granim:start"),
-    end: new CustomEvent("granim:end"),
-    gradientChange: function(details) {
-      return new CustomEvent("granim:gradientChange", {
-        detail: {
-          isLooping: details.isLooping,
-          colorsFrom: details.colorsFrom,
-          colorsTo: details.colorsTo,
-          activeState: details.activeState
-        },
-        bubbles: false,
-        cancelable: false
-      });
-    }
-  };
-  this.callbacks = {
-    onStart: typeof options.onStart === "function" ? options.onStart : false,
-    onGradientChange: typeof options.onGradientChange === "function" ? options.onGradientChange : false,
-    onEnd: typeof options.onEnd === "function" ? options.onEnd : false
-  };
-  this.getDimensions();
-  this.canvas.setAttribute("width", this.x1);
-  this.canvas.setAttribute("height", this.y1);
-  this.setColors();
-  if (this.image) {
-    this.validateInput("image");
-    this.prepareImage();
-  }
-  this.pauseWhenNotInViewNameSpace = this.pauseWhenNotInView.bind(this);
-  this.setSizeAttributesNameSpace = this.setSizeAttributes.bind(this);
-  this.onResize();
-  if (this.isPausedWhenNotInView) {
-    this.onScroll();
-  } else {
-    if (!this.image) {
-      this.refreshColorsAndPos();
-      this.animation = requestAnimationFrame(this.animateColors.bind(this));
-      this.animating = true;
-    }
-  }
-  if (this.callbacks.onStart)
-    this.callbacks.onStart();
-  this.canvas.dispatchEvent(this.events.start);
-}
-Granim$1.prototype.animateColors = animateColors;
-Granim$1.prototype.changeBlendingMode = changeBlendingMode;
-Granim$1.prototype.changeDirection = changeDirection;
-Granim$1.prototype.changeState = changeState;
-Granim$1.prototype.clear = clear;
-Granim$1.prototype.convertColorToRgba = convertColorToRgba;
-Granim$1.prototype.destroy = destroy;
-Granim$1.prototype.eventPolyfill = eventPolyfill;
-Granim$1.prototype.getColor = getColor;
-Granim$1.prototype.getColorDiff = getColorDiff;
-Granim$1.prototype.getColorPos = getColorPos;
-Granim$1.prototype.getColorPosDiff = getColorPosDiff;
-Granim$1.prototype.getCurrentColors = getCurrentColors;
-Granim$1.prototype.getCurrentColorsPos = getCurrentColorsPos;
-Granim$1.prototype.getDimensions = getDimensions;
-Granim$1.prototype.getElement = getElement;
-Granim$1.prototype.getLightness = getLightness;
-Granim$1.prototype.makeGradient = makeGradient;
-Granim$1.prototype.onResize = onResize;
-Granim$1.prototype.onScroll = onScroll;
-Granim$1.prototype.pause = pause;
-Granim$1.prototype.pauseWhenNotInView = pauseWhenNotInView;
-Granim$1.prototype.play = play;
-Granim$1.prototype.prepareImage = prepareImage;
-Granim$1.prototype.refreshColorsAndPos = refreshColorsAndPos;
-Granim$1.prototype.setColors = setColors;
-Granim$1.prototype.setDirection = setDirection;
-Granim$1.prototype.setSizeAttributes = setSizeAttributes;
-Granim$1.prototype.triggerError = triggerError;
-Granim$1.prototype.validateInput = validateInput;
-var Granim_1 = Granim$1;
-var granim = Granim_1;
-const Granim = /* @__PURE__ */ getDefaultExportFromCjs(granim);
-const WallpaperAuth = () => {
-  const canvasRef = reactExports.useRef(null);
-  const setAuthWallpaperDark = useThemeStore((state) => state.setAuthWallpaperDark);
-  const dark = ["#000428", "#004e92"];
-  reactExports.useEffect(() => {
-    let granim2;
-    if (canvasRef.current) {
-      granim2 = new Granim({
-        element: canvasRef.current,
-        direction: "diagonal",
-        states: {
-          "default-state": {
-            gradients: [
-              ["#00d2ff", "#3a7bd5"],
-              ["#4776E6", "#8E54E9"],
-              dark,
-              ["#FF512F", "#DD2476"],
-              ["#fd746c", "#ff9068"],
-              ["#6a3093", "#a044ff"],
-              ["#76b852", "#8DC26F"],
-              ["#005C97", "#363795"]
-            ]
-          }
-        },
-        onGradientChange: (e2) => {
-          const isDark = compareSlices(e2.colorsTo, dark);
-          setAuthWallpaperDark(isDark);
-        }
-      });
-    }
-    return () => {
-      if (granim2) {
-        granim2.destroy();
-      }
-    };
-  }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "canvas",
-    {
-      ref: canvasRef,
-      className: "absolute w-full h-full -z-10",
-      style: { position: "fixed" }
+  axiosInstance.interceptors.request.use(
+    () => {
+      throw new Error("default RestfulAPI rejects all request");
+    },
+    (error) => {
+      return Promise.reject(error);
     }
   );
+  return new RestfulAPI(axiosInstance);
 };
-function WallpaperWalkInGreen() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: "bg-walk-in-green bg-cover bg-center fixed -mt-5 -ml-5 w-screen-105 h-screen-105 blur-lg brightness-75 -z-10"
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-noise opacity-80 fixed h-full w-full contrast-200 brightness-200 -z-10" })
-  ] });
-}
+const toChatGPTOption = (chatGPT) => {
+  if (chatGPT.enabled && chatGPT.available) {
+    let model = "";
+    if (chatGPT.models.chosen !== void 0) {
+      model = chatGPT.models.chosen;
+    } else if (chatGPT.models.choices.length != 0) {
+      model = chatGPT.models.choices[0].value;
+    } else {
+      console.warn("model not found");
+    }
+    return {
+      model,
+      maxTokens: chatGPT.maxTokens.chosen ?? chatGPT.maxTokens.default,
+      temperature: chatGPT.temperature.chosen ?? chatGPT.temperature.default,
+      presencePenalty: chatGPT.presencePenalty.chosen ?? chatGPT.presencePenalty.default,
+      frequencyPenalty: chatGPT.frequencyPenalty.chosen ?? chatGPT.frequencyPenalty.default
+    };
+  }
+};
+const useRestfulAPIStore = create(
+  (set2) => ({
+    restfulAPI: defaultRestfulAPI(),
+    setRestfulAPI: (api) => set2(() => ({ restfulAPI: api }))
+  })
+);
 const detectDelay = 1e3;
 const fadeOutDuration = 1500;
 const shakeAnimation = {
@@ -23099,20 +23089,19 @@ const shakeAnimation = {
 function Auth() {
   const setVerified = useAuthStore((state) => state.setVerified);
   const setPassword = useAuthStore((state) => state.setPassword);
-  const authWallpaperDark = useThemeStore((state) => state.authWallpaperDark);
+  const restfulAPI = useRestfulAPIStore((state) => state.restfulAPI);
+  const [isWallpaperDark, setIsWallpaperDark] = reactExports.useState(false);
   const [inputValue, setInputValue] = reactExports.useState("");
   const [shake, setShake] = reactExports.useState(false);
   const [startFadeOut, setStartFadeOut] = reactExports.useState(false);
   const [startFadeIn, setStartFadeIn] = reactExports.useState(false);
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setPassword(inputValue);
-    detectAuth(true);
-  };
-  const detectAuth = (shake2) => {
+  const detectPassword = reactExports.useCallback((shake2, password) => {
     setShake(false);
-    getHealth().then((r3) => {
+    restfulAPI.getHealth(password).then((r3) => {
       console.info("get health response", r3.status, r3.data);
+      if (password) {
+        setPassword(password);
+      }
       setStartFadeOut(true);
       setTimeout(() => setVerified(true), fadeOutDuration);
     }).catch((e2) => {
@@ -23120,28 +23109,32 @@ function Auth() {
       setShake(shake2);
       setInputValue("");
     });
-  };
+  }, [restfulAPI, setVerified]);
+  const handleSubmit = reactExports.useCallback((event) => {
+    event.preventDefault();
+    detectPassword(true, inputValue);
+  }, [detectPassword, inputValue, setPassword]);
   reactExports.useEffect(() => {
     const t3 = setTimeout(
-      () => detectAuth(false),
+      () => detectPassword(false),
       detectDelay
     );
     return () => clearTimeout(t3);
-  }, []);
+  }, [detectPassword]);
   reactExports.useEffect(() => {
     setStartFadeIn(true);
   }, []);
   return (
     // fadeOutDuration is a little shorter than duration-2000 to avoid staying in a white page
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `transition-opacity duration-2000 ${startFadeOut ? "opacity-0" : "opacity-100"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `transition-opacity duration-500 ${startFadeIn ? "opacity-100" : "opacity-0"}`, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(WallpaperAuth, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(WallpaperAuth, { setDark: setIsWallpaperDark }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
           className: "flex flex-col items-center justify-center h-screen w-screen overflow-hidden gap-14 transition-colors",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-borel text-6xl lg:text-9xl  tracking-widest z-10 transition duration-5000 " + (authWallpaperDark ? "text-neutral-200" : "text-neutral-800"), children: "Let's talk" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("form", { className: "z-10 max-w-3/4 w-96 mb-[25vh]", onSubmit: handleSubmit, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-borel text-6xl lg:text-9xl  tracking-widest z-10 transition duration-5000 " + (isWallpaperDark ? "text-neutral-200" : "text-neutral-800"), children: "Let's talk" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("form", { className: "max-w-3/4 w-96 mb-[25vh]", onSubmit: handleSubmit, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               motion.input,
               {
                 type: "password",
@@ -23155,7 +23148,7 @@ function Auth() {
                   setInputValue(e2.target.value);
                   setShake(false);
                 },
-                className: "appearance-none w-full h-16 rounded-lg outline-0 shadow-md caret-transparent text-6xl text-center tracking-widest bg-white bg-opacity-10 backdrop-blur placeholder:text-neutral-200 transition duration-5000" + (authWallpaperDark ? "text-neutral-200" : "text-neutral-800")
+                className: "appearance-none w-full h-16 rounded-lg outline-0 shadow-md caret-transparent text-6xl text-center tracking-widest bg-white bg-opacity-10 backdrop-blur placeholder:text-neutral-200 transition duration-5000" + (isWallpaperDark ? "text-neutral-200" : "text-neutral-800")
               }
             ) })
           ]
@@ -23165,35 +23158,77 @@ function Auth() {
   );
 }
 const App$1 = "";
-const useInputStore = create(() => ({ inputText: "" }));
-const useSendingTextStore = create(() => ({ sendingText: "" }));
-const emptyBlob = new Blob([], { type: "audio/mp3" });
+const useInputStore = create()(
+  devtools(
+    persist(
+      (set2) => ({
+        inputText: "",
+        setInputText: (text) => set2({ inputText: text })
+      }),
+      {
+        name: "inputText",
+        storage: createJSONStorage(() => zustandStorage)
+        // (optional) by default the 'localStorage' is used
+      }
+    )
+  )
+);
+const useSendingTextStore = create(
+  (set2, get2) => ({
+    sendingTexts: [],
+    push: (audio) => set2((state) => ({
+      ...state,
+      sendingTexts: [...state.sendingTexts, audio]
+    })),
+    pop: () => {
+      const [first, ...rest] = get2().sendingTexts;
+      if (first !== void 0) {
+        set2((state) => ({ ...state, sendingAudios: rest }));
+      }
+      return first;
+    }
+  })
+);
 const useSendingAudioStore = create(
-  () => ({ sendingAudio: emptyBlob, duration: 0 })
+  (set2, get2) => ({
+    sendingAudios: [],
+    push: (audio) => set2((state) => ({
+      ...state,
+      sendingAudios: [...state.sendingAudios, audio]
+    })),
+    pop: () => {
+      const [first, ...rest] = get2().sendingAudios;
+      if (first !== void 0) {
+        set2((state) => ({ ...state, sendingAudios: rest }));
+      }
+      return first;
+    }
+  })
 );
 const TextArea = () => {
+  const inputText = useInputStore((state) => state.inputText);
+  const setInputText = useInputStore((state) => state.setInputText);
+  const push = useSendingTextStore((state) => state.push);
   const [inputAreaIsLarge, setInputAreaIsLarge] = reactExports.useState(false);
   const arrowButtonRef = reactExports.useRef(null);
   const sendButtonRef = reactExports.useRef(null);
   const textAreaRef = reactExports.useRef(null);
-  const stopPropagation = (event) => {
+  const [isComposing, setIsComposing] = reactExports.useState(false);
+  const stopPropagation = reactExports.useCallback((event) => {
     console.debug("stopPropagation", event.code);
     event.stopPropagation();
-  };
-  const inputText = useInputStore((state) => state.inputText);
-  const [isComposing, setIsComposing] = reactExports.useState(false);
-  const sendAndClearText = () => {
+  }, []);
+  const sendAndClearText = reactExports.useCallback(() => {
     var _a;
     if (sendButtonRef.current) {
       sendButtonRef.current.blur();
     }
-    const it2 = useInputStore.getState().inputText;
-    if (it2) {
-      useSendingTextStore.setState({ sendingText: it2 });
+    if (inputText) {
+      push(inputText);
     }
-    useInputStore.setState({ inputText: "" });
+    setInputText("");
     (_a = textAreaRef.current) == null ? void 0 : _a.focus();
-  };
+  }, [inputText, push, setInputText]);
   const handleKeyDown = reactExports.useCallback((event) => {
     event.stopPropagation();
     if (isComposing) {
@@ -23205,28 +23240,29 @@ const TextArea = () => {
         textAreaRef.current.blur();
       }
     }
-  }, [isComposing]);
-  const handleCompositionStart = () => {
+  }, [isComposing, sendAndClearText]);
+  const handleCompositionStart = reactExports.useCallback(() => {
     console.debug("is composing");
     setIsComposing(true);
-  };
-  const handleCompositionEnd = () => {
+  }, []);
+  const handleCompositionEnd = reactExports.useCallback(() => {
     console.debug("is not composing");
     setIsComposing(false);
-  };
-  const handleClick = () => {
+  }, []);
+  const handleClick = reactExports.useCallback(() => {
     setInputAreaIsLarge(!inputAreaIsLarge);
     if (arrowButtonRef) {
       arrowButtonRef.current.blur();
     }
-  };
-  reactExports.useEffect(
-    () => {
-      var _a, _b;
-      return inputAreaIsLarge ? (_a = textAreaRef.current) == null ? void 0 : _a.focus() : (_b = textAreaRef.current) == null ? void 0 : _b.blur();
-    },
-    [inputAreaIsLarge]
-  );
+  }, [inputAreaIsLarge]);
+  reactExports.useEffect(() => {
+    var _a, _b;
+    if (inputAreaIsLarge) {
+      (_a = textAreaRef.current) == null ? void 0 : _a.focus();
+    } else {
+      (_b = textAreaRef.current) == null ? void 0 : _b.blur();
+    }
+  }, [inputAreaIsLarge]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center w-full mt-auto bottom-0 max-w-4xl", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
@@ -23264,7 +23300,7 @@ const TextArea = () => {
           rows: inputAreaIsLarge ? 8 : 2,
           onKeyUp: stopPropagation,
           value: inputText,
-          onChange: (e2) => useInputStore.setState({ inputText: e2.target.value }),
+          onChange: (e2) => setInputText(e2.target.value),
           onKeyDown: handleKeyDown,
           onCompositionStart: handleCompositionStart,
           onCompositionEnd: handleCompositionEnd,
@@ -23340,175 +23376,6 @@ function v4(options, buf, offset) {
   }
   return unsafeStringify(rnds);
 }
-const defaultChatGPTLLM = () => ({
-  enabled: true,
-  available: false,
-  models: {
-    choices: []
-  },
-  maxHistory: {
-    rangeStart: 0,
-    rangeEnd: Number.MAX_SAFE_INTEGER,
-    default: 4
-  },
-  maxTokens: {
-    rangeStart: 0,
-    rangeEnd: Number.MAX_SAFE_INTEGER,
-    default: 2e3
-  },
-  temperature: {
-    rangeStart: 0,
-    rangeEnd: 2,
-    default: 1
-  },
-  presencePenalty: {
-    rangeStart: -2,
-    rangeEnd: 2,
-    default: 0
-  },
-  frequencyPenalty: {
-    rangeStart: -2,
-    rangeEnd: 2,
-    default: 0
-  }
-});
-const defaultLLM = () => ({
-  available: false,
-  chatGPT: defaultChatGPTLLM()
-});
-const defaultAbility = () => ({
-  llm: defaultLLM()
-});
-const historyChoices = [
-  { value: 1, name: "1", tags: [] },
-  { value: 2, name: "2", tags: [] },
-  { value: 3, name: "3", tags: [] },
-  { value: 4, name: "4", tags: [] },
-  { value: 5, name: "5", tags: [] },
-  { value: 6, name: "6", tags: [] },
-  { value: 7, name: "7", tags: [] },
-  { value: 8, name: "8", tags: [] },
-  { value: 9, name: "9", tags: [] },
-  { value: 10, name: "10", tags: [] },
-  { value: 20, name: "20", tags: [] },
-  { value: 30, name: "30", tags: [] },
-  { value: 40, name: "40", tags: [] },
-  { value: 50, name: "50", tags: [] },
-  { value: 100, name: "100", tags: [] }
-];
-const tokenChoices = [
-  { value: 50, name: "50", tags: [] },
-  { value: 100, name: "100", tags: [] },
-  { value: 200, name: "200", tags: [] },
-  { value: 500, name: "500", tags: [] },
-  { value: 1e3, name: "1k", tags: [] },
-  { value: 2e3, name: "2k", tags: [] },
-  { value: 4e3, name: "4k", tags: [] },
-  { value: 8e3, name: "8k", tags: [] },
-  { value: 16e3, name: "16k", tags: [] },
-  { value: 32e3, name: "32k", tags: [] },
-  { value: Number.MAX_SAFE_INTEGER, name: "∞", tags: [] }
-];
-const temperatureChoices = [
-  { value: 0, name: "0", tags: [] },
-  { value: 0.2, name: "0.2", tags: [] },
-  { value: 0.4, name: "0.4", tags: [] },
-  { value: 0.6, name: "0.6", tags: [] },
-  { value: 0.8, name: "0.8", tags: [] },
-  { value: 1, name: "1", tags: [] },
-  { value: 1.2, name: "1.2", tags: [] },
-  { value: 1.4, name: "1.4", tags: [] },
-  { value: 1.6, name: "1.6", tags: [] },
-  { value: 1.8, name: "1.8", tags: [] },
-  { value: 2, name: "2", tags: [] }
-];
-const presencePenaltyChoices = [
-  { value: -2, name: "-2", tags: [] },
-  { value: -1.75, name: "-1.75", tags: [] },
-  { value: -1.5, name: "-1.5", tags: [] },
-  { value: -1.25, name: "-1.25", tags: [] },
-  { value: -1, name: "-1", tags: [] },
-  { value: 0, name: "0", tags: [] },
-  { value: 1, name: "1", tags: [] },
-  { value: 1.25, name: "1.25", tags: [] },
-  { value: 1.5, name: "1.5", tags: [] },
-  { value: 1.75, name: "1.75", tags: [] },
-  { value: 2, name: "2", tags: [] }
-];
-const frequencyPenaltyChoices = presencePenaltyChoices;
-const useConvStore = create()(
-  devtools(
-    persist((set2, get2) => ({
-      qaSlice: [],
-      pushQueAns: (queAns) => set2((state) => ({ qaSlice: [...state.qaSlice, queAns] })),
-      removeQueAns: (queAns) => set2((state) => ({
-        qaSlice: state.qaSlice.filter((qa2) => qa2.id !== queAns.id)
-      })),
-      updateQueAns: (queAns) => set2((state) => ({
-        qaSlice: state.qaSlice.map((qa2) => qa2.id === queAns.id ? queAns : qa2)
-      })),
-      updateQueText: (id2, myText) => set2((state) => ({
-        qaSlice: state.qaSlice.map((qa2) => qa2.id === id2 ? {
-          ...qa2,
-          que: {
-            ...qa2.que,
-            text: myText
-          }
-        } : qa2)
-      })),
-      updateQueAudio: (id2, audio) => set2((state) => ({
-        qaSlice: state.qaSlice.map((qa2) => qa2.id === id2 ? {
-          ...qa2,
-          que: {
-            ...qa2.que,
-            audio
-          }
-        } : qa2)
-      })),
-      updateAnsText: (id2, myText) => set2((state) => ({
-        qaSlice: state.qaSlice.map((qa2) => qa2.id === id2 ? {
-          ...qa2,
-          ans: {
-            ...qa2.ans,
-            text: myText
-          }
-        } : qa2)
-      })),
-      updateAnsAudio: (id2, audio) => set2((state) => ({
-        qaSlice: state.qaSlice.map((qa2) => qa2.id === id2 ? {
-          ...qa2,
-          ans: {
-            ...qa2.ans,
-            audio
-          }
-        } : qa2)
-      })),
-      getQueText: (id2) => get2().qaSlice.find((qa2) => qa2.id === id2).que.text,
-      getQueAudio: (id2) => get2().qaSlice.find((qa2) => qa2.id === id2).que.audio,
-      getAnsText: (id2) => get2().qaSlice.find((qa2) => qa2.id === id2).ans.text,
-      getAnsAudio: (id2) => get2().qaSlice.find((qa2) => qa2.id === id2).ans.audio,
-      ability: defaultAbility(),
-      setAbility: (ability) => set2(() => ({
-        ability
-      })),
-      getChatGPT: () => get2().ability.llm.chatGPT,
-      setChatGPT: (chatGPT) => set2((state) => ({
-        ...state,
-        ability: {
-          ...state.ability,
-          llm: {
-            ...state.ability.llm,
-            chatGPT
-          }
-        }
-      }))
-    }), {
-      name: "conversation",
-      storage: createJSONStorage(() => zustandStorage)
-      // (optional) by default the 'localStorage' is used
-    })
-  )
-);
 function _typeof$1(obj) {
   "@babel/helpers - typeof";
   return _typeof$1 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj2) {
@@ -23752,6 +23619,196 @@ const newQueAns = (id2, textFirst, queText, audio) => {
     createdAt: formatISO(/* @__PURE__ */ new Date())
   };
 };
+const historyMessages = (qaSlice, maxHistory2) => {
+  if (maxHistory2 <= 0) {
+    return [];
+  }
+  const messages = [];
+  for (const qa2 of qaSlice.slice().reverse()) {
+    if (messages.length === maxHistory2) {
+      break;
+    }
+    if (qa2.ans.text.status === "received") {
+      messages.push({ role: "assistant", content: qa2.ans.text.text });
+      if (messages.length === maxHistory2) {
+        break;
+      }
+    }
+    if (["received", "sent"].includes(qa2.que.text.status)) {
+      messages.push({ role: "user", content: qa2.que.text.text });
+    }
+  }
+  return messages.reverse();
+};
+const defaultChatGPTLLM = () => ({
+  enabled: true,
+  available: false,
+  models: {
+    choices: []
+  },
+  maxHistory: {
+    rangeStart: 0,
+    rangeEnd: Number.MAX_SAFE_INTEGER,
+    default: 4
+  },
+  maxTokens: {
+    rangeStart: 0,
+    rangeEnd: Number.MAX_SAFE_INTEGER,
+    default: 2e3
+  },
+  temperature: {
+    rangeStart: 0,
+    rangeEnd: 2,
+    default: 1
+  },
+  presencePenalty: {
+    rangeStart: -2,
+    rangeEnd: 2,
+    default: 0
+  },
+  frequencyPenalty: {
+    rangeStart: -2,
+    rangeEnd: 2,
+    default: 0
+  }
+});
+const defaultLLM = () => ({
+  available: false,
+  chatGPT: defaultChatGPTLLM()
+});
+const defaultAbility = () => ({
+  llm: defaultLLM()
+});
+const historyChoices = [
+  { value: 1, name: "1", tags: [] },
+  { value: 2, name: "2", tags: [] },
+  { value: 3, name: "3", tags: [] },
+  { value: 4, name: "4", tags: [] },
+  { value: 5, name: "5", tags: [] },
+  { value: 6, name: "6", tags: [] },
+  { value: 7, name: "7", tags: [] },
+  { value: 8, name: "8", tags: [] },
+  { value: 9, name: "9", tags: [] },
+  { value: 10, name: "10", tags: [] },
+  { value: 20, name: "20", tags: [] },
+  { value: 30, name: "30", tags: [] },
+  { value: 40, name: "40", tags: [] },
+  { value: 50, name: "50", tags: [] },
+  { value: 100, name: "100", tags: [] }
+];
+const tokenChoices = [
+  { value: 50, name: "50", tags: [] },
+  { value: 100, name: "100", tags: [] },
+  { value: 200, name: "200", tags: [] },
+  { value: 500, name: "500", tags: [] },
+  { value: 1e3, name: "1k", tags: [] },
+  { value: 2e3, name: "2k", tags: [] },
+  { value: 4e3, name: "4k", tags: [] },
+  { value: 8e3, name: "8k", tags: [] },
+  { value: 16e3, name: "16k", tags: [] },
+  { value: 32e3, name: "32k", tags: [] },
+  { value: Number.MAX_SAFE_INTEGER, name: "∞", tags: [] }
+];
+const temperatureChoices = [
+  { value: 0, name: "0", tags: [] },
+  { value: 0.2, name: "0.2", tags: [] },
+  { value: 0.4, name: "0.4", tags: [] },
+  { value: 0.6, name: "0.6", tags: [] },
+  { value: 0.8, name: "0.8", tags: [] },
+  { value: 1, name: "1", tags: [] },
+  { value: 1.2, name: "1.2", tags: [] },
+  { value: 1.4, name: "1.4", tags: [] },
+  { value: 1.6, name: "1.6", tags: [] },
+  { value: 1.8, name: "1.8", tags: [] },
+  { value: 2, name: "2", tags: [] }
+];
+const presencePenaltyChoices = [
+  { value: -2, name: "-2", tags: [] },
+  { value: -1.5, name: "-1.5", tags: [] },
+  { value: -1, name: "-1", tags: [] },
+  { value: -0.5, name: "-0.5", tags: [] },
+  { value: 0, name: "0", tags: [] },
+  { value: 0.5, name: "0.5", tags: [] },
+  { value: 1, name: "1", tags: [] },
+  { value: 1.5, name: "1.5", tags: [] },
+  { value: 2, name: "2", tags: [] }
+];
+const frequencyPenaltyChoices = presencePenaltyChoices;
+const useConvStore = create()(
+  devtools(
+    persist((set2, get2) => ({
+      qaSlice: [],
+      clearQsSlice: () => set2(() => ({ qaSlice: [] })),
+      pushQueAns: (queAns) => set2((state) => ({ qaSlice: [...state.qaSlice, queAns] })),
+      removeQueAns: (queAns) => set2((state) => ({
+        qaSlice: state.qaSlice.filter((qa2) => qa2.id !== queAns.id)
+      })),
+      updateQueAns: (queAns) => set2((state) => ({
+        qaSlice: state.qaSlice.map((qa2) => qa2.id === queAns.id ? queAns : qa2)
+      })),
+      updateQueText: (id2, myText) => set2((state) => ({
+        qaSlice: state.qaSlice.map((qa2) => qa2.id === id2 ? {
+          ...qa2,
+          que: {
+            ...qa2.que,
+            text: myText
+          }
+        } : qa2)
+      })),
+      updateQueAudio: (id2, audio) => set2((state) => ({
+        qaSlice: state.qaSlice.map((qa2) => qa2.id === id2 ? {
+          ...qa2,
+          que: {
+            ...qa2.que,
+            audio
+          }
+        } : qa2)
+      })),
+      updateAnsText: (id2, myText) => set2((state) => ({
+        qaSlice: state.qaSlice.map((qa2) => qa2.id === id2 ? {
+          ...qa2,
+          ans: {
+            ...qa2.ans,
+            text: myText
+          }
+        } : qa2)
+      })),
+      updateAnsAudio: (id2, audio) => set2((state) => ({
+        qaSlice: state.qaSlice.map((qa2) => qa2.id === id2 ? {
+          ...qa2,
+          ans: {
+            ...qa2.ans,
+            audio
+          }
+        } : qa2)
+      })),
+      getQueText: (id2) => get2().qaSlice.find((qa2) => qa2.id === id2).que.text,
+      getQueAudio: (id2) => get2().qaSlice.find((qa2) => qa2.id === id2).que.audio,
+      getAnsText: (id2) => get2().qaSlice.find((qa2) => qa2.id === id2).ans.text,
+      getAnsAudio: (id2) => get2().qaSlice.find((qa2) => qa2.id === id2).ans.audio,
+      ability: defaultAbility(),
+      setAbility: (ability) => set2(() => ({
+        ability
+      })),
+      getChatGPT: () => get2().ability.llm.chatGPT,
+      setChatGPT: (chatGPT) => set2((state) => ({
+        ...state,
+        ability: {
+          ...state.ability,
+          llm: {
+            ...state.ability.llm,
+            chatGPT
+          }
+        }
+      })),
+      historyMessages: (amount) => historyMessages(get2().qaSlice, amount)
+    }), {
+      name: "conversation",
+      storage: createJSONStorage(() => zustandStorage)
+      // (optional) by default the 'localStorage' is used
+    })
+  )
+);
 function e$3(e2, t3, s3, i2) {
   return new (s3 || (s3 = Promise))(function(r3, n2) {
     function o3(e3) {
@@ -23999,9 +24056,33 @@ class EnhancedRecorder {
     this.cancelListeners = this.cancelListeners.filter((l2) => l2 !== f2);
   }
 }
+const streamIdLength = 32;
+const audioPlayerMimeType = "audio/mpeg";
+const contentTimeoutSeconds = 30;
+const minSpeakTimeMillis = 500;
+function SSEEndpoint() {
+  const ep = joinUrl(Endpoint(), "events");
+  console.debug("SSEEndpoint:", ep);
+  return ep;
+}
+function Endpoint() {
+  let ep = {}.VITE_REACT_APP_ENDPOINT;
+  if (ep) {
+    return ep;
+  }
+  ep = joinUrl(currentProtocolHostPortPath(), "api");
+  console.debug("RestfulEndpoint:", ep);
+  return ep;
+}
+const popularMimeTypes = [
+  { mimeType: "audio/webm; codecs=vp9", fileName: "audio.webm" },
+  { mimeType: "audio/webm; codecs=opus", fileName: "audio.webm" },
+  { mimeType: "audio/webm", fileName: "audio.webm" },
+  { mimeType: "audio/mp4", fileName: "audio.mp4" }
+];
 const useRecorderStore = create(
   () => ({
-    recordingMimeType: chooseAudioMimeType(),
+    recordingMimeType: chooseAudioMimeType(popularMimeTypes),
     // todo fix stop mic bug and set this to true
     recorder: new EnhancedRecorder(false)
   })
@@ -24231,32 +24312,13 @@ async function addBlob(blogEntry) {
   await store.add(blogEntry);
   await tx.done;
 }
-const toTalkOption = (ability) => {
-  return {
-    llm: ability.llm.available ? {
-      chatGPT: toChatGPTOption(ability.llm.chatGPT)
-    } : void 0
-  };
-};
-const toChatGPTOption = (chatGPT) => {
-  if (chatGPT.enabled && chatGPT.available) {
-    let model = "";
-    if (chatGPT.models.chosen !== void 0) {
-      model = chatGPT.models.chosen;
-    } else if (chatGPT.models.choices.length != 0) {
-      model = chatGPT.models.choices[0].value;
-    } else {
-      console.warn("model not found");
-    }
-    return {
-      model,
-      maxTokens: chatGPT.maxTokens.chosen ?? chatGPT.maxTokens.default,
-      temperature: chatGPT.temperature.chosen ?? chatGPT.temperature.default,
-      presencePenalty: chatGPT.presencePenalty.chosen ?? chatGPT.presencePenalty.default,
-      frequencyPenalty: chatGPT.frequencyPenalty.chosen ?? chatGPT.frequencyPenalty.default
-    };
-  }
-};
+async function clearBlob() {
+  const db2 = await newDB();
+  const tx = db2.transaction(storeName, "readwrite");
+  const store = tx.objectStore(storeName);
+  await store.clear();
+  await tx.done;
+}
 const mergeAbility = (c2, s3) => {
   return {
     llm: mergeLLM(c2.llm, s3.llm)
@@ -24294,29 +24356,34 @@ const systemMessage$1 = {
   content: "You are a helpful assistant!"
 };
 const SubscribeSendingAudio = () => {
-  const qaSlice = useConvStore((state) => state.qaSlice);
+  const historyMessages2 = useConvStore((state) => state.historyMessages);
   const ability = useConvStore((state) => state.ability);
   const pushQueAns = useConvStore((state) => state.pushQueAns);
   const updateQueAudio = useConvStore((state) => state.updateQueAudio);
   const getQueAudio = useConvStore((state) => state.getQueAudio);
-  const sendingAudio = useSendingAudioStore((state) => state.sendingAudio);
-  const duration = useSendingAudioStore((state) => state.duration);
+  const pop = useSendingAudioStore((state) => state.pop);
+  const sendingAudios = useSendingAudioStore((state) => state.sendingAudios);
   const recordingMimeType = useRecorderStore((state) => state.recordingMimeType);
+  const restfulAPI = useRestfulAPIStore((state) => state.restfulAPI);
   reactExports.useEffect(() => {
-    if (sendingAudio.length === 0) {
-      console.warn("audio blob is empty");
+    if (sendingAudios.length === 0) {
       return;
     }
-    if (duration < minSpeakTimeMillis) {
+    const sendingAudio = pop();
+    if (!sendingAudio) {
+      return;
+    }
+    if (sendingAudio.duration < minSpeakTimeMillis) {
       console.info("audio is less than ms", minSpeakTimeMillis);
       return;
     }
     const id2 = v4();
-    let messages = historyMessages(qaSlice, maxHistory(ability.llm));
+    let messages = historyMessages2(maxHistory(ability.llm));
     messages = [systemMessage$1, ...messages];
+    console.debug("sending conversation: ", messages);
     const qa2 = newQueAns(id2, false, newMyText("receiving", ""), newAudio("sending"));
     pushQueAns(qa2);
-    postAudioConv(sendingAudio, (recordingMimeType == null ? void 0 : recordingMimeType.fileName) ?? "audio.webm", {
+    restfulAPI.postAudioConv(sendingAudio.blob, (recordingMimeType == null ? void 0 : recordingMimeType.fileName) ?? "audio.webm", {
       id: id2,
       ms: messages,
       talkOption: toTalkOption(ability)
@@ -24332,13 +24399,13 @@ const SubscribeSendingAudio = () => {
       updateQueAudio(id2, onError(getQueAudio(id2), e2.message));
     });
     const audioId = v4();
-    addBlob({ id: audioId, blob: sendingAudio }).then(() => {
+    addBlob({ id: audioId, blob: sendingAudio.blob }).then(() => {
       console.debug("saved audio blob, audioId: ", audioId);
       updateQueAudio(id2, onNewAudioId(getQueAudio(id2), audioId));
     }).catch((e2) => {
       console.error("saved audio blob, audioId:", id2, e2.message);
     });
-  }, [sendingAudio]);
+  }, [sendingAudios, restfulAPI, ability, getQueAudio, pushQueAns, recordingMimeType, updateQueAudio]);
   return null;
 };
 const systemMessage = {
@@ -24346,22 +24413,26 @@ const systemMessage = {
   content: "You are a helpful assistant!"
 };
 const SubscriberSendingText = () => {
-  const qaSlice = useConvStore((state) => state.qaSlice);
+  const historyMessages2 = useConvStore((state) => state.historyMessages);
   const pushQueAns = useConvStore((state) => state.pushQueAns);
   const updateQueText = useConvStore((state) => state.updateQueText);
   const getQueText = useConvStore((state) => state.getQueText);
   const ability = useConvStore((state) => state.ability);
-  const sendingText = useSendingTextStore((state) => state.sendingText);
+  const pop = useSendingTextStore((state) => state.pop);
+  const sendingTexts = useSendingTextStore((state) => state.sendingTexts);
+  const restfulAPI = useRestfulAPIStore((state) => state.restfulAPI);
   reactExports.useEffect(() => {
+    const sendingText = pop();
     if (!sendingText) {
       return;
     }
-    let messages = historyMessages(qaSlice, maxHistory(ability.llm));
+    let messages = historyMessages2(maxHistory(ability.llm));
     messages = [systemMessage, ...messages, { role: "user", content: sendingText }];
+    console.debug("sending conversation: ", messages);
     const id2 = v4();
     const qa2 = newQueAns(id2, true, newMyText("sending", sendingText));
     pushQueAns(qa2);
-    postConv({ id: id2, ms: messages, talkOption: toTalkOption(ability) }).then(
+    restfulAPI.postConv({ id: id2, ms: messages, talkOption: toTalkOption(ability) }).then(
       (r3) => {
         if (r3.status >= 200 && r3.status < 300) {
           updateQueText(id2, onSent$1(getQueText(id2)));
@@ -24373,7 +24444,7 @@ const SubscriberSendingText = () => {
     ).catch((e2) => {
       updateQueText(id2, onError$1(getQueText(id2), e2.message));
     });
-  }, [sendingText]);
+  }, [sendingTexts, ability, pop, getQueText, pushQueAns, restfulAPI, updateQueText]);
   return null;
 };
 const timeoutCheckStatus = ["sending", "receiving"];
@@ -25702,14 +25773,14 @@ const ListBox = ({ choices, value, setValue, mostEffort }) => {
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Nt.Options,
           {
-            className: "absolute w-full rounded-xl text-base\n                            shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm\n                            bg-white bg-opacity-40 backdrop-blur overflow-auto max-h-96",
+            className: "absolute w-full rounded-xl text-base\n                            shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm\n                            bg-white bg-opacity-70 overflow-auto max-h-96 ",
             children: choices.map((ch2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
               Nt.Option,
               {
                 value: ch2.value,
                 className: ({ active }) => joinClassNames(
                   active ? "bg-blue-600 text-white" : "text-neutral-900",
-                  "rounded-lg relative cursor-default select-none py-0.5 pl-3 pr-0.5"
+                  "rounded-lg relative cursor-default select-none py-0.5 pl-3 pr-0.5 "
                 ),
                 children: ({ selected, active }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                   selected ? /* @__PURE__ */ jsxRuntimeExports.jsx(CheckIcon$1, { className: joinClassNames(
@@ -25793,7 +25864,7 @@ const ChatGpt = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: "flex flex-col w-full items-center justify-between gap-2 px-3 py-4 rounded-xl bg-white bg-opacity-40 backdrop-blur",
+      className: "flex flex-col w-full items-center justify-between gap-2 px-3 py-4 rounded-xl\n            bg-white bg-opacity-40 backdrop-blur z-10",
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center w-full px-3 ", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose text-lg text-neutral-600", children: "ChatGPT" }),
@@ -25851,7 +25922,10 @@ const ChatGpt = () => {
                   value: gpt.presencePenalty.chosen ?? gpt.presencePenalty.default,
                   showRange: false,
                   fallbackValue: gpt.presencePenalty.default,
-                  range: { rangeStart: gpt.presencePenalty.rangeStart, rangeEnd: gpt.presencePenalty.rangeEnd }
+                  range: {
+                    rangeStart: gpt.presencePenalty.rangeStart,
+                    rangeEnd: gpt.presencePenalty.rangeEnd
+                  }
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -25863,7 +25937,10 @@ const ChatGpt = () => {
                   value: gpt.frequencyPenalty.chosen ?? gpt.frequencyPenalty.default,
                   showRange: false,
                   fallbackValue: gpt.frequencyPenalty.default,
-                  range: { rangeStart: gpt.frequencyPenalty.rangeStart, rangeEnd: gpt.frequencyPenalty.rangeEnd }
+                  range: {
+                    rangeStart: gpt.frequencyPenalty.rangeStart,
+                    rangeEnd: gpt.frequencyPenalty.rangeEnd
+                  }
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center gap-2", children: [
@@ -25885,14 +25962,150 @@ const ChatGpt = () => {
     }
   );
 };
+var DefaultContext = {
+  color: void 0,
+  size: void 0,
+  className: void 0,
+  style: void 0,
+  attr: void 0
+};
+var IconContext = React.createContext && React.createContext(DefaultContext);
+var __assign = globalThis && globalThis.__assign || function() {
+  __assign = Object.assign || function(t3) {
+    for (var s3, i2 = 1, n2 = arguments.length; i2 < n2; i2++) {
+      s3 = arguments[i2];
+      for (var p2 in s3)
+        if (Object.prototype.hasOwnProperty.call(s3, p2))
+          t3[p2] = s3[p2];
+    }
+    return t3;
+  };
+  return __assign.apply(this, arguments);
+};
+var __rest$1 = globalThis && globalThis.__rest || function(s3, e2) {
+  var t3 = {};
+  for (var p2 in s3)
+    if (Object.prototype.hasOwnProperty.call(s3, p2) && e2.indexOf(p2) < 0)
+      t3[p2] = s3[p2];
+  if (s3 != null && typeof Object.getOwnPropertySymbols === "function")
+    for (var i2 = 0, p2 = Object.getOwnPropertySymbols(s3); i2 < p2.length; i2++) {
+      if (e2.indexOf(p2[i2]) < 0 && Object.prototype.propertyIsEnumerable.call(s3, p2[i2]))
+        t3[p2[i2]] = s3[p2[i2]];
+    }
+  return t3;
+};
+function Tree2Element(tree) {
+  return tree && tree.map(function(node, i2) {
+    return React.createElement(node.tag, __assign({
+      key: i2
+    }, node.attr), Tree2Element(node.child));
+  });
+}
+function GenIcon(data) {
+  return function(props) {
+    return React.createElement(IconBase, __assign({
+      attr: __assign({}, data.attr)
+    }, props), Tree2Element(data.child));
+  };
+}
+function IconBase(props) {
+  var elem = function(conf) {
+    var attr = props.attr, size = props.size, title = props.title, svgProps = __rest$1(props, ["attr", "size", "title"]);
+    var computedSize = size || conf.size || "1em";
+    var className;
+    if (conf.className)
+      className = conf.className;
+    if (props.className)
+      className = (className ? className + " " : "") + props.className;
+    return React.createElement("svg", __assign({
+      stroke: "currentColor",
+      fill: "currentColor",
+      strokeWidth: "0"
+    }, conf.attr, attr, svgProps, {
+      className,
+      style: __assign(__assign({
+        color: props.color || conf.color
+      }, conf.style), props.style),
+      height: computedSize,
+      width: computedSize,
+      xmlns: "http://www.w3.org/2000/svg"
+    }), title && React.createElement("title", null, title), props.children);
+  };
+  return IconContext !== void 0 ? React.createElement(IconContext.Consumer, null, function(conf) {
+    return elem(conf);
+  }) : elem(DefaultContext);
+}
+function BsBootstrapReboot(props) {
+  return GenIcon({ "tag": "svg", "attr": { "fill": "currentColor", "viewBox": "0 0 16 16" }, "child": [{ "tag": "path", "attr": { "d": "M1.161 8a6.84 6.84 0 1 0 6.842-6.84.58.58 0 1 1 0-1.16 8 8 0 1 1-6.556 3.412l-.663-.577a.58.58 0 0 1 .227-.997l2.52-.69a.58.58 0 0 1 .728.633l-.332 2.592a.58.58 0 0 1-.956.364l-.643-.56A6.812 6.812 0 0 0 1.16 8z" } }, { "tag": "path", "attr": { "d": "M6.641 11.671V8.843h1.57l1.498 2.828h1.314L9.377 8.665c.897-.3 1.427-1.106 1.427-2.1 0-1.37-.943-2.246-2.456-2.246H5.5v7.352h1.141zm0-3.75V5.277h1.57c.881 0 1.416.499 1.416 1.32 0 .84-.504 1.324-1.386 1.324h-1.6z" } }] })(props);
+}
+function BsTrash3(props) {
+  return GenIcon({ "tag": "svg", "attr": { "fill": "currentColor", "viewBox": "0 0 16 16" }, "child": [{ "tag": "path", "attr": { "d": "M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" } }] })(props);
+}
+const Other = () => {
+  const clearQsSlice = useConvStore((state) => state.clearQsSlice);
+  const [zustandCleared, setZustandCleared] = reactExports.useState(false);
+  const [blobCleared, setBlobCleared] = reactExports.useState(false);
+  const reset = reactExports.useCallback(() => {
+    zustandStorage.clear().then(() => setZustandCleared(true)).catch((e2) => console.error("failed to clear zustand", e2));
+    clearBlob().then(() => setBlobCleared(true)).catch((e2) => console.error("failed to clear blob", e2));
+  }, []);
+  reactExports.useEffect(() => {
+    if (zustandCleared && blobCleared) {
+      console.info("rested");
+      window.location.reload();
+    }
+  }, [zustandCleared, blobCleared]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: "flex flex-col w-full items-center justify-between gap-2 px-3 py-4 rounded-xl bg-white\n            bg-opacity-40 backdrop-blur",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-center w-full px-3 ", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "prose text-lg text-neutral-600", children: "Other" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "flex justify-start items-center gap-2 py-2 border-2 border-neutral-500 border-dashed rounded-lg w-full px-3",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "flex items-center border border-red-600 rounded-lg gap-1 px-2 py-0.5\n                text-red-600 bg-white bg-opacity-60 hover:bg-red-600  hover:text-neutral-100 hover:border-transparent hover:scale-110\n                transition duration-300",
+                  onClick: clearQsSlice,
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(BsTrash3, { className: "text-lg" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-light", children: "Clear Message" })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "flex items-center border border-black rounded-lg gap-1 px-2 py-0.5\n                text-black bg-white bg-opacity-60 hover:bg-black  hover:text-white hover:border-transparent hover:scale-110\n                transition duration-300",
+                  onClick: reset,
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(BsBootstrapReboot, { className: "text-lg" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "", children: "Reset All" })
+                  ]
+                }
+              )
+            ]
+          }
+        )
+      ]
+    }
+  );
+};
 const Setting = () => {
   const ability = useConvStore((state) => state.ability);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
       className: "flex flex-col w-full items-end justify-center gap-5 select-none",
       onKeyDown: escapeSpaceKey,
-      children: ability.llm.chatGPT.available && /* @__PURE__ */ jsxRuntimeExports.jsx(ChatGpt, {})
+      children: [
+        ability.llm.chatGPT.available && /* @__PURE__ */ jsxRuntimeExports.jsx(ChatGpt, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Other, {}) })
+      ]
     }
   );
 };
@@ -28274,6 +28487,7 @@ const Qa = ({ qa: qa2 }) => {
 };
 const Recorder = () => {
   const recorder = useRecorderStore((state) => state.recorder);
+  const push = useSendingAudioStore((state) => state.push);
   const [isRecording, setIsRecording] = reactExports.useState(false);
   const [recordDuration, setRecordDuration] = reactExports.useState(0);
   const [context, setContext] = reactExports.useState(void 0);
@@ -28285,7 +28499,7 @@ const Recorder = () => {
     const doneListener = (blob, duration, ctx) => {
       setContext(ctx);
       setIsRecording(false);
-      useSendingAudioStore.setState({ sendingAudio: blob, duration });
+      push({ blob, duration });
     };
     const cancelListener = (_blob, _duration, ctx) => {
       setContext(ctx);
@@ -28299,7 +28513,7 @@ const Recorder = () => {
       recorder.removeDoneListener(doneListener);
       recorder.removeCancelListener(cancelListener);
     };
-  }, [recorder, setIsRecording, setContext]);
+  }, [recorder, push, setIsRecording, setContext]);
   reactExports.useEffect(() => {
     let interval;
     if (isRecording) {
@@ -28439,6 +28653,57 @@ const Recorder = () => {
       ]
     }
   );
+};
+const WindowListeners = () => {
+  const setMouseDown = useMouseStore((state) => state.setMouseDown);
+  const recorder = useRecorderStore((state) => state.recorder);
+  reactExports.useEffect(
+    () => {
+      const handleKeyUp = (event) => {
+        var _a;
+        if (event.code == "Space" && ((_a = recorder.currentContext()) == null ? void 0 : _a.triggeredBy) === "spacebar") {
+          recorder.done();
+        }
+      };
+      const handleKeyDown = (event) => {
+        var _a, _b;
+        if (event.code === "Space") {
+          if (event.repeat) {
+            console.debug("handleKeyDown skip repeated space");
+            return;
+          }
+          if (!((_a = recorder.currentContext()) == null ? void 0 : _a.triggeredBy)) {
+            console.debug("handleKeyDown with not repeated space");
+            recorder.start({ triggeredBy: "spacebar" }).catch((e2) => {
+              console.error("failed to start recorder", e2);
+            });
+          }
+        } else {
+          if (((_b = recorder.currentContext()) == null ? void 0 : _b.triggeredBy) === "spacebar") {
+            recorder.cancel();
+          }
+        }
+      };
+      const handleMouseDown = () => {
+        setMouseDown(true);
+      };
+      const handleMouseUp = () => {
+        setMouseDown(false);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keyup", handleKeyUp);
+      window.addEventListener("mousedown", handleMouseDown);
+      window.addEventListener("mouseup", handleMouseUp);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        window.removeEventListener("keyup", handleKeyUp);
+        window.removeEventListener("mousedown", handleMouseDown);
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+    },
+    [setMouseDown, recorder]
+  );
+  return null;
 };
 const EventAudio = "audio";
 const EventAnswer = "answer";
@@ -28633,6 +28898,11 @@ function defaultOnOpen(response) {
     throw new Error(`Expected content-type to be ${EventStreamContentType}, Actual: ${contentType}`);
   }
 }
+const useSSEStore = create()(
+  () => ({
+    streamId: randomHash(streamIdLength)
+  })
+);
 const SSE = () => {
   const getQueText = useConvStore((state) => state.getQueText);
   const updateQueText = useConvStore((state) => state.updateQueText);
@@ -28657,9 +28927,6 @@ const SSE = () => {
       keepalive: true,
       onopen: async (response) => {
         console.info("EventSource connected to server, response: ", response);
-        if (200 <= response.status && response.status < 300) {
-          setVerified(true);
-        }
       },
       onmessage: (msg) => {
         console.debug("received an msg from SSE server", msg.event, msg.data.slice(0, 100));
@@ -28703,58 +28970,7 @@ const SSE = () => {
     return () => {
       ctrl.abort("passwordHash changed");
     };
-  }, [getAnsAudio, streamId]);
-  return null;
-};
-const WindowListeners = () => {
-  const setMouseDown = useMouseStore((state) => state.setMouseDown);
-  const recorder = useRecorderStore((state) => state.recorder);
-  reactExports.useEffect(
-    () => {
-      const handleKeyUp = (event) => {
-        var _a;
-        if (event.code == "Space" && ((_a = recorder.currentContext()) == null ? void 0 : _a.triggeredBy) === "spacebar") {
-          recorder.done();
-        }
-      };
-      const handleKeyDown = (event) => {
-        var _a, _b;
-        if (event.code === "Space") {
-          if (event.repeat) {
-            console.debug("handleKeyDown skip repeated space");
-            return;
-          }
-          if (!((_a = recorder.currentContext()) == null ? void 0 : _a.triggeredBy)) {
-            console.debug("handleKeyDown with not repeated space");
-            recorder.start({ triggeredBy: "spacebar" }).catch((e2) => {
-              console.error("failed to start recorder", e2);
-            });
-          }
-        } else {
-          if (((_b = recorder.currentContext()) == null ? void 0 : _b.triggeredBy) === "spacebar") {
-            recorder.cancel();
-          }
-        }
-      };
-      const handleMouseDown = () => {
-        setMouseDown(true);
-      };
-      const handleMouseUp = () => {
-        setMouseDown(false);
-      };
-      window.addEventListener("keydown", handleKeyDown);
-      window.addEventListener("keyup", handleKeyUp);
-      window.addEventListener("mousedown", handleMouseDown);
-      window.addEventListener("mouseup", handleMouseUp);
-      return () => {
-        window.removeEventListener("keydown", handleKeyDown);
-        window.removeEventListener("keyup", handleKeyUp);
-        window.removeEventListener("mousedown", handleMouseDown);
-        window.removeEventListener("mouseup", handleMouseUp);
-      };
-    },
-    [setMouseDown, recorder]
-  );
+  }, [streamId, passwordHash, getAnsAudio, getAnsText, getQueText, setAbility, setVerified, updateAnsAudio, updateAnsText, updateQueText]);
   return null;
 };
 function Home() {
@@ -28784,7 +29000,7 @@ function Home() {
               ]
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-full w-full max-w-1/4  hidden sm:block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Setting, {}) })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-full w-full max-w-1/3 hidden sm:block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Setting, {}) })
         ]
       }
     ),
@@ -28795,6 +29011,45 @@ function Home() {
     ] })
   ] });
 }
+const RestfulAPIComponent = () => {
+  const streamId = useSSEStore((state) => state.streamId);
+  const passwordHash = useAuthStore((state) => state.passwordHash);
+  const setVerified = useAuthStore((state) => state.setVerified);
+  const setRestfulAPI = useRestfulAPIStore((state) => state.setRestfulAPI);
+  reactExports.useEffect(() => {
+    const axiosInstance = axios$1.create({
+      baseURL: Endpoint(),
+      timeout: 5e3
+    });
+    const source = axios$1.CancelToken.source();
+    axiosInstance.interceptors.request.use((config) => {
+      config.headers["stream-id"] = streamId;
+      if (!config.headers["Authorization"]) {
+        config.headers["Authorization"] = "Bearer " + passwordHash;
+      }
+      config.cancelToken = source.token;
+      return config;
+    });
+    axiosInstance.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          setVerified(false);
+          console.info("Unauthorized", error.response);
+        }
+        return Promise.reject(error);
+      }
+    );
+    const api = new RestfulAPI(axiosInstance);
+    setRestfulAPI(api);
+    return () => {
+      source.cancel("destroying axios instance");
+    };
+  }, [passwordHash, streamId, setRestfulAPI, setVerified]);
+  return null;
+};
 function App() {
   const verified = useAuthStore((state) => state.verified);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -28805,10 +29060,11 @@ function App() {
         className: `transition-opacity duration-1000 ${verified ? "opacity-100" : "opacity-20"}`,
         children: verified && /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {})
       }
-    )
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(RestfulAPIComponent, {})
   ] });
 }
 client.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-7b1405de.js.map
+//# sourceMappingURL=index-3986a26f.js.map
