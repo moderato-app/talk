@@ -10,13 +10,8 @@ import (
 
 	"github.com/proxoar/talk/pkg/ability"
 	"github.com/proxoar/talk/pkg/client"
-
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
-)
-
-const (
-	systemRoleContent = "You are a helpful assistant!"
 )
 
 type ChatGPT struct {
@@ -32,12 +27,12 @@ func (c *ChatGPT) MustFunction(_ context.Context) {
 	o := ability.DefaultChatGPTOption()
 	content, err := c.Completion(context.Background(), []client.Message{m}, ability.LLMOption{ChatGPT: o})
 	if err != nil {
-		c.Logger.Sugar().Panic("failed to get response from ChatGPTAb server: ", err)
+		c.Logger.Sugar().Panic("failed to get response from ChatGPT server: ", err)
 	}
 	if len(content) == 0 {
 		c.Logger.Warn(`bad smell: got empty content from ChatGPTAb server`)
 	}
-	c.Logger.Info("ChatGPTAb is healthy")
+	c.Logger.Info("ChatGPT is healthy")
 }
 
 func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {
@@ -48,7 +43,7 @@ func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {
 func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t ability.LLMOption) (string, error) {
 	c.Logger.Info("completion...")
 	if t.ChatGPT == nil {
-		return "", errors.New("client did not provide ChatGPTAb option")
+		return "", errors.New("client did not provide ChatGPT option")
 	}
 
 	messages := messageOfComplete(ms)
@@ -79,10 +74,10 @@ func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t ability
 // To make sure the chan closes eventually, caller should either read the last chunk from chan
 // or got a chunk whose Err != nil
 func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMOption) <-chan client.Chunk {
-	c.Logger.Info("completion stream...")
+	c.Logger.Sugar().Infow("completion stream...", "message list length", len(ms))
 	ch := make(chan client.Chunk, 64)
 	if t.ChatGPT == nil {
-		ch <- client.Chunk{Message: "", Err: errors.New("client did not provide ChatGPTAb option")}
+		ch <- client.Chunk{Message: "", Err: errors.New("client did not provide ChatGPT option")}
 		return ch
 	}
 
@@ -96,6 +91,9 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 		PresencePenalty:  t.ChatGPT.PresencePenalty,
 		FrequencyPenalty: t.ChatGPT.FrequencyPenalty,
 	}
+	reqLog := req
+	reqLog.Messages = nil
+	c.Logger.Sugar().Info("completion stream req without messages:", reqLog)
 
 	go func() {
 		stream, err := c.Client.CreateChatCompletionStream(ctx, req)
@@ -137,7 +135,7 @@ func (c *ChatGPT) SetAbility(ctx context.Context, a *ability.LLMAb) error {
 }
 
 func (c *ChatGPT) GetModels(ctx context.Context) ([]string, error) {
-	c.Logger.Info("completion...")
+	c.Logger.Info("get models...")
 	ml, err := c.Client.ListModels(ctx)
 	if err != nil {
 		return nil, err
@@ -153,17 +151,12 @@ func (c *ChatGPT) GetModels(ctx context.Context) ([]string, error) {
 }
 
 func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {
-	messages := []openai.ChatCompletionMessage{
-		{
-			Role:    openai.ChatMessageRoleSystem,
-			Content: systemRoleContent,
-		},
-	}
-	for _, m := range ms {
-		messages = append(messages, openai.ChatCompletionMessage{
+	messages := make([]openai.ChatCompletionMessage, len(ms), len(ms))
+	for i, m := range ms {
+		messages[i] = openai.ChatCompletionMessage{
 			Role:    m.Role,
 			Content: m.Content,
-		})
+		}
 	}
 	return messages
 }

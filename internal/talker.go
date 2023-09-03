@@ -38,7 +38,7 @@ func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*
 			Logger: logger,
 		}
 	} else {
-		return nil, errors.New("no LLMAb provider was found")
+		return nil, errors.New("no LLM provider was found")
 	}
 
 	// choose a text-to-speech provider
@@ -92,7 +92,7 @@ func (t *Talker) Ability(ctx context.Context) (ability.Ability, error) {
 	a := ability.LLMAb{}
 	err := t.LLM.SetAbility(ctx, &a)
 	if err != nil {
-		t.logger.Sugar().Error("failed to get LLMAb Ability", err)
+		t.logger.Sugar().Error("failed to get LLM Ability", err)
 		return ability.Ability{}, err
 	}
 

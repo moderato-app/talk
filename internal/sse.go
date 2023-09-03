@@ -140,7 +140,7 @@ func (s *SSEHandler) audio(ctx context.Context, streamId string, audio io.Reader
 	newConv := *conv
 	newConv.Ms = append(newConv.Ms, Message{Role: "user", Content: text})
 	// 3. Append the text to conversation, and call conv
-	s.conv(ctx, streamId, conv)
+	s.conv(ctx, streamId, &newConv)
 }
 
 func (s *SSEHandler) toEvent(eventName string, data interface{}) (event *sse.Event, err error) {
