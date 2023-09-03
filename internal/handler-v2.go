@@ -39,7 +39,6 @@ var TTSZhCNOption = client.VOption{
 
 func (s *SSEHandler) PostConv(c echo.Context) error {
 	conv := new(api.Conversation)
-	s.logger.Sugar().Debug("PostConv body:", conv)
 	err := c.Bind(conv)
 	if err != nil {
 		return err

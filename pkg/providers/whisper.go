@@ -36,7 +36,7 @@ func (c *Whisper) Quota(_ context.Context) (used, total int, err error) {
 }
 
 func (c *Whisper) SpeechToText(ctx context.Context, audio io.Reader, fileName string) (string, error) {
-	c.Logger.Info("transcribe...")
+	c.Logger.Sugar().Infow("transcribe...", "fileName", fileName)
 	// File uploads are currently limited to 25 MB and the following input file types are supported: mp3, mp4, mpeg, mpga, m4a, wav, and webm.
 	// see https://platform.openai.com/docs/guides/speech-to-text/introduction
 	resp, err := c.Client.CreateTranscription(
@@ -51,11 +51,10 @@ func (c *Whisper) SpeechToText(ctx context.Context, audio io.Reader, fileName st
 	if err != nil {
 		return "", err
 	}
-	c.Logger.Sugar().Debug("transcribe result", resp)
+	c.Logger.Sugar().Info("transcribe result text length:", len(resp.Text))
 	if len(resp.Text) == 0 {
 		return "", errors.New("content of transcription is empty: " + err.Error())
 	}
 	transcription := resp.Text
-	c.Logger.Sugar().Info("transcription text:", transcription)
 	return transcription, nil
 }
