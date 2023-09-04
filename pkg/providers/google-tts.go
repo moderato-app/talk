@@ -90,7 +90,7 @@ func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId strin
 	if err != nil {
 		return nil, fmt.Errorf("SynthesizeSpeech: %v", err)
 	}
-	g.Logger.Sugar().Infow("text to speech result audio bytes length: ", len(resp.AudioContent))
+	g.Logger.Sugar().Info("text to speech result audio bytes length: ", len(resp.AudioContent))
 	return resp.AudioContent, nil
 }
 
