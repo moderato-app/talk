@@ -14701,9 +14701,33 @@ function makeLatestValues(props, context, presenceContext, scrapeMotionValues) {
   return values;
 }
 const noop$1 = (any) => any;
+class Queue {
+  constructor() {
+    this.order = [];
+    this.scheduled = /* @__PURE__ */ new Set();
+  }
+  add(process) {
+    if (!this.scheduled.has(process)) {
+      this.scheduled.add(process);
+      this.order.push(process);
+      return true;
+    }
+  }
+  remove(process) {
+    const index2 = this.order.indexOf(process);
+    if (index2 !== -1) {
+      this.order.splice(index2, 1);
+      this.scheduled.delete(process);
+    }
+  }
+  clear() {
+    this.order.length = 0;
+    this.scheduled.clear();
+  }
+}
 function createRenderStep(runNextFrame) {
-  let toRun = [];
-  let toRunNextFrame = [];
+  let thisFrame = new Queue();
+  let nextFrame = new Queue();
   let numToRun = 0;
   let isProcessing = false;
   let flushNextFrame = false;
@@ -14714,13 +14738,11 @@ function createRenderStep(runNextFrame) {
      */
     schedule: (callback, keepAlive = false, immediate = false) => {
       const addToCurrentFrame = immediate && isProcessing;
-      const buffer = addToCurrentFrame ? toRun : toRunNextFrame;
+      const queue = addToCurrentFrame ? thisFrame : nextFrame;
       if (keepAlive)
         toKeepAlive.add(callback);
-      if (buffer.indexOf(callback) === -1) {
-        buffer.push(callback);
-        if (addToCurrentFrame && isProcessing)
-          numToRun = toRun.length;
+      if (queue.add(callback) && addToCurrentFrame && isProcessing) {
+        numToRun = thisFrame.order.length;
       }
       return callback;
     },
@@ -14728,9 +14750,7 @@ function createRenderStep(runNextFrame) {
      * Cancel the provided callback from running on the next frame.
      */
     cancel: (callback) => {
-      const index2 = toRunNextFrame.indexOf(callback);
-      if (index2 !== -1)
-        toRunNextFrame.splice(index2, 1);
+      nextFrame.remove(callback);
       toKeepAlive.delete(callback);
     },
     /**
@@ -14742,12 +14762,12 @@ function createRenderStep(runNextFrame) {
         return;
       }
       isProcessing = true;
-      [toRun, toRunNextFrame] = [toRunNextFrame, toRun];
-      toRunNextFrame.length = 0;
-      numToRun = toRun.length;
+      [thisFrame, nextFrame] = [nextFrame, thisFrame];
+      nextFrame.clear();
+      numToRun = thisFrame.order.length;
       if (numToRun) {
         for (let i2 = 0; i2 < numToRun; i2++) {
-          const callback = toRun[i2];
+          const callback = thisFrame.order[i2];
           callback(frameData2);
           if (toKeepAlive.has(callback)) {
             step.schedule(callback);
@@ -16546,7 +16566,7 @@ class MotionValue {
    * @internal
    */
   constructor(init, options = {}) {
-    this.version = "10.16.1";
+    this.version = "10.16.2";
     this.timeDelta = 0;
     this.lastUpdated = 0;
     this.canTrackVelocity = false;
@@ -23183,7 +23203,7 @@ const useSendingTextStore = create(
     pop: () => {
       const [first, ...rest] = get2().sendingTexts;
       if (first !== void 0) {
-        set2((state) => ({ ...state, sendingAudios: rest }));
+        set2((state) => ({ ...state, sendingTexts: rest }));
       }
       return first;
     }
@@ -23263,6 +23283,10 @@ const TextArea = () => {
       (_b = textAreaRef.current) == null ? void 0 : _b.blur();
     }
   }, [inputAreaIsLarge]);
+  const autoGrowHeight = (e2) => {
+    e2.currentTarget.style.height = "5px";
+    e2.currentTarget.style.height = e2.currentTarget.scrollHeight + "px";
+  };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center w-full mt-auto bottom-0 max-w-4xl", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
@@ -23296,10 +23320,10 @@ const TextArea = () => {
         "textarea",
         {
           ref: textAreaRef,
-          className: "w-full outline-0 rounded-xl resize-none bg-white pl-2 py-1 lg:p-3 mt-auto placeholder:text-neutral-500",
-          rows: inputAreaIsLarge ? 8 : 2,
+          className: "w-full outline-0 rounded-xl resize-none bg-white pl-2 py-1 lg:p-3 mt-auto\n                        placeholder:text-neutral-500 min-h-24 max-h-[30rem]",
           onKeyUp: stopPropagation,
           value: inputText,
+          onInput: autoGrowHeight,
           onChange: (e2) => setInputText(e2.target.value),
           onKeyDown: handleKeyDown,
           onCompositionStart: handleCompositionStart,
@@ -23376,13 +23400,13 @@ function v4(options, buf, offset) {
   }
   return unsafeStringify(rnds);
 }
-function _typeof$1(obj) {
+function _typeof$1(o3) {
   "@babel/helpers - typeof";
-  return _typeof$1 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && "function" == typeof Symbol && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$1(obj);
+  return _typeof$1 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o4) {
+    return typeof o4;
+  } : function(o4) {
+    return o4 && "function" == typeof Symbol && o4.constructor === Symbol && o4 !== Symbol.prototype ? "symbol" : typeof o4;
+  }, _typeof$1(o3);
 }
 function requiredArgs(required, args) {
   if (args.length < required) {
@@ -23873,8 +23897,9 @@ let s$7 = class s extends t$4 {
 };
 const i$5 = ["audio/webm", "audio/wav", "audio/mpeg", "audio/mp4", "audio/mp3"];
 let r$2 = class r extends s$7 {
-  constructor() {
-    super(...arguments), this.stream = null, this.mediaRecorder = null;
+  constructor(e2) {
+    var t3;
+    super(Object.assign(Object.assign({}, e2), { audioBitsPerSecond: null !== (t3 = e2.audioBitsPerSecond) && void 0 !== t3 ? t3 : 128e3 })), this.stream = null, this.mediaRecorder = null;
   }
   static create(e2) {
     return new r(e2 || {});
@@ -24510,7 +24535,7 @@ const DiscreteRange = ({
 }) => {
   const [choiceColor, setChoiceColors] = reactExports.useState([]);
   const [containsValue, setChoiceContainsValue] = reactExports.useState(false);
-  const textareaBoxRef = reactExports.useRef(null);
+  const inputBoxRef = reactExports.useRef(null);
   const [valueUpdated, setValueUpdated] = reactExports.useState(0);
   const onBlur = (e2) => {
     var _a;
@@ -24541,14 +24566,16 @@ const DiscreteRange = ({
   };
   reactExports.useEffect(() => {
     var _a;
-    if (!textareaBoxRef.current) {
+    if (!inputBoxRef.current) {
       return;
     }
     const found = (_a = choices.find((c2) => c2.value === value)) == null ? void 0 : _a.name;
     if (found !== void 0) {
-      textareaBoxRef.current.value = found;
+      inputBoxRef.current.value = found;
+      inputBoxRef.current.size = found.length + 1;
     } else {
-      textareaBoxRef.current.value = value.toString();
+      inputBoxRef.current.value = value.toString();
+      inputBoxRef.current.size = value.toString().length + 1;
     }
   }, [value, choices, valueUpdated]);
   reactExports.useEffect(() => {
@@ -24588,19 +24615,19 @@ const DiscreteRange = ({
   const handleKeyDown = (event) => {
     var _a;
     if (event.code == "Escape") {
-      (_a = textareaBoxRef.current) == null ? void 0 : _a.blur();
+      (_a = inputBoxRef.current) == null ? void 0 : _a.blur();
     }
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-y-0.5", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center max-h-10 ring-transparent ", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center max-h-10", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-neutral-600", children: title }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "textarea",
+        "input",
         {
-          ref: textareaBoxRef,
-          className: "w-11 max-h-6 outline-0 overflow-hidden text-center align-middle border border-neutral-500 rounded-xl resize-none " + (containsValue ? "bg-transparent" : "bg-blue-600 text-neutral-100"),
-          rows: 1,
+          ref: inputBoxRef,
+          className: "min-w-11 max-h-6 text-center px-1 align-middle outline-0 overflow-hidden border border-neutral-500 rounded-xl resize-none " + (containsValue ? "bg-transparent" : "bg-blue-600 text-neutral-100"),
           onBlur,
+          onInput: (e2) => e2.currentTarget.size = e2.currentTarget.value.length + 1,
           onFocus: (e2) => {
             e2.target.select();
           },
@@ -26064,7 +26091,7 @@ const Other = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
-            className: "flex justify-start items-center gap-2 py-2 border-2 border-neutral-500 border-dashed rounded-lg w-full px-3",
+            className: "flex flex-wrap justify-start items-center gap-2 py-2 border-2 border-neutral-500 border-dashed rounded-lg w-full px-3",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "div",
@@ -26073,7 +26100,7 @@ const Other = () => {
                   onClick: clearQsSlice,
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(BsTrash3, { className: "text-lg" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-light", children: "Clear Message" })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-light whitespace-nowrap", children: "Clear Message" })
                   ]
                 }
               ),
@@ -26084,7 +26111,7 @@ const Other = () => {
                   onClick: reset,
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(BsBootstrapReboot, { className: "text-lg" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "", children: "Reset All" })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "whitespace-nowrap", children: "Reset All" })
                   ]
                 }
               )
@@ -27343,30 +27370,41 @@ const usePlayingStore = create(
     }
   })
 );
-const Audio = ({ audio, self: self2 }) => {
+const Audio = ({ audio, self: self2, delay: delay2 }) => {
   const [audioUrl, setAudioUrl] = reactExports.useState("");
-  reactExports.useEffect(() => {
-    if (!audio) {
-      return;
+  const update = reactExports.useCallback((id2) => getBlob(id2).then((r3) => {
+    if (r3) {
+      const url = URL.createObjectURL(r3.blob);
+      setAudioUrl(url);
+    } else {
+      console.error("audio blob not found");
     }
-    if (audioUrl) {
-      return;
-    }
-    if (["sent", "received"].includes(audio.status)) {
-      if (audio.audioId) {
-        getBlob(audio.audioId).then((r3) => {
-          if (r3) {
-            const url = URL.createObjectURL(r3.blob);
-            setAudioUrl(url);
-          } else {
-            console.error("audio blob not found");
-          }
-        }).catch((e2) => {
-          console.error("failed to get audio blob", audio.audioId, e2);
-        });
+  }).catch((e2) => {
+    console.error("failed to get audio blob", id2, e2);
+  }), []);
+  reactExports.useEffect(
+    () => {
+      if (!audio) {
+        return;
       }
-    }
-  }, [audio]);
+      if (audioUrl) {
+        return;
+      }
+      let timeout;
+      if (["sent", "received"].includes(audio.status)) {
+        if (audio.audioId) {
+          const id2 = audio.audioId;
+          if (delay2 == 0) {
+            update(id2);
+          } else {
+            timeout = setTimeout(() => update(id2), delay2);
+          }
+        }
+      }
+      return () => clearTimeout(timeout);
+    },
+    [audio, audioUrl]
+  );
   if (!audio) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
   }
@@ -28323,7 +28361,7 @@ const RichOpText = ({ text, deleteFunc }) => {
     {
       onMouseOver: () => setHovering(true),
       onMouseLeave: () => setHovering(false),
-      className: "relative rounded-lg self-end max-w-3/4 whitespace-pre-wrap text-violet-100 bg-blue-600 px-2 py-1.5",
+      className: "relative rounded-2xl self-end max-w-3/4 whitespace-pre-wrap text-violet-100 bg-blue-600 px-2 py-1.5",
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: text.text }),
         confettiCount === 0 ? null : /* @__PURE__ */ jsxRuntimeExports.jsx(Confetti, { numberOfPieces: 500, wind: 0.02, recycle: false }, confettiCount),
@@ -28415,27 +28453,41 @@ const SelfText = ({ text, qaId }) => {
       return null;
   }
 };
+let windowObject;
+if (typeof window !== "undefined") {
+  windowObject = window;
+} else if (typeof self !== "undefined") {
+  windowObject = self;
+} else {
+  windowObject = global;
+}
+windowObject.clearTimeout;
+windowObject.setTimeout;
+windowObject.cancelAnimationFrame || windowObject.mozCancelAnimationFrame || windowObject.webkitCancelAnimationFrame;
+windowObject.requestAnimationFrame || windowObject.mozRequestAnimationFrame || windowObject.webkitRequestAnimationFrame;
 const MessageList = () => {
   const qaSlice = useConvStore((state) => state.qaSlice);
   const scrollRef = reactExports.useRef(null);
-  reactExports.useLayoutEffect(() => {
-    if (scrollRef.current) {
-      const { scrollHeight } = scrollRef.current;
-      scrollRef.current.scrollTop = scrollHeight;
-    }
-  }, [qaSlice]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  reactExports.useEffect(() => {
+    scrollRef.current.scrollIntoView({ behavior: "instant" });
+  });
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
       className: "overflow-y-auto overflow-x-hidden w-full hide-scrollbar hover:show-scrollbar",
-      ref: scrollRef,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-5 rounded-lg w-full justify-end", children: qaSlice.map(
-        (qa2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Qa, { qa: qa2 }, qa2.id)
-      ) })
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-5 rounded-lg w-full justify-end", children: qaSlice.map(
+          (qa2, index2) => (
+            // last 10 item has no delay, the rest has 4000s and 300ms more delay for each 10 items
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Qa, { qa: qa2, delay: (qaSlice.length - index2) / 10 * 1e3 }, qa2.id)
+          )
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: scrollRef })
+      ]
     }
   );
 };
-const Qa = ({ qa: qa2 }) => {
+const Qa = ({ qa: qa2, delay: delay2 }) => {
   var _a;
   const renderOrder = ["queText", "queAudio", "ansText", "ansAudio"];
   const statusSlice = [qa2.que.text.status, ((_a = qa2.que.audio) == null ? void 0 : _a.status) ?? "", qa2.ans.text.status, qa2.ans.audio.status];
@@ -28464,7 +28516,7 @@ const Qa = ({ qa: qa2 }) => {
             "div",
             {
               className: "rounded-lg max-w-1/2 md:max-w-2/5 w-full text-neutral-900 self-end",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Audio, { audio: qa2.que.audio, self: true })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Audio, { audio: qa2.que.audio, self: true, delay: delay2 })
             },
             "que.audio"
           );
@@ -28475,7 +28527,7 @@ const Qa = ({ qa: qa2 }) => {
             "div",
             {
               className: "rounded-lg max-w-1/2 md:max-w-2/5 w-full text-neutral-900",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Audio, { audio: qa2.ans.audio, self: false })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Audio, { audio: qa2.ans.audio, self: false, delay: delay2 })
             },
             "ans.audio"
           );
@@ -28976,35 +29028,35 @@ const SSE = () => {
 function Home() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(WallpaperWalkInGreen, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        className: "home flex items-center justify-center h-screen w-screen overflow-hidden gap-2 lg:p-3",
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "flex flex-col items-center max-w-4xl w-full h-full rounded-xl justify-between gap-1 p-2\n                    bg-white bg-opacity-40 backdrop-blur",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(MessageList, {}),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "div",
-                  {
-                    className: "flex flex-col rounded-xl items-center gap-2 w-full px-2 mt-auto bottom-0",
-                    children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(TextArea, {}),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center w-full my-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Recorder, {}) })
-                    ]
-                  }
-                )
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-full w-full max-w-1/3 hidden sm:block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Setting, {}) })
-        ]
-      }
-    ),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(ErrorBoundary, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "home flex items-center justify-center h-screen w-screen overflow-hidden gap-2 p-1 lg:p-3",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-full max-w-md hidden sm:block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Setting, {}) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "flex flex-col items-center max-w-4xl w-full h-full rounded-xl justify-between gap-1 p-2\n                    bg-white bg-opacity-40 backdrop-blur",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MessageList, {}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "flex flex-col rounded-xl items-center gap-2 w-full px-2 mt-auto bottom-0",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(TextArea, {}),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center w-full my-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Recorder, {}) })
+                      ]
+                    }
+                  )
+                ]
+              }
+            )
+          ]
+        }
+      ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(SSE, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Workers, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(WindowListeners, {})
@@ -29067,4 +29119,4 @@ function App() {
 client.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-3986a26f.js.map
+//# sourceMappingURL=index-9e4c9177.js.map
