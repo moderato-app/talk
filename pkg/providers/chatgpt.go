@@ -77,7 +77,7 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 	c.Logger.Sugar().Infow("completion stream...", "message list length", len(ms))
 	ch := make(chan client.Chunk, 64)
 	if t.ChatGPT == nil {
-		ch <- client.Chunk{Message: "", Err: errors.New("client did not provide ChatGPT option")}
+		ch <- client.Chunk{Text: "", Err: errors.New("client did not provide ChatGPT option")}
 		return ch
 	}
 
@@ -98,7 +98,7 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 	go func() {
 		stream, err := c.Client.CreateChatCompletionStream(ctx, req)
 		if err != nil {
-			ch <- client.Chunk{Message: "", Err: err}
+			ch <- client.Chunk{Text: "", Err: err}
 			return
 		}
 		defer stream.Close()
@@ -111,10 +111,10 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 			}
 
 			if err != nil {
-				ch <- client.Chunk{Message: "", Err: err}
+				ch <- client.Chunk{Text: "", Err: err}
 				break
 			}
-			ch <- client.Chunk{Message: response.Choices[0].Delta.Content, Err: nil}
+			ch <- client.Chunk{Text: response.Choices[0].Delta.Content, Err: nil}
 		}
 	}()
 	return ch
@@ -122,19 +122,26 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 
 // SetAbility set `ChatGPTAb` and `available` field of ability.LLMAb
 func (c *ChatGPT) SetAbility(ctx context.Context, a *ability.LLMAb) error {
-	models, err := c.GetModels(ctx)
+	models, err := c.getModels(ctx)
 	if err != nil {
 		return err
 	}
-	a.Available = true
 	a.ChatGPT = ability.ChatGPTAb{
 		Available: true,
 		Models:    models,
 	}
+	a.Available = true
 	return nil
 }
 
-func (c *ChatGPT) GetModels(ctx context.Context) ([]string, error) {
+// Support
+//
+// read ability.LLMOption to check if current provider support the option
+func (c *ChatGPT) Support(o ability.LLMOption) bool {
+	return o.ChatGPT != nil
+}
+
+func (c *ChatGPT) getModels(ctx context.Context) ([]string, error) {
 	c.Logger.Info("get models...")
 	ml, err := c.Client.ListModels(ctx)
 	if err != nil {
@@ -154,7 +161,7 @@ func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {
 	messages := make([]openai.ChatCompletionMessage, len(ms), len(ms))
 	for i, m := range ms {
 		messages[i] = openai.ChatCompletionMessage{
-			Role:    m.Role,
+			Role:    string(m.Role),
 			Content: m.Content,
 		}
 	}

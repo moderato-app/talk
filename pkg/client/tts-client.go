@@ -2,20 +2,15 @@ package client
 
 import (
 	"context"
+
+	"github.com/proxoar/talk/pkg/ability"
 )
 
 type TextToSpeech interface {
-	MustFunction
-	Quota
-	TextToSpeech(ctx context.Context, text string, voiceId string, o VOption) ([]byte, error)
-}
-
-type VOption struct {
-	LanguageCode string
-	Gender       string
-	SpeakingRate float64
-	Pitch        float64
-	VolumeGainDb float64
-	Stability    float32
-	Clarity      float32
+	TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error)
+	SetAbility(ctx context.Context, a *ability.TTSAb) error
+	// Support
+	//
+	// read ability.TTSOption to check if current provider support the option
+	Support(o ability.TTSOption) bool
 }

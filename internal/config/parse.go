@@ -7,31 +7,11 @@ import (
 )
 
 const (
-	DefaultServerPort                           = 8000
-	DefaultServerEagerCheckProviders            = true
-	DefaultElevenLabsStability                  = 0.5
-	DefaultElevenLabsClarity                    = 0.5
-	DefaultGoogleTTSPathToServiceAccountKeyFile = "./google-service-account-key.json"
-	DefaultGoogleTTSLanguageCode                = "en-US"
-	DefaultGoogleTTSGender                      = "female"
-	DefaultGoogleTTSSpeakingRate                = 1
-	DefaultGoogleTTSPitch                       = 0
-	DefaultGoogleTTSVolumeGainDb                = 0
+	DefaultServerPort = 8000
 )
 
 func setDefaultValue() {
 	viper.SetDefault("server.port", DefaultServerPort)
-	viper.SetDefault("server.providers-must-function", DefaultServerEagerCheckProviders)
-
-	viper.SetDefault("text-to-speech.elevenlabs.stability", DefaultElevenLabsStability)
-	viper.SetDefault("text-to-speech.elevenlabs.clarity", DefaultElevenLabsClarity)
-
-	viper.SetDefault("text-to-speech.google-text-to-speech.path-to-service-account-key-file", DefaultGoogleTTSPathToServiceAccountKeyFile)
-	viper.SetDefault("text-to-speech.google-text-to-speech.gender", DefaultGoogleTTSGender)
-	viper.SetDefault("text-to-speech.google-text-to-speech.language-code", DefaultGoogleTTSLanguageCode)
-	viper.SetDefault("text-to-speech.google-text-to-speech.speaking-rate", DefaultGoogleTTSSpeakingRate)
-	viper.SetDefault("text-to-speech.google-text-to-speech.pitch", DefaultGoogleTTSPitch)
-	viper.SetDefault("text-to-speech.google-text-to-speech.volume-gain-db", DefaultGoogleTTSVolumeGainDb)
 }
 
 func readFile() error {
