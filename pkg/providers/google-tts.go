@@ -6,6 +6,8 @@ import (
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
 	"cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
+	"github.com/dustin/go-humanize"
+	"github.com/proxoar/talk/pkg/ability"
 	"github.com/proxoar/talk/pkg/client"
 
 	"go.uber.org/zap"
@@ -17,17 +19,17 @@ type GoogleTTS struct {
 }
 
 func (g *GoogleTTS) MustFunction(ctx context.Context) {
-	vOption := client.VOption{
-		LanguageCode: "en-GB",
-		Gender:       "female",
-		SpeakingRate: 1.0,
-		Pitch:        0,
-		VolumeGainDb: 0,
-		Stability:    0.3,
-		Clarity:      0.5,
+	o := ability.TTSOption{
+		Google: &ability.GoogleTTSOption{
+			VoiceId:      "",
+			LanguageCode: "en-GB",
+			Gender:       texttospeechpb.SsmlVoiceGender_FEMALE,
+			SpeakingRate: 0.8,
+			Pitch:        0,
+			VolumeGainDb: 0,
+		},
 	}
-
-	audio, err := g.TextToSpeech(ctx, "Hello!", "", vOption)
+	audio, err := g.TextToSpeech(ctx, "Hello!", o)
 	if err != nil {
 		g.Logger.Sugar().Panicf("failed to get response from Google text-to-speech server: %+v", err)
 	}
@@ -67,21 +69,21 @@ func (g *GoogleTTS) Voices(ctx context.Context, langCode string) ([]client.Voice
 	return gvs, nil
 }
 
-func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId string, o client.VOption) ([]byte, error) {
-	g.Logger.Sugar().Infow("text to speech...", "voiceId", voiceId, "option", o)
+func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
+	g.Logger.Sugar().Infow("text to speech...", "option", o)
 	req := texttospeechpb.SynthesizeSpeechRequest{
 		Input: &texttospeechpb.SynthesisInput{
 			InputSource: &texttospeechpb.SynthesisInput_Text{Text: text},
 		},
 		Voice: &texttospeechpb.VoiceSelectionParams{
-			LanguageCode: o.LanguageCode,
-			Name:         voiceId,
-			SsmlGender:   mustConvertGender2(o.Gender),
+			LanguageCode: o.Google.LanguageCode,
+			Name:         o.Google.VoiceId,
+			SsmlGender:   o.Google.Gender,
 		},
 		AudioConfig: &texttospeechpb.AudioConfig{
-			SpeakingRate:  o.SpeakingRate,
-			Pitch:         o.Pitch,
-			VolumeGainDb:  o.VolumeGainDb,
+			SpeakingRate:  o.Google.SpeakingRate,
+			Pitch:         o.Google.Pitch,
+			VolumeGainDb:  o.Google.VolumeGainDb,
 			AudioEncoding: texttospeechpb.AudioEncoding_MP3,
 		},
 	}
@@ -90,18 +92,42 @@ func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, voiceId strin
 	if err != nil {
 		return nil, fmt.Errorf("SynthesizeSpeech: %v", err)
 	}
-	g.Logger.Sugar().Info("text to speech result audio bytes length: ", len(resp.AudioContent))
+	g.Logger.Sugar().Info("text to speech result audio bytes size: ", humanize.Bytes(uint64(len(resp.AudioContent))))
 	return resp.AudioContent, nil
 }
 
-// elevenlabsVoiceToGeneralVoice convert texttospeechpb.Voice to client.Voice
+func (g *GoogleTTS) SetAbility(ctx context.Context, a *ability.TTSAb) error {
+	voices, err := g.Client.ListVoices(ctx, &texttospeechpb.ListVoicesRequest{})
+	if err != nil {
+		return err
+	}
+	vs := make([]ability.Voice, len(voices.Voices))
+	for i, voice := range voices.Voices {
+		vs[i] = googleVoiceToAbVoice(voice)
+	}
+	a.Google = ability.GoogleTTSAb{
+		Available: true,
+		Voices:    vs,
+	}
+	a.Available = true
+	return nil
+}
+
+// Support
+//
+// read ability.TTSOption to check if current provider support the option
+func (g *GoogleTTS) Support(o ability.TTSOption) bool {
+	return o.Google != nil
+}
+
+// googleVoiceToGeneralVoice convert texttospeechpb.Voice to client.Voice
 func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) client.Voice {
 	// Voice.LanguageCodes contains only one code; keep Voice.Lang as string type for simplicity
 	langCode := ""
 	if len(v.LanguageCodes) > 0 {
 		langCode = v.LanguageCodes[0]
 	}
-	gender := mustConvertGender(v.SsmlGender)
+	gender := convertGender(v.SsmlGender)
 	return client.Voice{
 		Id:     v.Name,
 		Name:   v.Name,
@@ -111,7 +137,20 @@ func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) client.Voice {
 	}
 }
 
-func mustConvertGender(g texttospeechpb.SsmlVoiceGender) string {
+// googleVoiceToAbVoice convert texttospeechpb.Voice to ability.Voice
+func googleVoiceToAbVoice(v *texttospeechpb.Voice) ability.Voice {
+	// Voice.LanguageCodes contains only one code in the moment
+	tags := v.LanguageCodes
+	gender := convertGender(v.SsmlGender)
+	tags = append(tags, gender)
+	return ability.Voice{
+		Id:   v.Name,
+		Name: v.Name,
+		Tags: tags,
+	}
+}
+
+func convertGender(g texttospeechpb.SsmlVoiceGender) string {
 	switch g {
 	case texttospeechpb.SsmlVoiceGender_SSML_VOICE_GENDER_UNSPECIFIED:
 		return "unspecified"
@@ -122,21 +161,6 @@ func mustConvertGender(g texttospeechpb.SsmlVoiceGender) string {
 	case texttospeechpb.SsmlVoiceGender_NEUTRAL:
 		return "neutral"
 	default:
-		panic(fmt.Sprintf("unkonwn gender: %+v", g))
-	}
-}
-
-func mustConvertGender2(g string) texttospeechpb.SsmlVoiceGender {
-	switch g {
-	case "unspecified":
-		return texttospeechpb.SsmlVoiceGender_SSML_VOICE_GENDER_UNSPECIFIED
-	case "male":
-		return texttospeechpb.SsmlVoiceGender_MALE
-	case "female":
-		return texttospeechpb.SsmlVoiceGender_FEMALE
-	case "neutral":
-		return texttospeechpb.SsmlVoiceGender_NEUTRAL
-	default:
-		panic(fmt.Sprintf("unkonwn gender: %+v", g))
+		return ""
 	}
 }

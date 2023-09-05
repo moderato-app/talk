@@ -1,50 +1,36 @@
 package api
 
 import (
-	"errors"
+	"io"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/proxoar/talk/pkg/ability"
+	"github.com/proxoar/talk/pkg/client"
 )
 
 var RestfulValidator *validator.Validate
 
 func init() {
 	RestfulValidator = validator.New()
-	err := errors.Join(
-		RestfulValidator.RegisterValidation("msIsNotEmpty", msIsNotEmpty),
-		RestfulValidator.RegisterValidation("stringNotZeroLength", stringNotZeroLength),
-	)
-	if err != nil {
-		panic(err)
-	}
 }
 
 type Conversation struct {
-	Id         string             `json:"id" validate:"required"` // unique ID for every Q&A
-	Ms         []Message          `json:"ms" validate:"msIsNotEmpty,dive"`
-	TalkOption ability.TalkOption `json:"talkOption" validate:"required"`
+	Id         string           `json:"id" validate:"required"` // unique ID for every Q&A
+	Ms         []client.Message `json:"ms" validate:"required,dive"`
+	TalkOption TalkOption       `json:"talkOption" validate:"required,dive"`
 }
 
-type Message struct {
-	Role    string `json:"role" validate:"required"` // options: system, user, assistant and function
-	Content string `json:"content" validate:"required"`
+type AudioReader struct {
+	Reader   io.Reader
+	FileName string
 }
 
-func msIsNotEmpty(fl validator.FieldLevel) bool {
-	switch fl.Field().Interface().(type) {
-	case []Message:
-		return len(fl.Field().Interface().([]Message)) > 0
-	default:
-		return false
-	}
-}
-
-func stringNotZeroLength(fl validator.FieldLevel) bool {
-	switch fl.Field().Interface().(type) {
-	case string:
-		return len(fl.Field().Interface().(string)) > 0
-	default:
-		return false
-	}
+type TalkOption struct {
+	ToText             bool               `json:"toText,omitempty"`             // transcribe user's speech to text, requiring STTOption option
+	ToSpeech           bool               `json:"toSpeech,omitempty"`           // synthesize user's text to speech, requiring TTSOption
+	Completion         bool               `json:"completion,omitempty"`         // completion, requires messages or result of transcription, require LLMOption
+	CompletionToSpeech bool               `json:"completionToSpeech,omitempty"` // synthesize result of completion to speech, requiring TTSOption
+	LLMOption          *ability.LLMOption `json:"llmOption,omitempty"`
+	STTOption          *ability.STTOption `json:"sstOption,omitempty"`
+	TTSOption          *ability.TTSOption `json:"ttsOption,omitempty"`
 }
