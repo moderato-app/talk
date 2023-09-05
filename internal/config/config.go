@@ -8,9 +8,8 @@ type TalkConfig struct {
 }
 
 type ServerConfig struct {
-	Port                  int      `mapstructure:"port"`
-	ProvidersMustFunction bool     `mapstructure:"providers-must-function"`
-	Passwords             []string `mapstructure:"passwords"`
+	Port      int      `mapstructure:"port"`
+	Passwords []string `mapstructure:"passwords"`
 }
 
 type SpeechToTextConfig struct {
@@ -27,20 +26,11 @@ type TextToSpeechConfig struct {
 }
 
 type ElevenLabsConfig struct {
-	APIKey    string  `mapstructure:"api-key"`
-	VoiceID   string  `mapstructure:"voice-id"`
-	Stability float32 `mapstructure:"stability"`
-	Clarity   float32 `mapstructure:"clarity"`
+	APIKey string `mapstructure:"api-key"`
 }
 
 type GoogleTextTOSpeechConfig struct {
-	PathToServiceAccountKeyFile string  `mapstructure:"path-to-service-account-key-file"`
-	LanguageCode                string  `mapstructure:"language-code"`
-	VoiceID                     string  `mapstructure:"voice-id"`
-	Gender                      string  `mapstructure:"gender"`
-	SpeakingRate                float32 `mapstructure:"speaking-rate"`
-	Pitch                       float32 `mapstructure:"pitch"`
-	VolumeGainDb                float32 `mapstructure:"volume-gain-db"`
+	ServiceAccountJson string `mapstructure:"service-account-json"`
 }
 
 type LlmConfig struct {
