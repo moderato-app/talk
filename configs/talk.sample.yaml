@@ -1,57 +1,36 @@
 server:
   # Optional. Use port 8000 if not specified.
   port: 8000
-  # Optional. Use true if not specified. Perform a startup request to each provider of speech-to-text,
-  # text-to-speech, and llm upon server initialization.
-  # Shutdown the server if there are any errors, such as invalid API key or connection error.
-  # Log a warning if there are any issues, such as quota exhaustion or incorrect transcriptions, indicating a potential problem
-  # These requests consume a minimal amount of quota or even no quota.
-  providers-must-function: true
   # Optional. Enable auth only if there is at least one password
   passwords:
     - "pass1"
     - "my-pass"
     - "password"
 
+llm:
+  open-ai-chat-gpt:
+    api-key: sk-abc123abc123abc123abc123abc123abc123
+
 speech-to-text:
   open-ai-whisper:
+    # typically, you would use the same API key as llm.open-ai-chat-gpt.api-key
     api-key: sk-abc123abc123abc123abc123abc123abc123
 
 text-to-speech:
   elevenlabs:
     api-key: abc123abc123abc1
-    # Optional. Use this voice whenever available, or randomly select a voice from the voice list
-    voice-id: P9sd8KYc82I23b9dUJm
-    # Optional. Range: 0.0~1.0. Use 0.5 if not specified. Increasing `stability` can make speech more stable and less expressive.
-    stability: 0.5
-    #Optional. Range: 0.0~1.0. Use 50(50%) if not specified. Increasing `clarity` brings more clarity and more background artifacts.
-    clarity: 0.5
   google-text-to-speech:
-    # Download a key file from Google Cloud. see https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console
-    path-to-service-account-key-file: ./google-service-account-key.json
-    # Optional. Use en-US if not specified. Choose a language-code from  https://www.rfc-editor.org/rfc/bcp/bcp47.txt
-    language-code: en-US
-    # Optional. Use this voice whenever available, or randomly select a voice from the voice list
-    voice-id: en-US-Standard-C
-    # Optional. Use female if not specified.
-    # When `voice-id` is not set, `gender` will be used to choose a voice.
-    #
-    # The preferred gender of the voice. If not set, the service will
-    # choose a voice based on the other parameters such as language_code and
-    # name. Note that this is only a preference, not requirement; if a
-    # voice of the appropriate gender is not available, the synthesizer should
-    # substitute a voice with a different gender rather than failing the request.
-    #
-    # Options: [male, female, neutral]
-    gender: female
-    # Optional. Range [0.25, 4.0]. Use 1.0 if not specified. Speaking speed
-    speaking-rate: 1.0
-    # Optional. Range [-20.0, 20.0]. Use 0 if not specified. Unit: semitone(12 semitone = 1 octave)
-    pitch: 0
-    # Optional. Range [-96.0, 16.0]. Use 0 if not specified. The bigger value comes with louder voice.
-    volume-gain-db: 0
-
-llm:
-  open-ai-chat-gpt:
-    # typically, you would use the same API key as speech-to-text.open-ai-whisper
-    api-key: sk-abc123abc123abc123abc123abc123abc123
+    service-account-json: |
+      {
+        "type": "service_account",
+        "project_id": "extreme-voice-356782",
+        "private_key_id": "8adsf7634895yh87d09gud09g7d86g9fg8df09g",
+        "private_key": "-----BEGIN PRIVATE KEY-----\xxxxxxxxxxxxxxxx=\n-----END PRIVATE KEY-----\n",
+        "client_email": "354-4fgfdg-65546@extreme-voice-34534.iam.gserviceaccount.com",
+        "client_id": "64565467568678798789789768",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/speech-and-text-3463456357dfgm.gserviceaccount.com",
+        "universe_domain": "googleapis.com"
+      }

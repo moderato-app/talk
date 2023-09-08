@@ -2,32 +2,32 @@ package ability
 
 // Ability guide clients in adjusting all parameters.
 type Ability struct {
-	LLM LLMAb `json:"llm"`
-	TTS TTSAb `json:"tts"`
-	STT STTAb `json:"stt"`
+	LLM LLMAblt `json:"llm"`
+	TTS TTSAblt `json:"tts"`
+	STT STTAblt `json:"stt"`
 }
 
-// TTSAb text to speech
+// TTSAblt text to speech
 
-type TTSAb struct {
-	Available  bool            `json:"available"`
-	Google     GoogleTTSAb     `json:"google"`
-	Elevenlabs ElevenlabsTTSAb `json:"elevenlabs"`
+type TTSAblt struct {
+	Available  bool              `json:"available"`
+	Google     GoogleTTSAblt     `json:"google"`
+	Elevenlabs ElevenlabsTTSAblt `json:"elevenlabs"`
 }
 
-type GoogleTTSAb struct {
+type GoogleTTSAblt struct {
 	Available bool    `json:"available"`
 	Voices    []Voice `json:"voices"`
 }
 
-type ElevenlabsTTSAb struct {
+type ElevenlabsTTSAblt struct {
 	Available bool    `json:"available"`
 	Voices    []Voice `json:"voices"`
 }
 
-// STTAb speech to text
+// STTAblt speech to text
 
-type STTAb struct {
+type STTAblt struct {
 	Available bool         `json:"available"`
 	Whisper   WhisperSTTAb `json:"whisper"`
 	Google    GoogleSTTAb  `json:"google"`
@@ -43,14 +43,14 @@ type GoogleSTTAb struct {
 	Voices    []Voice `json:"voices"`
 }
 
-// LLMAb
+// LLMAblt
 
-type LLMAb struct {
-	Available bool      `json:"available"`
-	ChatGPT   ChatGPTAb `json:"chatGPT"`
+type LLMAblt struct {
+	Available bool        `json:"available"`
+	ChatGPT   ChatGPTAblt `json:"chatGPT"`
 }
 
-type ChatGPTAb struct {
+type ChatGPTAblt struct {
 	Available bool     `json:"available"`
 	Models    []string `json:"models"`
 }
@@ -58,7 +58,7 @@ type ChatGPTAb struct {
 // other
 
 type Voice struct {
-	Id   string   `json:"ID"`   // used by TTSAb client
+	Id   string   `json:"id"`   // used by TTSAblt client
 	Name string   `json:"name"` // to display on UI
 	Tags []string `json:"tags"` // gender, accent, age, etc
 }

@@ -46,18 +46,18 @@ func (e *ElevenLabs) Quota(_ context.Context) (used, total int, err error) {
 	return subscription.CharacterCount, subscription.CharacterLimit, nil
 }
 
-func (e *ElevenLabs) Voices(_ context.Context) ([]client.Voice, error) {
+func (e *ElevenLabs) Voices(_ context.Context) ([]ability.Voice, error) {
 	e.Logger.Info("get voices...")
 	voices, err := e.Client.GetVoices()
 	if err != nil {
 		return nil, err
 	}
-	e.Logger.Sugar().Debug("result", voices)
-	gvs := make([]client.Voice, len(voices))
-	for i, v := range voices {
-		gvs[i] = elevenlabsVoiceToGeneralVoice(v)
+	vs := make([]ability.Voice, len(voices))
+	for i, voice := range voices {
+		vs[i] = elevenlabsVoiceToAbilityVoice(voice)
 	}
-	return gvs, nil
+	e.Logger.Sugar().Debug("voices count:", len(vs))
+	return vs, nil
 }
 
 func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
@@ -82,18 +82,14 @@ func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, o ability.TT
 	return bytes, nil
 }
 
-func (e *ElevenLabs) SetAbility(_ context.Context, a *ability.TTSAb) error {
-	voices, err := e.Client.GetVoices()
+func (e *ElevenLabs) SetAbility(ctx context.Context, a *ability.TTSAblt) error {
+	voices, err := e.Voices(ctx)
 	if err != nil {
 		return err
 	}
-	vs := make([]ability.Voice, len(voices))
-	for i, voice := range voices {
-		vs[i] = elevenlabsVoiceToAbilityVoice(voice)
-	}
-	a.Elevenlabs = ability.ElevenlabsTTSAb{
+	a.Elevenlabs = ability.ElevenlabsTTSAblt{
 		Available: true,
-		Voices:    vs,
+		Voices:    voices,
 	}
 	a.Available = true
 	return nil
@@ -106,10 +102,6 @@ func (e *ElevenLabs) Support(o ability.TTSOption) bool {
 	return o.Elevenlabs != nil
 }
 
-// choose voice id by priority:
-// 1. voiceId parameter
-// 2. predefined ElevenLabs.VoiceId
-// 3. choose a voiceId from voice list. In such case, set ElevenLabs.VoiceId to the chosen voiceId for future usage
 func (e *ElevenLabs) chooseVoiceId(ctx context.Context, voiceId string) (string, error) {
 	if voiceId != "" {
 		return voiceId, nil
