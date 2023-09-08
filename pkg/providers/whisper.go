@@ -62,8 +62,8 @@ func (c *Whisper) SpeechToText(ctx context.Context, audio io.Reader, fileName st
 	return transcription, nil
 }
 
-// SetAbility set `WhisperAb` and `available` field of ability.STTAb
-func (c *Whisper) SetAbility(ctx context.Context, a *ability.STTAb) error {
+// SetAbility set `WhisperAb` and `available` field of ability.STTAblt
+func (c *Whisper) SetAbility(ctx context.Context, a *ability.STTAblt) error {
 	models, err := c.setModels(ctx)
 	if err != nil {
 		return err
@@ -96,5 +96,6 @@ func (c *Whisper) setModels(ctx context.Context) ([]string, error) {
 		}
 	}
 	sort.Strings(models)
+	c.Logger.Sugar().Debug("models count:", len(models))
 	return models, err
 }

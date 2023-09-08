@@ -50,23 +50,18 @@ func (g *GoogleTTS) Quota(_ context.Context) (used, total int, err error) {
 // Voices list available voices
 //
 // pass empty langCode or choose one from https://www.rfc-editor.org/rfc/bcp/bcp47.txt,
-func (g *GoogleTTS) Voices(ctx context.Context, langCode string) ([]client.Voice, error) {
+func (g *GoogleTTS) Voices(ctx context.Context) ([]ability.Voice, error) {
 	g.Logger.Info("get voices...")
-	resp, err := g.Client.ListVoices(ctx,
-		&texttospeechpb.ListVoicesRequest{
-			LanguageCode: langCode,
-		},
-	)
+	voices, err := g.Client.ListVoices(ctx, &texttospeechpb.ListVoicesRequest{})
 	if err != nil {
-		return nil, fmt.Errorf("ListVoices %s %v", langCode, err)
+		return nil, err
 	}
-	g.Logger.Sugar().Debug("result", resp)
-	voices := resp.GetVoices()
-	gvs := make([]client.Voice, len(voices))
-	for i, v := range voices {
-		gvs[i] = googleVoiceToGeneralVoice(v)
+	vs := make([]ability.Voice, len(voices.Voices))
+	for i, voice := range voices.Voices {
+		vs[i] = googleVoiceToAbVoice(voice)
 	}
-	return gvs, nil
+	g.Logger.Sugar().Debug("voices count:", len(vs))
+	return vs, nil
 }
 
 func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
@@ -96,18 +91,14 @@ func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, o ability.TTS
 	return resp.AudioContent, nil
 }
 
-func (g *GoogleTTS) SetAbility(ctx context.Context, a *ability.TTSAb) error {
-	voices, err := g.Client.ListVoices(ctx, &texttospeechpb.ListVoicesRequest{})
+func (g *GoogleTTS) SetAbility(ctx context.Context, a *ability.TTSAblt) error {
+	voices, err := g.Voices(ctx)
 	if err != nil {
 		return err
 	}
-	vs := make([]ability.Voice, len(voices.Voices))
-	for i, voice := range voices.Voices {
-		vs[i] = googleVoiceToAbVoice(voice)
-	}
-	a.Google = ability.GoogleTTSAb{
+	a.Google = ability.GoogleTTSAblt{
 		Available: true,
-		Voices:    vs,
+		Voices:    voices,
 	}
 	a.Available = true
 	return nil

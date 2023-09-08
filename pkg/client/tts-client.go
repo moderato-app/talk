@@ -8,7 +8,7 @@ import (
 
 type TextToSpeech interface {
 	TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error)
-	SetAbility(ctx context.Context, a *ability.TTSAb) error
+	SetAbility(ctx context.Context, a *ability.TTSAblt) error
 	// Support
 	//
 	// read ability.TTSOption to check if current provider support the option

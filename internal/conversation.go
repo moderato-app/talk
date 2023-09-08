@@ -3,32 +3,34 @@ package internal
 import (
 	"context"
 
-	"github.com/google/uuid"
 	. "github.com/proxoar/talk/internal/api"
 	"github.com/proxoar/talk/pkg/client"
 	"go.uber.org/zap"
 )
 
-type ConvHandler struct {
+type ChatHandler struct {
 	streamId string
-	convId   string
+	chatId   string
+	ticketId string
 	o        TalkOption
 	sse      *SSE
 	talker   *Talker
 	logger   *zap.Logger
 }
 
-func NewConvHandler(
+func NewChatHandler(
 	streamId string,
-	convId string,
+	chatId string,
+	ticketId string,
 	o TalkOption,
 	sse *SSE,
 	talker *Talker,
 	logger *zap.Logger,
-) *ConvHandler {
-	return &ConvHandler{
+) *ChatHandler {
+	return &ChatHandler{
 		streamId: streamId,
-		convId:   convId,
+		chatId:   chatId,
+		ticketId: ticketId,
 		o:        o,
 		sse:      sse,
 		talker:   talker,
@@ -42,22 +44,22 @@ Start
 	if there is an audio
 
 	client --audio--> [toText] --text--> [completion] --text--> [toSpeech] --audio--> client
-	                               |                        |                     |
-	                               v                        v                     v
-	                            client                    client               client
+	                               |                      |                     |
+	                               v                      v                     v
+	                            client                  client               client
 
 
 	if there isn't an audio
 
 	client --text--> [completion] --text--> [toSpeech] --audio--> client
-	          |                            |
-	          v                            v
-	      [toAudio]                      client
+	          |                       |
+	          v                       v
+	      [toAudio]                 client
 	          |
 	          v
 	        client
 */
-func (c *ConvHandler) Start(ms []client.Message, ar *AudioReader) {
+func (c *ChatHandler) Start(ms []client.Message, ar *AudioReader) {
 	ctx := context.Background()
 	textCh := make(chan string, 1) // text in this channel is intended for completion purpose
 	if ar != nil {
@@ -97,61 +99,63 @@ func (c *ConvHandler) Start(ms []client.Message, ar *AudioReader) {
 	}
 }
 
-func (c *ConvHandler) toSpeech(ctx context.Context, text string, role client.Role) {
+func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Role) {
 	meta := MessageMeta{
-		ConvId:    c.convId,
-		MessageID: uuid.New().String(),
+		ChatId:    c.chatId,
+		TicketId:  c.ticketId,
+		MessageID: RandomHash(),
 		Role:      role,
 	}
 
 	tts, ok := c.talker.SelectTTSProvider(c.o.TTSOption)
 	if !ok {
-		c.sse.PublishData(c.streamId, EvenMessageError, Error{
+		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
 			EMessage:    "no text-to-speech provider matches the request"},
 		)
 		return
 	}
 
-	go func() { c.sse.PublishData(c.streamId, EvenMessageThinking, meta) }()
+	go func() { c.sse.PublishData(c.streamId, EventMessageThinking, meta) }()
 
 	audio, err := tts.TextToSpeech(ctx, text, *c.o.TTSOption)
 	if err != nil {
-		c.sse.PublishData(c.streamId, EvenMessageError, Error{
+		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
 			EMessage:    "got empty content from text-to-speech sever"},
 		)
 		return
 	}
 
-	c.sse.PublishData(c.streamId, EvenMessageAudio, Audio{
+	c.sse.PublishData(c.streamId, EventMessageAudio, Audio{
 		MessageMeta: meta,
 		Audio:       audio,
 	})
 }
 
-func (c *ConvHandler) toText(ctx context.Context, ar AudioReader, role client.Role, textCh chan<- string) {
+func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Role, textCh chan<- string) {
 	defer close(textCh)
 	meta := MessageMeta{
-		ConvId:    c.convId,
-		MessageID: uuid.New().String(),
+		ChatId:    c.chatId,
+		TicketId:  c.ticketId,
+		MessageID: RandomHash(),
 		Role:      role,
 	}
 
 	stt, ok := c.talker.SelectSTTProvider(c.o.STTOption)
 	if !ok {
-		c.sse.PublishData(c.streamId, EvenMessageError, Error{
+		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
 			EMessage:    "no speech-to-text provider matches the request"},
 		)
 		return
 	}
 
-	go func() { c.sse.PublishData(c.streamId, EvenMessageThinking, meta) }()
+	go func() { c.sse.PublishData(c.streamId, EventMessageThinking, meta) }()
 
 	text, err := stt.SpeechToText(ctx, ar.Reader, ar.FileName, *c.o.STTOption)
 	if err != nil {
-		c.sse.PublishData(c.streamId, EvenMessageError, Error{
+		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
 			EMessage:    "got empty content from speech-to-text sever"},
 		)
@@ -161,31 +165,31 @@ func (c *ConvHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 	// should not block
 	textCh <- text
 
-	c.sse.PublishData(c.streamId, EvenMessageAudio, Text{
+	c.sse.PublishData(c.streamId, EventMessageTextEOF, Text{
 		MessageMeta: meta,
 		Text:        text,
 	})
 }
 
-func (c *ConvHandler) completion(ctx context.Context, latestMs []client.Message, assistant client.Role, textCh chan<- string) {
+func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message, assistant client.Role, textCh chan<- string) {
 	defer close(textCh)
 	meta := MessageMeta{
-		ConvId:    c.convId,
-		MessageID: uuid.New().String(),
+		ChatId:    c.chatId,
+		TicketId:  c.ticketId,
+		MessageID: RandomHash(),
 		Role:      assistant,
 	}
-	c.sse.PublishData(c.streamId, EvenMessageThinking, meta)
 
 	llm, ok := c.talker.SelectLLMProvider(c.o.LLMOption)
 	if !ok {
-		c.sse.PublishData(c.streamId, EvenMessageError, Error{
+		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
 			EMessage:    "no LLM provider matches the request"},
 		)
 		return
 	}
 
-	go func() { c.sse.PublishData(c.streamId, EvenMessageThinking, meta) }()
+	go func() { c.sse.PublishData(c.streamId, EventMessageThinking, meta) }()
 
 	ch := llm.CompletionStream(ctx, latestMs, *c.o.LLMOption)
 	text := ""
@@ -193,17 +197,16 @@ func (c *ConvHandler) completion(ctx context.Context, latestMs []client.Message,
 		chunk, ok := <-ch
 		if ok {
 			if chunk.Err != nil {
-				c.sse.PublishData(c.streamId, EvenMessageError,
+				c.sse.PublishData(c.streamId, EventMessageError,
 					Error{MessageMeta: meta, EMessage: chunk.Err.Error()})
 				return
 			}
-			c.sse.PublishData(c.streamId, EvenMessageTextTyping,
+			c.sse.PublishData(c.streamId, EventMessageTextTyping,
 				Text{MessageMeta: meta, Text: chunk.Text})
 			text += chunk.Text
 		} else {
 			// if ch is closed
-			c.sse.PublishData(c.streamId, EvenMessageTextEOF,
-				Text{MessageMeta: meta, Text: chunk.Text})
+			c.sse.PublishData(c.streamId, EventMessageTextEOF, meta)
 			break
 		}
 	}

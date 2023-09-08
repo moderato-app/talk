@@ -30,7 +30,7 @@ func (c *ChatGPT) MustFunction(_ context.Context) {
 		c.Logger.Sugar().Panic("failed to get response from ChatGPT server: ", err)
 	}
 	if len(content) == 0 {
-		c.Logger.Warn(`bad smell: got empty content from ChatGPTAb server`)
+		c.Logger.Warn(`bad smell: got empty content from ChatGPTAblt server`)
 	}
 	c.Logger.Info("ChatGPT is healthy")
 }
@@ -120,13 +120,13 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 	return ch
 }
 
-// SetAbility set `ChatGPTAb` and `available` field of ability.LLMAb
-func (c *ChatGPT) SetAbility(ctx context.Context, a *ability.LLMAb) error {
+// SetAbility set `ChatGPTAblt` and `available` field of ability.LLMAblt
+func (c *ChatGPT) SetAbility(ctx context.Context, a *ability.LLMAblt) error {
 	models, err := c.getModels(ctx)
 	if err != nil {
 		return err
 	}
-	a.ChatGPT = ability.ChatGPTAb{
+	a.ChatGPT = ability.ChatGPTAblt{
 		Available: true,
 		Models:    models,
 	}
@@ -154,6 +154,7 @@ func (c *ChatGPT) getModels(ctx context.Context) ([]string, error) {
 		}
 	}
 	sort.Strings(models)
+	c.Logger.Sugar().Debug("models count:", len(models))
 	return models, err
 }
 
