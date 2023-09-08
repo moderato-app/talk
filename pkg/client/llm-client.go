@@ -12,7 +12,7 @@ type LLM interface {
 	//
 	// return a chunk that contains an error if stream is not supported
 	CompletionStream(ctx context.Context, ms []Message, t ability.LLMOption) <-chan Chunk
-	SetAbility(ctx context.Context, a *ability.LLMAb) error
+	SetAbility(ctx context.Context, a *ability.LLMAblt) error
 	// Support
 	//
 	// read ability.LLMOption to check if current provider support the option

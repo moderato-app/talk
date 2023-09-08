@@ -46,8 +46,8 @@ func StartServer() {
 	}
 	api.Any("/events", sse.HandleEcho)
 	api.Use(middleware2.StreamId)
-	api.POST("/conversation", h.PostConv)
-	api.POST("/audio-conversation", h.PostAudioConv)
+	api.POST("/chat", h.PostChat)
+	api.POST("/audio-chat", h.PostAudioChat)
 	api.GET("/health", h.Health)
 	api.GET("/providers/status", h.ProvidersStatus)
 

@@ -2,7 +2,7 @@ package ability
 
 import "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 
-// LLMOption clients use TalkOption to guide LLMAb in generating text
+// LLMOption clients use TalkOption to guide LLMAblt in generating text
 type LLMOption struct {
 	ChatGPT *ChatGPTOption `json:"chatGPT"`
 }

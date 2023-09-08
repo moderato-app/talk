@@ -25,39 +25,39 @@ func NewRestfulEHandler(talker *Talker, sse *SSE, logger *zap.Logger) *RestfulEH
 	}
 }
 
-func (h *RestfulEHandler) PostConv(c echo.Context) error {
-	conv := new(api.Conversation)
-	err := c.Bind(conv)
+func (h *RestfulEHandler) PostChat(c echo.Context) error {
+	chat := new(api.Chat)
+	err := c.Bind(chat)
 	if err != nil {
 		return err
 	}
-	err = api.RestfulValidator.Struct(conv)
+	err = api.RestfulValidator.Struct(chat)
 	if err != nil {
 		return err
 	}
 	id := c.Get(middleware.StreamIdKey).(string)
 
-	handler := NewConvHandler(id, conv.Id, conv.TalkOption, h.sse, h.talker, h.logger)
+	handler := NewChatHandler(id, chat.ChatId, chat.TicketId, chat.TalkOption, h.sse, h.talker, h.logger)
 	go func() {
-		handler.Start(conv.Ms, nil)
+		handler.Start(chat.Ms, nil)
 	}()
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *RestfulEHandler) PostAudioConv(c echo.Context) error {
-	// there are 2 files in the form: "conversation" and "file"
-	convStr := c.FormValue("conversation")
-	if len(convStr) == 0 {
-		h.logger.Sugar().Error("conversation is empty")
-		return errors.New("conversation is empty")
+func (h *RestfulEHandler) PostAudioChat(c echo.Context) error {
+	// there are 2 files in the form: "chat" and "file"
+	chatStr := c.FormValue("chat")
+	if len(chatStr) == 0 {
+		h.logger.Sugar().Error("chat is empty")
+		return errors.New("chat is empty")
 	}
 
-	conv := new(api.Conversation)
-	err := json.Unmarshal([]byte(convStr), conv)
+	chat := new(api.Chat)
+	err := json.Unmarshal([]byte(chatStr), chat)
 	if err != nil {
 		return err
 	}
-	err = api.RestfulValidator.Struct(conv)
+	err = api.RestfulValidator.Struct(chat)
 	if err != nil {
 		return err
 	}
@@ -72,13 +72,13 @@ func (h *RestfulEHandler) PostAudioConv(c echo.Context) error {
 	}
 	filename := audioFile.Filename
 	id := c.Get(middleware.StreamIdKey).(string)
-	ar := api.AudioReader{
+	ar := AudioReader{
 		Reader:   reader,
 		FileName: filename,
 	}
-	handler := NewConvHandler(id, conv.Id, conv.TalkOption, h.sse, h.talker, h.logger)
+	handler := NewChatHandler(id, chat.ChatId, chat.TicketId, chat.TalkOption, h.sse, h.talker, h.logger)
 	go func() {
-		handler.Start(conv.Ms, &ar)
+		handler.Start(chat.Ms, &ar)
 	}()
 	return c.NoContent(http.StatusOK)
 }

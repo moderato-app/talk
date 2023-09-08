@@ -24,7 +24,7 @@
 - [ ] Helm template
 - [ ] More LLMs other than ChatGPT
 - [ ] Download and import text history
-- [ ] Download conversation MP3
+- [ ] Download chat MP3
 
 # Q&A
 

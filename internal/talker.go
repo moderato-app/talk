@@ -28,7 +28,7 @@ func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*
 	var stts []client.SpeechToText
 	var ttss []client.TextToSpeech
 
-	// choose an LLMAb provider
+	// choose an LLMAblt provider
 	if cfg := tc.Llm.OpenAIChatGPT; cfg.APIKey != "" {
 		// by default, the underlying http.Client utilizes the proxy from the environment.
 		c := openai.NewClient(cfg.APIKey)
