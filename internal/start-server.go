@@ -44,11 +44,11 @@ func StartServer() {
 	if len(conf.Server.Passwords) != 0 {
 		api.Use(middleware2.SPAuth(conf.Server.Passwords))
 	}
+	api.GET("/health", h.Health)
 	api.Any("/events", sse.HandleEcho)
 	api.Use(middleware2.StreamId)
 	api.POST("/chat", h.PostChat)
 	api.POST("/audio-chat", h.PostAudioChat)
-	api.GET("/health", h.Health)
 	api.GET("/providers/status", h.ProvidersStatus)
 
 	//route static files

@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"math/rand"
 
@@ -10,12 +10,12 @@ import (
 
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-//RandomHash
+// RandomHash16Chars
 //
 // returns a hash that contains 32 chars
-func RandomHash() string {
+func RandomHash16Chars() string {
 	str := uuid.New().String() + randomString(10)
-	md5Hash := md5Hash(str)
+	md5Hash := sha256Hash(str)
 	return md5Hash
 }
 
@@ -28,7 +28,7 @@ func randomString(length int) string {
 	return string(result)
 }
 
-func md5Hash(input string) string {
-	hash := md5.Sum([]byte(input))
+func sha256Hash(input string) string {
+	hash := sha256.Sum256([]byte(input))
 	return hex.EncodeToString(hash[:])
 }

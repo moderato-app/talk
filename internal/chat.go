@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 
 	. "github.com/proxoar/talk/internal/api"
 	"github.com/proxoar/talk/pkg/client"
@@ -103,7 +104,7 @@ func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Rol
 	meta := MessageMeta{
 		ChatId:    c.chatId,
 		TicketId:  c.ticketId,
-		MessageID: RandomHash(),
+		MessageID: RandomHash16Chars(),
 		Role:      role,
 	}
 
@@ -111,7 +112,7 @@ func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Rol
 	if !ok {
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			EMessage:    "no text-to-speech provider matches the request"},
+			ErrMsg:      "no text-to-speech provider matches the request"},
 		)
 		return
 	}
@@ -120,9 +121,10 @@ func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Rol
 
 	audio, err := tts.TextToSpeech(ctx, text, *c.o.TTSOption)
 	if err != nil {
+		c.logger.Sugar().Error(err)
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			EMessage:    "got empty content from text-to-speech sever"},
+			ErrMsg:      fmt.Sprintf("got empty content from text-to-speech sever: %s", err)},
 		)
 		return
 	}
@@ -138,7 +140,7 @@ func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 	meta := MessageMeta{
 		ChatId:    c.chatId,
 		TicketId:  c.ticketId,
-		MessageID: RandomHash(),
+		MessageID: RandomHash16Chars(),
 		Role:      role,
 	}
 
@@ -146,7 +148,7 @@ func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 	if !ok {
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			EMessage:    "no speech-to-text provider matches the request"},
+			ErrMsg:      "no speech-to-text provider matches the request"},
 		)
 		return
 	}
@@ -157,7 +159,7 @@ func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 	if err != nil {
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			EMessage:    "got empty content from speech-to-text sever"},
+			ErrMsg:      "got empty content from speech-to-text sever"},
 		)
 		return
 	}
@@ -176,7 +178,7 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 	meta := MessageMeta{
 		ChatId:    c.chatId,
 		TicketId:  c.ticketId,
-		MessageID: RandomHash(),
+		MessageID: RandomHash16Chars(),
 		Role:      assistant,
 	}
 
@@ -184,7 +186,7 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 	if !ok {
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			EMessage:    "no LLM provider matches the request"},
+			ErrMsg:      "no LLM provider matches the request"},
 		)
 		return
 	}
@@ -198,7 +200,7 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 		if ok {
 			if chunk.Err != nil {
 				c.sse.PublishData(c.streamId, EventMessageError,
-					Error{MessageMeta: meta, EMessage: chunk.Err.Error()})
+					Error{MessageMeta: meta, ErrMsg: chunk.Err.Error()})
 				return
 			}
 			c.sse.PublishData(c.streamId, EventMessageTextTyping,
