@@ -6,6 +6,7 @@ func DefaultChatGPTOption() *ChatGPTOption {
 		Model:            model,
 		MaxTokens:        2000,
 		Temperature:      1,
+		TopP:             1,
 		PresencePenalty:  0,
 		FrequencyPenalty: 0,
 	}

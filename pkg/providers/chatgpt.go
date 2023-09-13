@@ -52,7 +52,8 @@ func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t ability
 		Messages:         messages,
 		Model:            t.ChatGPT.Model,
 		MaxTokens:        t.ChatGPT.MaxTokens,
-		Temperature:      t.ChatGPT.Temperature,
+		Temperature:      t.ChatGPT.TopP,
+		TopP:             t.ChatGPT.Temperature,
 		PresencePenalty:  t.ChatGPT.PresencePenalty,
 		FrequencyPenalty: t.ChatGPT.FrequencyPenalty,
 	}
@@ -88,6 +89,7 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 		Model:            t.ChatGPT.Model,
 		MaxTokens:        t.ChatGPT.MaxTokens,
 		Temperature:      t.ChatGPT.Temperature,
+		TopP:             t.ChatGPT.TopP,
 		PresencePenalty:  t.ChatGPT.PresencePenalty,
 		FrequencyPenalty: t.ChatGPT.FrequencyPenalty,
 	}

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -22,7 +23,9 @@ func StreamId(next echo.HandlerFunc) echo.HandlerFunc {
 		id := c.Request().Header.Get(StreamIdKey)
 		c.Logger().Debugf("StreamId middleware: stream-id: %s", id)
 		if len(id) != streamIdLength {
-			return echo.ErrBadRequest
+			msg := fmt.Sprintf("StreamId length is incorrect,%s,%d", id, len(id))
+			fmt.Println(msg)
+			return c.String(echo.ErrBadRequest.Code, msg)
 		}
 		c.Set(StreamIdKey, id)
 		return next(c)

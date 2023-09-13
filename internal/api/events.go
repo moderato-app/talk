@@ -44,5 +44,5 @@ type Audio struct {
 
 type Error struct {
 	MessageMeta
-	EMessage string `json:"eMessage"`
+	ErrMsg string `json:"errMsg"`
 }
