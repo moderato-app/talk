@@ -11,6 +11,7 @@ type ChatGPTOption struct {
 	Model            string  `json:"model"`
 	MaxTokens        int     `json:"maxTokens"`
 	Temperature      float32 `json:"temperature"`
+	TopP             float32 `json:"topP"`
 	PresencePenalty  float32 `json:"presencePenalty"`
 	FrequencyPenalty float32 `json:"frequencyPenalty"`
 }
