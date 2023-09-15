@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	. "github.com/proxoar/talk/internal/api"
+	"github.com/proxoar/talk/internal/util"
 	"github.com/proxoar/talk/pkg/client"
 	"go.uber.org/zap"
 )
@@ -104,7 +105,7 @@ func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Rol
 	meta := MessageMeta{
 		ChatId:    c.chatId,
 		TicketId:  c.ticketId,
-		MessageID: RandomHash16Chars(),
+		MessageID: util.RandomHash16Chars(),
 		Role:      role,
 	}
 
@@ -140,7 +141,7 @@ func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 	meta := MessageMeta{
 		ChatId:    c.chatId,
 		TicketId:  c.ticketId,
-		MessageID: RandomHash16Chars(),
+		MessageID: util.RandomHash16Chars(),
 		Role:      role,
 	}
 
@@ -178,7 +179,7 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 	meta := MessageMeta{
 		ChatId:    c.chatId,
 		TicketId:  c.ticketId,
-		MessageID: RandomHash16Chars(),
+		MessageID: util.RandomHash16Chars(),
 		Role:      assistant,
 	}
 
