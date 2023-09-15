@@ -8,7 +8,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/haguro/elevenlabs-go"
 	"github.com/proxoar/talk/pkg/ability"
-	"github.com/proxoar/talk/pkg/client"
 	"go.uber.org/zap"
 )
 
@@ -123,30 +122,23 @@ func (e *ElevenLabs) chooseVoiceId(ctx context.Context, voiceId string) (string,
 	return id, nil
 }
 
-// elevenlabsVoiceToGeneralVoice convert elevenlabs.Voice to client.Voice
-func elevenlabsVoiceToGeneralVoice(v elevenlabs.Voice) client.Voice {
-	if v.Labels == nil {
-		v.Labels = map[string]string{}
-	}
-	return client.Voice{
-		Id:         v.VoiceId,
-		Name:       v.Name,
-		Lang:       "English", // ElevenLabs focuses only on English in the moment
-		Accent:     v.Labels["accent"],
-		Gender:     v.Labels["gender"],
-		PreviewUrl: v.PreviewUrl,
-		Labels:     v.Labels,
-	}
-}
-
 // elevenlabsVoiceToAbilityVoice convert elevenlabs.Voice to ability.Voice
 func elevenlabsVoiceToAbilityVoice(voice elevenlabs.Voice) ability.Voice {
 	if voice.Labels == nil {
 		voice.Labels = map[string]string{}
 	}
 	tags := make([]string, len(voice.Labels))
+	deDup := make(map[string]struct{}, len(voice.Labels))
 	for key, v := range voice.Labels {
+		if key == "" || v == "" {
+			continue
+		}
 		t := fmt.Sprintf("%s=%s", key, v)
+		_, ok := deDup[t]
+		if ok {
+			continue
+		}
+		deDup[t] = struct{}{}
 		tags = append(tags, t)
 	}
 	return ability.Voice{

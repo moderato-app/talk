@@ -56,8 +56,15 @@ func (g *GoogleTTS) Voices(ctx context.Context) ([]ability.Voice, error) {
 	if err != nil {
 		return nil, err
 	}
+	ids := make(map[string]struct{}, len(voices.Voices))
 	vs := make([]ability.Voice, len(voices.Voices))
 	for i, voice := range voices.Voices {
+		_, ok := ids[voice.Name]
+		if ok {
+			// google may return duplicated voice names, such as `en-GB-Standard-A`
+			continue
+		}
+		ids[voice.Name] = struct{}{}
 		vs[i] = googleVoiceToAbVoice(voice)
 	}
 	g.Logger.Sugar().Debug("voices count:", len(vs))

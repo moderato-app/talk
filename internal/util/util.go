@@ -1,4 +1,4 @@
-package internal
+package util
 
 import (
 	"crypto/sha256"
@@ -16,7 +16,7 @@ const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 func RandomHash16Chars() string {
 	str := uuid.New().String() + randomString(10)
 	md5Hash := sha256Hash(str)
-	return md5Hash
+	return md5Hash[0:16]
 }
 
 func randomString(length int) string {

@@ -51,11 +51,12 @@ func StartServer() {
 	api.POST("/audio-chat", h.PostAudioChat)
 	api.GET("/providers/status", h.ProvidersStatus)
 
-	//route static files
+	// route static files
 	w, err := fs.Sub(talk.Web, "web")
 	if err != nil {
 		logger.Sugar().Panic(err)
 	}
+	e.Use(middleware2.ConstantEtag())
 	e.StaticFS("/", w)
 
 	addr := fmt.Sprintf(":%d", conf.Server.Port)
