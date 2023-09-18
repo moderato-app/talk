@@ -56,8 +56,10 @@ func StartServer() {
 	if err != nil {
 		logger.Sugar().Panic(err)
 	}
-	e.Use(middleware2.ConstantEtag())
-	e.StaticFS("/", w)
+	s := e.Group("/*")
+	s.Use(middleware2.ConstantEtag())
+	s.Use(middleware2.SinglePageApp(""))
+	s.StaticFS("/*", w)
 
 	addr := fmt.Sprintf(":%d", conf.Server.Port)
 	e.Logger.Fatal(e.Start(addr))

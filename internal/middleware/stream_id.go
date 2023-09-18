@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,9 +16,6 @@ const (
 // The headers must include a stream id.
 func StreamId(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) (returnErr error) {
-		if !strings.HasPrefix(c.Path(), "/api/") {
-			return next(c)
-		}
 		id := c.Request().Header.Get(StreamIdKey)
 		c.Logger().Debugf("StreamId middleware: stream-id: %s", id)
 		if len(id) != streamIdLength {
