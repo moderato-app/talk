@@ -17,14 +17,14 @@
 - [x] Google TTS
 - [ ] Google STT
 - [x] OpenAI Whisper STT
-- [ ] Setting language, speed, stability, etc
-- [ ] Choose voice
-- [ ] Docker image
+- [x] Setting language, speed, stability, etc
+- [x] Choose voice
+- [x] Docker image
 - [x] Server Side Events(SSE)
-- [ ] Helm template
 - [ ] More LLMs other than ChatGPT
 - [ ] Download and import text history
-- [ ] Download chat MP3
+- [x] Download chat MP3
+- [ ] Prompt template
 
 # Q&A
 
@@ -38,13 +38,24 @@ A:
 * Crafting backend logic with Go feels incredibly intuitive—it distills everything down to a single binary.
 * Moreover, my skills in frontend development were somewhat rudimentary at that time.
 
+**Q: Will a mobile browser-friendly version be made available?**
+
+A: Streamlining the website for mobile usage would be a time-intensive endeavour and, given my current time constraints,
+it isn't our primary concern. As it stands, the site performs optimally on desktop browsers based on the Chromium
+Engine, with certain limitations on browsers such as Safari.
+
+# Contributing
+
+We're in the midst of a dynamic development stage for
+this project and warmly invite new contributors.
+
 # Credits
 
 #### Front-end
 
 * [React](https://github.com/facebook/react): The library for web and native user interfaces
 * [vite](https://github.com/vitejs/vite): Next generation frontend tooling. It's fast!
-* [zustand](https://github.com/pmndrs/zustand): 🐻 Bear necessities for state management in React
+* [valtio](https://github.com/pmndrs/valtio): Valtio makes proxy-state simple for React and Vanilla
 * [wavesurfer.js](https://github.com/katspaugh/wavesurfer.js): Audio waveform player
 * [granim.js](https://github.com/sarcadass/granim.js): Create fluid and interactive gradient animations with this small
   javascript library.
@@ -62,6 +73,13 @@ A:
 * [elevenlabs-go](https://github.com/haguro/elevenlabs-go): A Go API client library for the ElevenLabs speech synthesis
 * [r3labs/sse](https://github.com/r3labs/sse/): Server Sent Events server and client for Golang
   platform.
+
+#### UI
+
+* [WikiArt.org](https://www.wikiart.org): Wikiart.org is a great place to find art online. Some wallpapers of this
+  project come from WikiArt.org
+* [grainy-gradients](https://github.com/cjimmy/grainy-gradients): Thanks to cjimmy for his amazing tutorial on noise and
+  gradient background
 
 We would also like to thank all other open-source projects and communities not listed here for their valuable
 contributions to our project.
