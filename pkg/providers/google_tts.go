@@ -39,7 +39,7 @@ func (g *GoogleTTS) MustFunction(ctx context.Context) {
 			" either too small or too large: %d byte", len(audio))
 	}
 
-	g.Logger.Info("GoogleTTS is healthy")
+	g.Logger.Info("Google text-to-speech is healthy")
 }
 
 func (g *GoogleTTS) Quota(_ context.Context) (used, total int, err error) {
@@ -50,14 +50,14 @@ func (g *GoogleTTS) Quota(_ context.Context) (used, total int, err error) {
 // Voices list available voices
 //
 // pass empty langCode or choose one from https://www.rfc-editor.org/rfc/bcp/bcp47.txt,
-func (g *GoogleTTS) Voices(ctx context.Context) ([]ability.Voice, error) {
+func (g *GoogleTTS) Voices(ctx context.Context) ([]ability.TaggedItem, error) {
 	g.Logger.Info("get voices...")
 	voices, err := g.Client.ListVoices(ctx, &texttospeechpb.ListVoicesRequest{})
 	if err != nil {
 		return nil, err
 	}
 	ids := make(map[string]struct{}, len(voices.Voices))
-	vs := make([]ability.Voice, len(voices.Voices))
+	vs := make([]ability.TaggedItem, len(voices.Voices))
 	for i, voice := range voices.Voices {
 		_, ok := ids[voice.Name]
 		if ok {
@@ -120,7 +120,7 @@ func (g *GoogleTTS) Support(o ability.TTSOption) bool {
 
 // googleVoiceToGeneralVoice convert texttospeechpb.Voice to client.Voice
 func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) client.Voice {
-	// Voice.LanguageCodes contains only one code; keep Voice.Lang as string type for simplicity
+	// TaggedItem.LanguageCodes contains only one code; keep TaggedItem.Lang as string type for simplicity
 	langCode := ""
 	if len(v.LanguageCodes) > 0 {
 		langCode = v.LanguageCodes[0]
@@ -135,13 +135,13 @@ func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) client.Voice {
 	}
 }
 
-// googleVoiceToAbVoice convert texttospeechpb.Voice to ability.Voice
-func googleVoiceToAbVoice(v *texttospeechpb.Voice) ability.Voice {
-	// Voice.LanguageCodes contains only one code in the moment
+// googleVoiceToAbVoice convert texttospeechpb.Voice to ability.TaggedItem
+func googleVoiceToAbVoice(v *texttospeechpb.Voice) ability.TaggedItem {
+	// TaggedItem.LanguageCodes contains only one code in the moment
 	tags := v.LanguageCodes
 	gender := convertGender(v.SsmlGender)
 	tags = append(tags, gender)
-	return ability.Voice{
+	return ability.TaggedItem{
 		Id:   v.Name,
 		Name: v.Name,
 		Tags: tags,

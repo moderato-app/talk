@@ -15,7 +15,7 @@
 # Roadmap
 
 - [x] Google TTS
-- [ ] Google STT
+- [x] Google STT
 - [x] OpenAI Whisper STT
 - [x] Setting language, speed, stability, etc
 - [x] Choose voice

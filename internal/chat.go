@@ -113,7 +113,7 @@ func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Rol
 	if !ok {
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			ErrMsg:      "no text-to-speech provider matches the request"},
+			ErrMsg:      "No text-to-speech providers are available"},
 		)
 		return
 	}
@@ -126,7 +126,7 @@ func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Rol
 		c.logger.Sugar().Error(err)
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			ErrMsg:      fmt.Sprintf("got empty content from text-to-speech sever: %s", err)},
+			ErrMsg:      fmt.Sprintf("Empty content from text-to-speech sever: \n%s", err)},
 		)
 		return
 	}
@@ -150,7 +150,7 @@ func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 	if !ok {
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			ErrMsg:      "no speech-to-text provider matches the request"},
+			ErrMsg:      "No speech-to-text providers are available"},
 		)
 		return
 	}
@@ -159,9 +159,18 @@ func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 
 	text, err := stt.SpeechToText(ctx, ar.Reader, ar.FileName, *c.o.STTOption)
 	if err != nil {
+		errMsg := fmt.Sprintf("Failed to get text from speech-to-text sever:\n %s", err.Error())
+		c.logger.Error(errMsg)
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			ErrMsg:      "got empty content from speech-to-text sever"},
+			ErrMsg:      errMsg},
+		)
+		return
+	}
+	if text == "" {
+		c.sse.PublishData(c.streamId, EventMessageError, Error{
+			MessageMeta: meta,
+			ErrMsg:      "Empty content from speech-to-text sever"},
 		)
 		return
 	}
@@ -188,7 +197,7 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 	if !ok {
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			ErrMsg:      "no LLM provider matches the request"},
+			ErrMsg:      "No Large Language Model providers are available"},
 		)
 		return
 	}
