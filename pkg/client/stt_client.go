@@ -18,6 +18,7 @@ type Voice struct {
 }
 
 type SpeechToText interface {
+	Client
 	// SpeechToText transcribes voice into text
 	SpeechToText(ctx context.Context, audio io.Reader, fileName string, option ability.STTOption) (string, error)
 	SetAbility(ctx context.Context, a *ability.STTAblt) error

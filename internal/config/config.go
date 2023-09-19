@@ -10,8 +10,9 @@ type TalkConfig struct {
 }
 
 type ServerConfig struct {
-	Port      int      `mapstructure:"port"`
-	Passwords []string `mapstructure:"passwords"`
+	Port                 int      `mapstructure:"port"`
+	CheckHealthOnStartup bool     `mapstructure:"check-health-on-startup"`
+	Passwords            []string `mapstructure:"passwords"`
 }
 
 type SpeechToTextConfig struct {

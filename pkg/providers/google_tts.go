@@ -18,7 +18,7 @@ type GoogleTTS struct {
 	Logger *zap.Logger
 }
 
-func (g *GoogleTTS) MustFunction(ctx context.Context) {
+func (g *GoogleTTS) CheckHealth(ctx context.Context) {
 	o := ability.TTSOption{
 		Google: &ability.GoogleTTSOption{
 			VoiceId:      "",
@@ -31,15 +31,13 @@ func (g *GoogleTTS) MustFunction(ctx context.Context) {
 	}
 	audio, err := g.TextToSpeech(ctx, "Hello!", o)
 	if err != nil {
-		g.Logger.Sugar().Panicf("failed to get response from Google text-to-speech server: %+v", err)
-	}
-
-	if len(audio) < 100 || len(audio) > 10000 {
-		g.Logger.Sugar().Warn("bad smell: the audio data received from Google text-to-speech server is"+
+		g.Logger.Sugar().Errorf("[Google text-to-speech] failed to get response from server: %+v", err)
+	} else if len(audio) < 100 || len(audio) > 10000 {
+		g.Logger.Sugar().Warn("[Google text-to-speech] bad smell: the audio data received from Google text-to-speech server is"+
 			" either too small or too large: %d byte", len(audio))
+	} else {
+		g.Logger.Info("[Google text-to-speech]  is healthy")
 	}
-
-	g.Logger.Info("Google text-to-speech is healthy")
 }
 
 func (g *GoogleTTS) Quota(_ context.Context) (used, total int, err error) {
