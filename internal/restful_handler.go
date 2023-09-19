@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/proxoar/talk/internal/api"
 	"github.com/proxoar/talk/internal/middleware"
+	"github.com/tidwall/pretty"
 	"go.uber.org/zap"
 )
 
@@ -36,7 +37,7 @@ func (h *RestfulEHandler) PostChat(c echo.Context) error {
 		return err
 	}
 	id := c.Get(middleware.StreamIdKey).(string)
-
+	h.logger.Sugar().Debug("option from client req", prettyJson(chat.TalkOption))
 	handler := NewChatHandler(id, chat.ChatId, chat.TicketId, chat.TalkOption, h.sse, h.talker, h.logger)
 	go func() {
 		handler.Start(chat.Ms, nil)
@@ -61,6 +62,7 @@ func (h *RestfulEHandler) PostAudioChat(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	h.logger.Sugar().Debug("option from client req", prettyJson(chat.TalkOption))
 
 	audioFile, err := c.FormFile("audio")
 	if err != nil {
@@ -90,4 +92,9 @@ func (h *RestfulEHandler) ProvidersStatus(c echo.Context) error {
 
 func (h *RestfulEHandler) Health(c echo.Context) error {
 	return c.String(http.StatusOK, "healthy")
+}
+
+func prettyJson(any interface{}) string {
+	marshal, _ := json.Marshal(any)
+	return string(pretty.Color(pretty.Pretty(marshal), nil))
 }

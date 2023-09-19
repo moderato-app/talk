@@ -16,13 +16,13 @@ type TTSAblt struct {
 }
 
 type GoogleTTSAblt struct {
-	Available bool    `json:"available"`
-	Voices    []Voice `json:"voices"`
+	Available bool         `json:"available"`
+	Voices    []TaggedItem `json:"voices"`
 }
 
 type ElevenlabsTTSAblt struct {
-	Available bool    `json:"available"`
-	Voices    []Voice `json:"voices"`
+	Available bool         `json:"available"`
+	Voices    []TaggedItem `json:"voices"`
 }
 
 // STTAblt speech to text
@@ -39,8 +39,8 @@ type WhisperSTTAb struct {
 }
 
 type GoogleSTTAb struct {
-	Available bool    `json:"available"`
-	Voices    []Voice `json:"voices"`
+	Available   bool         `json:"available"`
+	Recognizers []TaggedItem `json:"recognizers"`
 }
 
 // LLMAblt
@@ -57,7 +57,7 @@ type ChatGPTAblt struct {
 
 // other
 
-type Voice struct {
+type TaggedItem struct {
 	Id   string   `json:"id"`   // used by TTSAblt client
 	Name string   `json:"name"` // to display on UI
 	Tags []string `json:"tags"` // gender, accent, age, etc

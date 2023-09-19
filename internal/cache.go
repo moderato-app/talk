@@ -15,7 +15,7 @@ const (
 
 const (
 	abilityKey        = "ability"
-	abilityExpireTime = 2 * time.Hour
+	abilityExpireTime = time.Hour
 )
 
 var TalkCache talkCache
