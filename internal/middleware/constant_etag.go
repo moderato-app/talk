@@ -17,6 +17,7 @@ var staticFileExtensions = []string{
 	".jpg",
 	".jpeg",
 	".gif",
+	".svg",
 }
 
 // ConstantEtag
