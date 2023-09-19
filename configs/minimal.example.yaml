@@ -1,0 +1,13 @@
+speech-to-text:
+  whisper: open-ai-01
+
+llm:
+  chat-gpt: open-ai-01
+
+text-to-speech:
+  elevenlabs: elevenlabs-01
+
+# provide your confidential information below.
+creds:
+  open-ai-01: "sk-2dwY1IAeEysbnDNuAKJDXofX1IAeEysbnDNuAKJDXofXF5"
+  elevenlabs-01: "711sfpb9kk15sds8m4czuk5rozvp43a4"
