@@ -83,27 +83,45 @@ func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*
 	}
 
 	talker := Talker{llms, stts, ttss, logger}
+	if tc.Server.CheckHealthOnStartup {
+		go func() { talker.checkProvidersHealth() }()
+	}
 	return &talker, nil
 }
 
-// ProvidersMustFunction performs a request to each provider in the process server initialization.
+// checkProvidersHealth performs a request to each provider in the process server initialization.
 //
-//	Shutdown the server by panic() if there are any errors, such as invalid API key or connection error.
+//	Log an error if there are any, such as invalid API key or connection error.
 //	Log a warning if there are any issues, such as quota exhaustion or incorrect transcriptions, indicating a potential problem
 //	These requests consume a minimal amount of quota or even no quota.
-//
-// todo refactor this into status checking and do not panic, display output on a simple page for troubleshooting purposes
-func (t *Talker) ProvidersMustFunction() {
-	//ctx := context.Background()
-	//for _, v := range t.llmProviders {
-	//	v.MustFunction(ctx)
-	//}
-	//for _, v := range t.ttsProviders {
-	//	v.MustFunction(ctx)
-	//}
-	//for _, v := range t.sstProviders {
-	//	v.MustFunction(ctx)
-	//}
+func (t *Talker) checkProvidersHealth() {
+	var clients []client.Client
+	for _, v := range t.llmProviders {
+		clients = append(clients, v)
+	}
+	for _, v := range t.ttsProviders {
+		clients = append(clients, v)
+	}
+	for _, v := range t.sstProviders {
+		clients = append(clients, v)
+	}
+
+	var wg sync.WaitGroup
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	for _, c := range clients {
+		wg.Add(1)
+		go func(c_ client.Client) {
+			defer wg.Done()
+			c_.CheckHealth(ctx)
+		}(c)
+	}
+
+	wg.Wait()
+	err := ctx.Err()
+	if err != nil {
+		t.logger.Sugar().Error("", err)
+	}
 }
 
 // Ability
@@ -129,7 +147,7 @@ func (t *Talker) Ability(ctx context.Context) ([]error, ability.Ability) {
 				errsMu.Lock()
 				errs = append(errs, err)
 				errsMu.Unlock()
-				t.logger.Sugar().Error("failed to get LLM Ability", err)
+				t.logger.Sugar().Error("failed to get LLM Ability: ", err)
 			}
 		}(p)
 	}
@@ -142,7 +160,7 @@ func (t *Talker) Ability(ctx context.Context) ([]error, ability.Ability) {
 				errsMu.Lock()
 				errs = append(errs, err)
 				errsMu.Unlock()
-				t.logger.Sugar().Error("failed to get text-to-speech Ability", err)
+				t.logger.Sugar().Error("failed to get text-to-speech Ability: ", err)
 			}
 		}(p)
 	}
@@ -155,6 +173,7 @@ func (t *Talker) Ability(ctx context.Context) ([]error, ability.Ability) {
 				errsMu.Lock()
 				errs = append(errs, err)
 				errsMu.Unlock()
+				t.logger.Sugar().Error("failed to get speech-to-text Ability: ", err)
 			}
 		}(p)
 	}

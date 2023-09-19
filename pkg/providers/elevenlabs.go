@@ -23,16 +23,18 @@ type ElevenLabs struct {
 	Logger    *zap.Logger
 }
 
-func (e *ElevenLabs) MustFunction(_ context.Context) {
+func (e *ElevenLabs) CheckHealth(_ context.Context) {
 	used, total, err := e.Quota(context.Background())
 	if err != nil {
-		e.Logger.Sugar().Panicf("failed to get response from ElevenLabs server: %+v", err)
+		e.Logger.Sugar().Error("[ElevenLabs] failed to get response from ElevenLabs server: %+v", err)
+	} else {
+		e.Logger.Sugar().Debugf("[ElevenLabs] quota: %d/%d used", used, total)
+		if total == 0 || used >= total {
+			e.Logger.Warn(`[ElevenLabs] bad smell: ElevenLabs quota may has been exhausted`)
+		} else {
+			e.Logger.Info("[ElevenLabs] is healthy")
+		}
 	}
-	e.Logger.Sugar().Debugf("ElevenLabs quota: %d/%d used", used, total)
-	if total == 0 || used >= total {
-		e.Logger.Warn(`bad smell: ElevenLabs quota may has been exhausted`)
-	}
-	e.Logger.Info("ElevenLabs is healthy")
 }
 
 func (e *ElevenLabs) Quota(_ context.Context) (used, total int, err error) {
