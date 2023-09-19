@@ -19,20 +19,20 @@ type ChatGPT struct {
 	Logger *zap.Logger
 }
 
-func (c *ChatGPT) MustFunction(_ context.Context) {
+func (c *ChatGPT) CheckHealth(ctx context.Context) {
 	m := client.Message{
 		Role:    "user",
 		Content: "Hello!",
 	}
 	o := ability.DefaultChatGPTOption()
-	content, err := c.Completion(context.Background(), []client.Message{m}, ability.LLMOption{ChatGPT: o})
+	content, err := c.Completion(ctx, []client.Message{m}, ability.LLMOption{ChatGPT: o})
 	if err != nil {
-		c.Logger.Sugar().Panic("failed to get response from ChatGPT server: ", err)
+		c.Logger.Sugar().Error("[ChatGPT] failed to get response from server: ", err)
+	} else if len(content) == 0 {
+		c.Logger.Warn(`[ChatGPT] bad smell: got empty content from ChatGPTAblt server`)
+	} else {
+		c.Logger.Info("[ChatGPT]  is healthy")
 	}
-	if len(content) == 0 {
-		c.Logger.Warn(`bad smell: got empty content from ChatGPTAblt server`)
-	}
-	c.Logger.Info("ChatGPT is healthy")
 }
 
 func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {

@@ -18,19 +18,19 @@ type Whisper struct {
 	Logger *zap.Logger
 }
 
-func (c *Whisper) MustFunction(_ context.Context) {
+func (c *Whisper) CheckHealth(_ context.Context) {
 	voice, fileName, err := resource.HelloVoice()
 	o := ability.STTOption{
 		Whisper: &ability.WhisperOption{Model: openai.Whisper1},
 	}
 	trans, err := c.SpeechToText(context.Background(), voice, fileName, o)
 	if err != nil {
-		c.Logger.Sugar().Panicf("failed to get response Whisper server: %+v", err)
+		c.Logger.Sugar().Errorf("[Whisper] failed to get response from server: %+v", err)
+	} else if !strings.Contains(strings.ToLower(trans), "hello") {
+		c.Logger.Warn(`[Whisper] bad smell: transcription from Whisper server does not contains "hello"`)
+	} else {
+		c.Logger.Info("[Whisper]  is healthy")
 	}
-	if !strings.Contains(strings.ToLower(trans), "hello") {
-		c.Logger.Warn(`bad smell: transcription from Whisper server does not contains "hello"`)
-	}
-	c.Logger.Info("Whisper is healthy")
 }
 
 func (c *Whisper) Quota(_ context.Context) (used, total int, err error) {

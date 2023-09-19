@@ -7,6 +7,7 @@ import (
 )
 
 type TextToSpeech interface {
+	Client
 	TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error)
 	SetAbility(ctx context.Context, a *ability.TTSAblt) error
 	// Support

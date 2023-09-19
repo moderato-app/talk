@@ -23,8 +23,19 @@ type GoogleSTT struct {
 	Logger        *zap.Logger
 }
 
-func (c *GoogleSTT) SpeechToText(ctx context.Context, audio io.Reader, fileName string, option ability.STTOption) (string, error) {
-	c.Logger.Sugar().Infow("transcribe...", "fileName", fileName, "option", option)
+func (g *GoogleSTT) CheckHealth(ctx context.Context) {
+	projects, err := g.getProjects(ctx)
+	if err != nil {
+		g.Logger.Sugar().Errorf("[Google speech-to-text] failed to get response from server: %+v", err)
+	} else if len(projects) == 0 {
+		g.Logger.Sugar().Warn("[Google speech-to-text] bad smell: no projects are found")
+	} else {
+		g.Logger.Info("[Google speech-to-text] is healthy")
+	}
+}
+
+func (g *GoogleSTT) SpeechToText(ctx context.Context, audio io.Reader, fileName string, option ability.STTOption) (string, error) {
+	g.Logger.Sugar().Infow("transcribe...", "fileName", fileName, "option", option)
 
 	bytes, err := io.ReadAll(audio)
 	if err != nil {
@@ -45,17 +56,17 @@ func (c *GoogleSTT) SpeechToText(ctx context.Context, audio io.Reader, fileName 
 		},
 		AudioSource: &speechpb.RecognizeRequest_Content{Content: bytes},
 	}
-	resp, err := c.SpeechClient.Recognize(ctx, req)
+	resp, err := g.SpeechClient.Recognize(ctx, req)
 	if err != nil {
 		return "", err
 	}
-	c.Logger.Sugar().Info("transcribe result alternatives: ", len(resp.Results))
+	g.Logger.Sugar().Info("transcribe result alternatives: ", len(resp.Results))
 	if len(resp.Results) == 0 {
 		return "", errors.New("google speech-to-text service did not provide any alternative results," +
 			" which typically occurs when the audio quality is poor or language doesn't match your voice")
 	}
 	text := resp.Results[0].Alternatives[0].Transcript
-	c.Logger.Sugar().Info("transcribe result text length:", len(text))
+	g.Logger.Sugar().Info("transcribe result text length:", len(text))
 	if len(text) == 0 {
 		return "", errors.New("content of transcription is empty: " + err.Error())
 	}
@@ -63,8 +74,8 @@ func (c *GoogleSTT) SpeechToText(ctx context.Context, audio io.Reader, fileName 
 }
 
 // SetAbility set `GoogleSTTAb` and `available` field of ability.STTAblt
-func (c *GoogleSTT) SetAbility(ctx context.Context, a *ability.STTAblt) error {
-	errs, recs := c.getAllRecognizers(ctx)
+func (g *GoogleSTT) SetAbility(ctx context.Context, a *ability.STTAblt) error {
+	errs, recs := g.getAllRecognizers(ctx)
 	a.Google = ability.GoogleSTTAb{
 		Available:   true,
 		Recognizers: recs,
@@ -80,7 +91,7 @@ func (c *GoogleSTT) SetAbility(ctx context.Context, a *ability.STTAblt) error {
 // Support
 //
 // read ability.STTOption to check if current provider support the option
-func (c *GoogleSTT) Support(o ability.STTOption) bool {
+func (g *GoogleSTT) Support(o ability.STTOption) bool {
 	return o.Google != nil
 }
 
@@ -89,9 +100,9 @@ func (c *GoogleSTT) Support(o ability.STTOption) bool {
 //
 // both the item slice and error slice can contain elements simultaneously
 // to emphasize this fact, we interchange the positions of errors and items.
-func (c *GoogleSTT) getAllRecognizers(ctx context.Context) ([]error, []ability.TaggedItem) {
-	c.Logger.Info("get all recognizers...")
-	projects, err := c.getProjects(ctx)
+func (g *GoogleSTT) getAllRecognizers(ctx context.Context) ([]error, []ability.TaggedItem) {
+	g.Logger.Info("get all recognizers...")
+	projects, err := g.getProjects(ctx)
 	if err != nil {
 		return []error{err}, nil
 	}
@@ -99,7 +110,7 @@ func (c *GoogleSTT) getAllRecognizers(ctx context.Context) ([]error, []ability.T
 	var errs []error
 	var locations []string
 	for _, p := range projects {
-		locs, err := c.getLocations(ctx, p)
+		locs, err := g.getLocations(ctx, p)
 		if err != nil {
 			errs = append(errs, err)
 			locations = append(locations, locs...)
@@ -115,7 +126,7 @@ func (c *GoogleSTT) getAllRecognizers(ctx context.Context) ([]error, []ability.T
 		wg.Add(1)
 		go func(loc_ string) {
 			defer wg.Done()
-			recs, err := c.getRecognizers(ctx, loc_)
+			recs, err := g.getRecognizers(ctx, loc_)
 			mu.Lock()
 			if err != nil {
 				errs = append(errs, err)
@@ -126,14 +137,14 @@ func (c *GoogleSTT) getAllRecognizers(ctx context.Context) ([]error, []ability.T
 		}(loc)
 	}
 	wg.Wait()
-	c.Logger.Sugar().Debug("all recognizers count:", len(recognizers))
-	c.Logger.Sugar().Debug("all errs count:", len(errs))
+	g.Logger.Sugar().Debug("all recognizers count:", len(recognizers))
+	g.Logger.Sugar().Debug("all errs count:", len(errs))
 	return errs, recognizers
 }
 
-func (c *GoogleSTT) getRecognizers(ctx context.Context, location string) ([]ability.TaggedItem, error) {
-	c.Logger.Sugar().Infof("get recognizers of location %s ...", location)
-	iter := c.SpeechClient.ListRecognizers(ctx, &speechpb.ListRecognizersRequest{
+func (g *GoogleSTT) getRecognizers(ctx context.Context, location string) ([]ability.TaggedItem, error) {
+	g.Logger.Sugar().Infof("get recognizers of location %s ...", location)
+	iter := g.SpeechClient.ListRecognizers(ctx, &speechpb.ListRecognizersRequest{
 		Parent:   location,
 		PageSize: 100, // max
 	})
@@ -166,14 +177,14 @@ func (c *GoogleSTT) getRecognizers(ctx context.Context, location string) ([]abil
 		}
 		recs = append(recs, rec)
 	}
-	c.Logger.Sugar().Debug("count of recognizers of %s: %d", location, len(recs))
+	g.Logger.Sugar().Debugf("count of recognizers of %s: %d", location, len(recs))
 
 	return recs, nil
 }
 
-func (c *GoogleSTT) getLocations(ctx context.Context, projectName string) ([]string, error) {
-	c.Logger.Sugar().Infof("get locations of project %s ...", projectName)
-	iter := c.SpeechClient.ListLocations(ctx, &location.ListLocationsRequest{
+func (g *GoogleSTT) getLocations(ctx context.Context, projectName string) ([]string, error) {
+	g.Logger.Sugar().Infof("get locations of project %s ...", projectName)
+	iter := g.SpeechClient.ListLocations(ctx, &location.ListLocationsRequest{
 		PageSize: 100, // max
 		Name:     projectName,
 	})
@@ -187,13 +198,13 @@ func (c *GoogleSTT) getLocations(ctx context.Context, projectName string) ([]str
 		}
 		locs = append(locs, next.Name)
 	}
-	c.Logger.Sugar().Infof("count of locations of  %s: %d", projectName, len(locs))
+	g.Logger.Sugar().Infof("count of locations of  %s: %d", projectName, len(locs))
 
 	return locs, nil
 }
 
-func (c *GoogleSTT) getProjects(ctx context.Context) ([]string, error) {
-	resp := c.ProjectClient.SearchProjects(ctx,
+func (g *GoogleSTT) getProjects(ctx context.Context) ([]string, error) {
+	resp := g.ProjectClient.SearchProjects(ctx,
 		&resourcemanagerpb.SearchProjectsRequest{
 			Query:    "",
 			PageSize: 100,

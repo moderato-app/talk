@@ -1,6 +1,8 @@
 server:
   # Optional. Use port 8000 if not specified.
   port: 8000
+  # Optional. Send a request to each server to check their accessibility status on startup. This should utilize minimal or no quota.
+  check-health-on-startup: true
   # Optional. Enable auth only if there is at least one password
   passwords:
     - "pass1"

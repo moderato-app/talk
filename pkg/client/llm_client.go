@@ -7,6 +7,7 @@ import (
 )
 
 type LLM interface {
+	Client
 	Completion(ctx context.Context, ms []Message, t ability.LLMOption) (string, error)
 	// CompletionStream
 	//
