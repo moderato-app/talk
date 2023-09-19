@@ -59,9 +59,6 @@ this project and warmly invite new contributors.
 * [wavesurfer.js](https://github.com/katspaugh/wavesurfer.js): Audio waveform player
 * [granim.js](https://github.com/sarcadass/granim.js): Create fluid and interactive gradient animations with this small
   javascript library.
-* [Signal-Desktop](https://github.com/signalapp/Signal-Desktop)
-  and [Signal-iOS](https://github.com/signalapp/Signal-iOS): Private messengers. Much of the inspiration for the UI
-  comes from Signal.
 
 #### Back-end
 
@@ -80,6 +77,9 @@ this project and warmly invite new contributors.
   project come from WikiArt.org
 * [grainy-gradients](https://github.com/cjimmy/grainy-gradients): Thanks to cjimmy for his amazing tutorial on noise and
   gradient background
+* [Signal-Desktop](https://github.com/signalapp/Signal-Desktop)
+  and [Signal-iOS](https://github.com/signalapp/Signal-iOS): Private messengers. Much of the inspiration for the UI
+  comes from Signal.
 
 We would also like to thank all other open-source projects and communities not listed here for their valuable
 contributions to our project.
