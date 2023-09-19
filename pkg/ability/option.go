@@ -17,7 +17,8 @@ type ChatGPTOption struct {
 }
 
 type STTOption struct {
-	Whisper *WhisperOption `json:"whisper"`
+	Whisper *WhisperOption   `json:"whisper"`
+	Google  *GoogleSTTOption `json:"google"`
 }
 
 type GoogleTTSOption struct {
@@ -37,6 +38,12 @@ type TTSOption struct {
 
 type WhisperOption struct {
 	Model string `json:"model"`
+}
+
+type GoogleSTTOption struct {
+	Recognizer string `json:"recognizer"`
+	Model      string `json:"model"`
+	Language   string `json:"language"`
 }
 
 type ElevenlabsTTSOption struct {

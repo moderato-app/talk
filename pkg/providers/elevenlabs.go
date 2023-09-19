@@ -45,13 +45,13 @@ func (e *ElevenLabs) Quota(_ context.Context) (used, total int, err error) {
 	return subscription.CharacterCount, subscription.CharacterLimit, nil
 }
 
-func (e *ElevenLabs) Voices(_ context.Context) ([]ability.Voice, error) {
+func (e *ElevenLabs) Voices(_ context.Context) ([]ability.TaggedItem, error) {
 	e.Logger.Info("get voices...")
 	voices, err := e.Client.GetVoices()
 	if err != nil {
 		return nil, err
 	}
-	vs := make([]ability.Voice, len(voices))
+	vs := make([]ability.TaggedItem, len(voices))
 	for i, voice := range voices {
 		vs[i] = elevenlabsVoiceToAbilityVoice(voice)
 	}
@@ -122,8 +122,8 @@ func (e *ElevenLabs) chooseVoiceId(ctx context.Context, voiceId string) (string,
 	return id, nil
 }
 
-// elevenlabsVoiceToAbilityVoice convert elevenlabs.Voice to ability.Voice
-func elevenlabsVoiceToAbilityVoice(voice elevenlabs.Voice) ability.Voice {
+// elevenlabsVoiceToAbilityVoice convert elevenlabs.Voice to ability.TaggedItem
+func elevenlabsVoiceToAbilityVoice(voice elevenlabs.Voice) ability.TaggedItem {
 	if voice.Labels == nil {
 		voice.Labels = map[string]string{}
 	}
@@ -141,7 +141,7 @@ func elevenlabsVoiceToAbilityVoice(voice elevenlabs.Voice) ability.Voice {
 		deDup[t] = struct{}{}
 		tags = append(tags, t)
 	}
-	return ability.Voice{
+	return ability.TaggedItem{
 		Id:   voice.VoiceId,
 		Name: voice.Name,
 		Tags: tags,

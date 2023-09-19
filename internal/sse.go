@@ -36,10 +36,9 @@ func (s *SSE) HandleEcho(c echo.Context) error {
 
 // emit an Ability to on client subscription
 func (s *SSE) sendAbilityEvent(streamID string, _ *sse.Subscriber) {
-	ab, err := s.talker.Ability(context.Background())
-	if err != nil {
-		s.logger.Sugar().Error("failed to get Ability", err)
-		return
+	errs, ab := s.talker.Ability(context.Background())
+	for i, v := range errs {
+		s.logger.Sugar().Errorf("error-%d when getting Ability: %s", i, v)
 	}
 	s.PublishData(streamID, api.EventSystemAbility, ab)
 }
