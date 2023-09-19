@@ -1,0 +1,59 @@
+server:
+  # Optional. Use port 8000 if not specified.
+  port: 8000
+  # Optional. Enable auth only if there is at least one password
+  passwords:
+    - "pass1"
+    - "my-pass"
+    - "password"
+
+speech-to-text:
+  whisper: open-ai-01
+  # must enable Resource Manager API, see https://console.cloud.google.com/apis/api/cloudresourcemanager.googleapis.com ,
+  # We only use Resource Manager API to query your project names. Without project names, we're unable to list your recognizers.
+  # must enable Speech-to-Text API, see https://console.cloud.google.com/apis/api/speech.googleapis.com
+  google: google-01
+
+llm:
+  chat-gpt: open-ai-02
+
+text-to-speech:
+  elevenlabs: elevenlabs-01
+  # must enable Text-to-Speech API, see https://console.cloud.google.com/apis/api/texttospeech.googleapis.com
+  google: google-02
+
+# provide your confidential information below.
+creds:
+  open-ai-01: "sk-2dwY1IAeEysbnDNuAKJDXofX1IAeEysbnDNuAKJDXofXF5"
+  open-ai-02: "sk-5jhJGy48GBj49gj45hUg4j0J4548GB58H4994jlax3Ki3H"
+  elevenlabs-01: "711sfpb9kk15sds8m4czuk5rozvp43a4"
+  # create a service account at https://console.cloud.google.com/iam-admin/serviceaccounts/create
+  # and download the json file follow this tutorial: https://cloud.google.com/iam/docs/keys-list-get#get-key
+  google-01: |
+    {
+      "type": "service_account",
+      "project_id": "extreme-voice-356782",
+      "private_key_id": "8adsf7634894j57h6uoi45h6id86g9fg8df09g",
+      "private_key": "-----BEGIN PRIVATE KEY-----\xxxxxxxxxxxxxxxx=\n-----END PRIVATE KEY-----\n",
+      "client_email": "354-4fgfdg-65546@extreme-voice-34534.iam.gserviceaccount.com",
+      "client_id": "64565467568678798789789768",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/speech-and-text-3463456357dfgm.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    }
+  google-02: |
+    {
+      "type": "service_account",
+      "project_id": "extreme-voice-356782",
+      "private_key_id": "8adsf7634894j57h6uoi45h6id86g9fg8df09g",
+      "private_key": "-----BEGIN PRIVATE KEY-----\xxxxxxxxxxxxxxxx=\n-----END PRIVATE KEY-----\n",
+      "client_email": "354-4fgfdg-65546@extreme-voice-34534.iam.gserviceaccount.com",
+      "client_id": "64565467568678798789789768",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/speech-and-text-3463456357dfgm.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    }

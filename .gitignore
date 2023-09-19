@@ -26,6 +26,7 @@ google-service-account-key.json
 go.work
 .idea
 main
+talk
 build+push.sh
 
 #macOS
