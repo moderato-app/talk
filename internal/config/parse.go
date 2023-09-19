@@ -25,30 +25,34 @@ func readFile() error {
 	return viper.ReadInConfig() // Find and read the config file
 }
 
-func parseFlag() error {
-	pflag.Int("server.port", DefaultServerPort, "Port to run Application server on")
-	pflag.Parse()
-	return viper.BindPFlags(pflag.CommandLine)
-}
-
 func bindEnv() {
 	viper.AutomaticEnv()
 }
 
 func LoadConfig(logger *zap.Logger) (*TalkConfig, error) {
-	logger.Info("read config...")
+	path := pflag.String("config", "", "Path to config file. ")
+	pflag.Parse()
+
 	setDefaultValue()
-	err := readFile()
-	if err != nil {
-		return nil, err
+	if path != nil && *path != "" {
+		logger.Sugar().Info("reading config file: ", *path)
+		viper.SetConfigFile(*path)
+		err := viper.ReadInConfig()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		logger.Sugar().Info("searching config file")
+		err := readFile()
+		if err != nil {
+			return nil, err
+		}
 	}
-	err = parseFlag()
-	if err != nil {
-		return nil, err
-	}
+
 	bindEnv()
+
 	c := TalkConfig{}
-	err = viper.UnmarshalExact(&c)
+	err := viper.UnmarshalExact(&c)
 	if err != nil {
 		return nil, err
 	}
