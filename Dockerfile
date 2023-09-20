@@ -4,7 +4,7 @@ FROM golang:1.20-alpine AS builder
 COPY ${PWD} /app
 WORKDIR /app
 
-RUN go build -o appbin cmd/talk/main.go
+RUN go build -o appbin cmd/talk/talk.go
 
 # Final step
 FROM alpine
