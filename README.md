@@ -1,8 +1,17 @@
-<h1 align="center">
-  <br>
-  <img src="https://socialify.git.ci/proxoar/talk/image?description=1&name=1&owner=1&pattern=Diagonal%20Stripes&theme=Light" alt="Markdownify" width="500">
-  <br>
-</h1>
+<img src="./doc/greeting.jpg"  style="border-radius: 1rem" alt="greeting"/>
+
+# Talk
+
+Talking with AI is a breeze
+
+![figjam-talk-2023-09-22.png](doc%2Ffigjam-talk-2023-09-22.png)
+
+<div align="center">
+View on 
+<a  href="https://www.figma.com/file/4Uhzr87YVN1KR5ayz7WDYm/Talk?type=whiteboard&t=OGwMZMSKsWZIwG0T-1" target="_blank">
+Figma
+</a>
+</div>
 
 # Highlighted Features
 
@@ -32,7 +41,8 @@ creds:
   elevenlabs-01: "711sfpb9kk15sds8m4czuk5rozvp43a4"
 ```
 
-How about `Google Text-to-Speech` and `Google Speech-to-Text`? No problem. See [talk.google.example.yaml](example/talk.google.example.yaml)
+How about `Google Text-to-Speech` and `Google Speech-to-Text`? No problem.
+See [talk.google.example.yaml](example/talk.google.example.yaml)
 
 Full example: [talk.full.example.yaml](example/talk.full.example.yaml)
 
@@ -85,9 +95,9 @@ Solutions:
 
 * Run Talk behind a reverse proxy like Nginx and setup TLS in Nginx.
 * Open `chrome://flags/` in Chrome, find `Insecure origins treated as secure` and enable it:
-   <br>
-   <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="600">
-   <br>
+  <br>
+  <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="600">
+  <br>
 
 Rest assured, HTTPS support is on its way and will be implemented shortly
 
@@ -162,7 +172,8 @@ Doc for contributing will be ready soon.
 
 * [wikiart.org](https://www.wikiart.org): Wikiart is a great place to find art online. Most wallpapers of Talk come
   from WikiArt.org
-* [Arc](https://arc.net/): Arc is the Chrome replacement I’ve been waiting for -- [THE VERGE](https://www.theverge.com/23462235/arc-web-browser-review)
+* [Arc](https://arc.net/): Arc is the Chrome replacement I’ve been waiting
+  for -- [THE VERGE](https://www.theverge.com/23462235/arc-web-browser-review)
 * [grainy-gradients](https://github.com/cjimmy/grainy-gradients): Thanks to [cjimmy](https://github.com/cjimmy/) for his
   amazing [tutorial](https://css-tricks.com/grainy-gradients/) on noise and gradient background
 * [Signal-Desktop](https://github.com/signalapp/Signal-Desktop)
