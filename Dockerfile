@@ -17,7 +17,7 @@ FROM golang:1.20-alpine AS builder
 COPY ${PWD} /app
 WORKDIR /app
 
-COPY --from=webBuilder /app/dist web
+COPY --from=webBuilder /app/dist web/html
 
 RUN go build -o appbin cmd/talk/talk.go
 

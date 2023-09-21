@@ -52,7 +52,7 @@ func StartServer() {
 	api.GET("/providers/status", h.ProvidersStatus)
 
 	// route static files
-	w, err := fs.Sub(talk.Web, "web")
+	w, err := fs.Sub(talk.Web, "web/html")
 	if err != nil {
 		logger.Sugar().Panic(err)
 	}
