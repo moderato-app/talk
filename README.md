@@ -9,22 +9,95 @@
 - Focus on voice-driven dialogues
 - Broad range of service providers to choose from
 - Modern and stylish user interface
-- User interaction primarily designed for desktop use
 - Unified, standalone binary
 
-# Roadmap
+## How to use
 
-- [x] Google TTS
-- [x] Google STT
-- [x] OpenAI Whisper STT
-- [x] Setting language, speed, stability, etc
-- [x] Choose voice
-- [x] Docker image
-- [x] Server Side Events(SSE)
-- [ ] More LLMs other than ChatGPT
-- [ ] Download and import text history
-- [x] Download chat MP3
-- [ ] Prompt template
+Prepare a `talk.yaml` file. Here is a [simple example](example/talk.simple.example.yaml) utilising ChatGPT, Whisper and
+Elevenlabs:
+
+```yaml
+speech-to-text:
+  whisper: open-ai-01
+
+llm:
+  chat-gpt: open-ai-01
+
+text-to-speech:
+  elevenlabs: elevenlabs-01
+
+# provide your confidential information below.
+creds:
+  open-ai-01: "sk-2dwY1IAeEysbnDNuAKJDXofX1IAeEysbnDNuAKJDXofXF5"
+  elevenlabs-01: "711sfpb9kk15sds8m4czuk5rozvp43a4"
+```
+
+How about `Google Text-to-Speech` and `Google Speech-to-Text`?
+
+No problem. See [talk.google.example.yaml](example/talk.google.example.yaml)
+
+Full example: [talk.full.example.yaml](example/talk.full.example.yaml)
+
+### Docker
+
+```shell
+docker run -it -v ./talk.yaml:/etc/talk/talk.yaml -p 8000:8000 proxoar/talk
+```
+
+With proxy:
+
+```shell
+docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \ 
+-e HTTPS_PROXY=http://localhost:7890 \ 
+-e HTTP_PROXY=http://localhost:7890 \ 
+-e ALL_PROXY=socks5://127.0.0.1:7891 \ 
+-p 8000:8000 proxoar/talk
+```
+
+### Terraform 
+Refer to  [terraform](example%2Fterraform). The same applies to Kubernetes.
+
+### From scratch
+
+```shell
+# clone projects
+mkdir talk-projects && cd talk-projects
+git clone git@github.com:proxoar/talk.git
+git clone git@github.com:proxoar/talk-web.git
+
+# build web with yarn
+cd talk-web && ./script/build-and-copy-to-backend.sh 
+
+cd ../talk && go build cmd/talk/talk.go
+
+# run
+./talk --config ./talk.yaml
+# or simply `./talk` as it automatically locates talk.yaml in `/etc/talk/` and `./talk.yaml`
+./talk
+```
+
+# Troubleshooting
+
+** I Can't start recording**
+
+Browsers keep HTTPS website from reading your microphone for security.
+
+Solutions:
+
+1. Run Talk behind a reverse proxy like Nginx and setup TLS in Nginx.
+2. Open `chrome://flags/` in Chrome, find `Insecure origins treated as secure` and enable it:
+   <br>
+   <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="500">
+   <br>
+
+Rest assured, HTTPS support is on its way and will be implemented shortly
+
+# Browser compatibility
+
+|            | Arc | Chrome | FireFox | Edge | Safari |
+|:----------:|:---:|:------:|:-------:|:----:|:------:|
+| Microphone |  ✅  |   ✅    |    ✅    |  ❌   |   ❌    |
+|     UI     |  ✅  |   ✅    |    ✅    |  ✅   |   ❌    |
 
 # Q&A
 
@@ -44,10 +117,25 @@ A: Streamlining the website for mobile usage would be a time-intensive endeavour
 it isn't our primary concern. As it stands, the site performs optimally on desktop browsers based on the Chromium
 Engine, with certain limitations on browsers such as Safari.
 
+# Roadmap
+
+- [x] Google TTS
+- [x] Google STT
+- [x] OpenAI Whisper STT
+- [x] Setting language, speed, stability, etc
+- [x] Choose voice
+- [x] Docker image
+- [x] Server Side Events(SSE)
+- [ ] More LLMs other than ChatGPT
+- [ ] Download and import text history
+- [x] Download chat MP3
+- [ ] Prompt template
+
 # Contributing
 
-We're in the midst of a dynamic development stage for
-this project and warmly invite new contributors.
+We're in the midst of a dynamic development stage for this project and warmly invite new contributors.
+
+Doc for contributing will be ready soon.
 
 # Credits
 
@@ -73,10 +161,10 @@ this project and warmly invite new contributors.
 
 #### UI
 
-* [WikiArt.org](https://www.wikiart.org): Wikiart.org is a great place to find art online. Some wallpapers of this
-  project come from WikiArt.org
-* [grainy-gradients](https://github.com/cjimmy/grainy-gradients): Thanks to cjimmy for his amazing tutorial on noise and
-  gradient background
+* [wikiart.org](https://www.wikiart.org): Wikiart is a great place to find art online. Most wallpapers of Talk come
+  from WikiArt.org
+* [grainy-gradients](https://github.com/cjimmy/grainy-gradients): Thanks to [cjimmy](https://github.com/cjimmy/) for his
+  amazing [tutorial](https://css-tricks.com/grainy-gradients/) on noise and gradient background
 * [Signal-Desktop](https://github.com/signalapp/Signal-Desktop)
   and [Signal-iOS](https://github.com/signalapp/Signal-iOS): Private messengers. Much of the inspiration for the UI
   comes from Signal.
