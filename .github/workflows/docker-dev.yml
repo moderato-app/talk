@@ -41,5 +41,3 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ env.IMAGE_NAME }}:dev-${{ env.CURRENT_SECOND }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
