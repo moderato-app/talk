@@ -1,0 +1,6 @@
+# with this config file, you can't talk to AI, but you can still type and get response in text
+llm:
+  chat-gpt: open-ai-01
+# provide your confidential information below.
+creds:
+  open-ai-01: "sk-2dwY1IAeEysbnDNuAKJDXofX1IAeEysbnDNuAKJDXofXF5"

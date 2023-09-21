@@ -1,0 +1,6 @@
+# with this config file, you can't type, but you can still talk and get transcription of your voice
+speech-to-text:
+  whisper: open-ai-01
+# provide your confidential information below.
+creds:
+  open-ai-01: "sk-2dwY1IAeEysbnDNuAKJDXofX1IAeEysbnDNuAKJDXofXF5"
