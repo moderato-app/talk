@@ -3,6 +3,7 @@ name: publish release image
 on:
   release:
     types: [ published ]
+  workflow_dispatch:
 
 env:
   # github.repository as <account>/<repo>
