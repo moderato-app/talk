@@ -17,10 +17,8 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-# Do not touch the flowing 3 lines
-config.yaml
+# Do not touch this lines
 talk.yaml
-google-service-account-key.json
 
 # Go workspace file
 go.work
