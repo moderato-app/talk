@@ -32,9 +32,7 @@ creds:
   elevenlabs-01: "711sfpb9kk15sds8m4czuk5rozvp43a4"
 ```
 
-How about `Google Text-to-Speech` and `Google Speech-to-Text`?
-
-No problem. See [talk.google.example.yaml](example/talk.google.example.yaml)
+How about `Google Text-to-Speech` and `Google Speech-to-Text`? No problem. See [talk.google.example.yaml](example/talk.google.example.yaml)
 
 Full example: [talk.full.example.yaml](example/talk.full.example.yaml)
 
@@ -54,7 +52,8 @@ docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \
 -p 8000:8000 proxoar/talk
 ```
 
-### Terraform 
+### Terraform
+
 Refer to  [terraform](example%2Fterraform). The same applies to Kubernetes.
 
 ### From scratch
@@ -84,20 +83,20 @@ Browsers keep HTTPS website from reading your microphone for security.
 
 Solutions:
 
-1. Run Talk behind a reverse proxy like Nginx and setup TLS in Nginx.
-2. Open `chrome://flags/` in Chrome, find `Insecure origins treated as secure` and enable it:
+* Run Talk behind a reverse proxy like Nginx and setup TLS in Nginx.
+* Open `chrome://flags/` in Chrome, find `Insecure origins treated as secure` and enable it:
    <br>
-   <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="500">
+   <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="600">
    <br>
 
 Rest assured, HTTPS support is on its way and will be implemented shortly
 
 # Browser compatibility
 
-|            | Arc | Chrome | FireFox | Edge | Safari |
-|:----------:|:---:|:------:|:-------:|:----:|:------:|
-| Microphone |  ✅  |   ✅    |    ✅    |  ❌   |   ❌    |
-|     UI     |  ✅  |   ✅    |    ✅    |  ✅   |   ❌    |
+|            | [Arc](https://arc.net/) | Chrome | FireFox | Edge | Safari |
+|:----------:|:-----------------------:|:------:|:-------:|:----:|:------:|
+| Microphone |            ✅            |   ✅    |    ✅    |  ❌   |   ❌    |
+|     UI     |            ✅            |   ✅    |    ✅    |  ✅   |   ❌    |
 
 # Q&A
 
@@ -114,7 +113,7 @@ A:
 **Q: Will a mobile browser-friendly version be made available?**
 
 A: Streamlining the website for mobile usage would be a time-intensive endeavour and, given my current time constraints,
-it isn't our primary concern. As it stands, the site performs optimally on desktop browsers based on the Chromium
+it isn't the primary concern. As it stands, the site performs optimally on desktop browsers based on the Chromium
 Engine, with certain limitations on browsers such as Safari.
 
 # Roadmap
@@ -163,6 +162,7 @@ Doc for contributing will be ready soon.
 
 * [wikiart.org](https://www.wikiart.org): Wikiart is a great place to find art online. Most wallpapers of Talk come
   from WikiArt.org
+* [Arc](https://arc.net/): Arc is the Chrome replacement I’ve been waiting for -- [THE VERGE](https://www.theverge.com/23462235/arc-web-browser-review)
 * [grainy-gradients](https://github.com/cjimmy/grainy-gradients): Thanks to [cjimmy](https://github.com/cjimmy/) for his
   amazing [tutorial](https://css-tricks.com/grainy-gradients/) on noise and gradient background
 * [Signal-Desktop](https://github.com/signalapp/Signal-Desktop)
