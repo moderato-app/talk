@@ -1,8 +1,23 @@
-# Build step
+# Use Node.js official image as base
+FROM node:20-alpine AS webBuilder
+
+# Install git
+RUN apk update && apk add --no-cache git
+
+# Clone the repository
+WORKDIR /app
+RUN git clone https://github.com/proxoar/talk-web .
+
+# Install dependencies and build
+RUN yarn install
+RUN yarn build
+
 FROM golang:1.20-alpine AS builder
 
 COPY ${PWD} /app
 WORKDIR /app
+
+COPY --from=webBuilder /app/dist web
 
 RUN go build -o appbin cmd/talk/talk.go
 
