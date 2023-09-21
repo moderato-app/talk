@@ -74,7 +74,7 @@ mkdir talk-projects && cd talk-projects
 git clone git@github.com:proxoar/talk.git
 git clone git@github.com:proxoar/talk-web.git
 
-# build web with yarn
+# build web with yarn; currently using node v20.3.0
 cd talk-web && ./script/build-and-copy-to-backend.sh 
 
 cd ../talk && go build cmd/talk/talk.go
