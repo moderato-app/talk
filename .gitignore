@@ -31,3 +31,4 @@ build+push.sh
 
 #macOS
 **/.DS_Store
+web/**
