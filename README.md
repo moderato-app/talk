@@ -4,7 +4,7 @@
 
 Talking with AI is a breeze
 
-![figjam-talk-2023-09-22.png](doc%2Ffigjam-talk-2023-09-22.png)
+![figjam-talk-2023-09-22.png](doc/figjam-talk-2023-09-22.png)
 
 <div align="center">
 View on 
