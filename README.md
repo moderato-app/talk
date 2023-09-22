@@ -87,7 +87,7 @@ cd ../talk && go build cmd/talk/talk.go
 
 # Troubleshooting
 
-** I Can't start recording**
+**Why am I unable to initiate the recording?**
 
 Browsers keep HTTPS website from reading your microphone for security.
 
@@ -100,6 +100,8 @@ Solutions:
   <br>
 
 Rest assured, HTTPS support is on its way and will be implemented shortly
+
+
 
 # Browser compatibility
 

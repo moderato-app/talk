@@ -13,6 +13,7 @@ type ServerConfig struct {
 	Port                 int      `mapstructure:"port"`
 	CheckHealthOnStartup bool     `mapstructure:"check-health-on-startup"`
 	Passwords            []string `mapstructure:"passwords"`
+	DemoMode             bool     `mapstructure:"demo-mode"`
 }
 
 type SpeechToTextConfig struct {

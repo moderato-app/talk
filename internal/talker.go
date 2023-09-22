@@ -2,21 +2,15 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
-	resourcemanager "cloud.google.com/go/resourcemanager/apiv3"
-	speech "cloud.google.com/go/speech/apiv2"
-	texttospeech "cloud.google.com/go/texttospeech/apiv1"
-	"github.com/haguro/elevenlabs-go"
+	demo "github.com/proxoar/talk-demo-resource/v2"
 	"github.com/proxoar/talk/internal/config"
 	"github.com/proxoar/talk/pkg/ability"
 	"github.com/proxoar/talk/pkg/client"
 	"github.com/proxoar/talk/pkg/providers"
-	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
-	"google.golang.org/api/option"
 )
 
 type Talker struct {
@@ -26,60 +20,53 @@ type Talker struct {
 	logger       *zap.Logger
 }
 
-func NewTalker(ctx context.Context, tc config.TalkConfig, logger *zap.Logger) (*Talker, error) {
+func NewTalker(tc config.TalkConfig, logger *zap.Logger) (*Talker, error) {
 	var llms []client.LLM
 	var ttss []client.TextToSpeech
 	var stts []client.SpeechToText
-
-	if apiKey, ok := tc.Creds[tc.Llm.ChatGPT]; ok {
-		// by default, the underlying http.Client utilizes the proxy from the environment.
-		c := openai.NewClient(apiKey)
-		llms = append(llms, &providers.ChatGPT{
-			Client: c,
-			Logger: logger,
-		})
-	}
-
-	if apiKey, ok := tc.Creds[tc.TextToSpeech.ElevenLabs]; ok {
-		// elevenlabs.Client create a new http.Client everytime it makes a request
-		// by default, the underlying http.Client utilizes the proxy from the environment.
-		c := elevenlabs.NewClient(ctx, apiKey, 30*time.Second)
-		ttss = append(ttss, &providers.ElevenLabs{
-			Client: c,
-			Logger: logger,
-		})
-	}
-
-	if accountJson, ok := tc.Creds[tc.TextToSpeech.Google]; ok {
-		// by default, the underlying http.Client utilizes the proxy from the environment.
-		c, err := texttospeech.NewClient(ctx, option.WithCredentialsJSON([]byte(accountJson)))
+	if tc.Server.DemoMode {
+		pool, err := demo.NewResourcePool()
 		if err != nil {
-			return nil, fmt.Errorf("failed to initialise Google text-to-speech client: %v", err)
+			return nil, err
 		}
-		ttss = append(ttss, &providers.GoogleTTS{Client: c, Logger: logger})
-	}
+		llm := providers.NewChatGPTDemo(pool, logger)
+		llms = append(llms, llm)
+		tts := providers.NewElevenlabsDemo(pool, logger)
+		ttss = append(ttss, tts)
+		stt := providers.NewWhisperDemo(logger)
+		stts = append(stts, stt)
+	} else {
 
-	if apiKey, ok := tc.Creds[tc.SpeechToText.Whisper]; ok {
-		// by default, the underlying http.Client utilizes the proxy from the environment.
-		c := openai.NewClient(apiKey)
-		stts = append(stts, &providers.Whisper{Client: c, Logger: logger})
-	}
+		if apiKey, ok := tc.Creds[tc.Llm.ChatGPT]; ok {
+			llm := providers.NewChatGPT(apiKey, logger)
+			llms = append(llms, llm)
+		}
 
-	if accountJson, ok := tc.Creds[tc.SpeechToText.Google]; ok {
-		// by default, the underlying http.Client utilizes the proxy from the environment.
-		speechClient, err := speech.NewClient(ctx, option.WithCredentialsJSON([]byte(accountJson)))
-		if err != nil {
-			return nil, fmt.Errorf("failed to initialise Google text-to-speech client: %v", err)
+		if apiKey, ok := tc.Creds[tc.TextToSpeech.ElevenLabs]; ok {
+			tts := providers.NewElevenLabs(apiKey, logger)
+			ttss = append(ttss, tts)
 		}
-		projectClient, err := resourcemanager.NewProjectsClient(ctx, option.WithCredentialsJSON([]byte(accountJson)))
-		if err != nil {
-			return nil, fmt.Errorf("failed to initialise Google project client: %v", err)
+
+		if accountJson, ok := tc.Creds[tc.TextToSpeech.Google]; ok {
+			tts, err := providers.NewGoogleTTS(accountJson, logger)
+			if err != nil {
+				return nil, err
+			}
+			ttss = append(ttss, tts)
 		}
-		stts = append(stts, &providers.GoogleSTT{
-			SpeechClient:  speechClient,
-			ProjectClient: projectClient,
-			Logger:        logger,
-		})
+
+		if apiKey, ok := tc.Creds[tc.SpeechToText.Whisper]; ok {
+			whisper := providers.NewWhisper(apiKey, logger)
+			stts = append(stts, whisper)
+		}
+
+		if accountJson, ok := tc.Creds[tc.SpeechToText.Google]; ok {
+			stt, err := providers.NewGoogleSTT(accountJson, logger)
+			if err != nil {
+				return nil, err
+			}
+			stts = append(stts, stt)
+		}
 	}
 
 	talker := Talker{llms, stts, ttss, logger}

@@ -7,16 +7,6 @@ import (
 	"github.com/proxoar/talk/pkg/ability"
 )
 
-type Voice struct {
-	Id         string
-	Name       string
-	Lang       string
-	Accent     string
-	Gender     string
-	PreviewUrl string
-	Labels     map[string]string
-}
-
 type SpeechToText interface {
 	Client
 	// SpeechToText transcribes voice into text
