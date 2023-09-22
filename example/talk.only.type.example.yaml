@@ -1,4 +1,4 @@
-# with this config file, you can't talk to AI, but you can still type and get response in text
+# with this config file, Talk won't reply with any audio, but you can still type and get response in text
 llm:
   chat-gpt: open-ai-01
 # provide your confidential information below.

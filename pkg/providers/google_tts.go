@@ -9,16 +9,28 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/proxoar/talk/pkg/ability"
 	"github.com/proxoar/talk/pkg/client"
-
 	"go.uber.org/zap"
+	"google.golang.org/api/option"
 )
 
-type GoogleTTS struct {
-	Client *texttospeech.Client
-	Logger *zap.Logger
+type googleTTS struct {
+	client *texttospeech.Client
+	logger *zap.Logger
 }
 
-func (g *GoogleTTS) CheckHealth(ctx context.Context) {
+func NewGoogleTTS(accountJson string, logger *zap.Logger) (client.TextToSpeech, error) {
+	// by default, the underlying http.client utilizes the proxy from the environment.
+	c, err := texttospeech.NewClient(context.Background(), option.WithCredentialsJSON([]byte(accountJson)))
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialise Google text-to-speech client: %v", err)
+	}
+	return &googleTTS{
+		client: c,
+		logger: logger,
+	}, nil
+}
+
+func (g *googleTTS) CheckHealth(ctx context.Context) {
 	o := ability.TTSOption{
 		Google: &ability.GoogleTTSOption{
 			VoiceId:      "",
@@ -31,26 +43,26 @@ func (g *GoogleTTS) CheckHealth(ctx context.Context) {
 	}
 	audio, err := g.TextToSpeech(ctx, "Hello!", o)
 	if err != nil {
-		g.Logger.Sugar().Errorf("[Google text-to-speech] failed to get response from server: %+v", err)
+		g.logger.Sugar().Errorf("[Google text-to-speech] failed to get response from server: %+v", err)
 	} else if len(audio) < 100 || len(audio) > 10000 {
-		g.Logger.Sugar().Warn("[Google text-to-speech] bad smell: the audio data received from Google text-to-speech server is"+
+		g.logger.Sugar().Warn("[Google text-to-speech] bad smell: the audio data received from Google text-to-speech server is"+
 			" either too small or too large: %d byte", len(audio))
 	} else {
-		g.Logger.Info("[Google text-to-speech]  is healthy")
+		g.logger.Info("[Google text-to-speech]  is healthy")
 	}
 }
 
-func (g *GoogleTTS) Quota(_ context.Context) (used, total int, err error) {
-	// texttospeech.Client doesn't support quota query
+func (g *googleTTS) Quota(_ context.Context) (used, total int, err error) {
+	// texttospeech.client doesn't support quota query
 	return 0, 0, nil
 }
 
 // Voices list available voices
 //
 // pass empty langCode or choose one from https://www.rfc-editor.org/rfc/bcp/bcp47.txt,
-func (g *GoogleTTS) Voices(ctx context.Context) ([]ability.TaggedItem, error) {
-	g.Logger.Info("get voices...")
-	voices, err := g.Client.ListVoices(ctx, &texttospeechpb.ListVoicesRequest{})
+func (g *googleTTS) Voices(ctx context.Context) ([]ability.TaggedItem, error) {
+	g.logger.Info("get voices...")
+	voices, err := g.client.ListVoices(ctx, &texttospeechpb.ListVoicesRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +77,12 @@ func (g *GoogleTTS) Voices(ctx context.Context) ([]ability.TaggedItem, error) {
 		ids[voice.Name] = struct{}{}
 		vs[i] = googleVoiceToAbVoice(voice)
 	}
-	g.Logger.Sugar().Debug("voices count:", len(vs))
+	g.logger.Sugar().Debug("voices count:", len(vs))
 	return vs, nil
 }
 
-func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
-	g.Logger.Sugar().Infow("text to speech...", "option", o)
+func (g *googleTTS) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
+	g.logger.Sugar().Infow("text to speech...", "option", o)
 	req := texttospeechpb.SynthesizeSpeechRequest{
 		Input: &texttospeechpb.SynthesisInput{
 			InputSource: &texttospeechpb.SynthesisInput_Text{Text: text},
@@ -88,15 +100,15 @@ func (g *GoogleTTS) TextToSpeech(ctx context.Context, text string, o ability.TTS
 		},
 	}
 
-	resp, err := g.Client.SynthesizeSpeech(ctx, &req)
+	resp, err := g.client.SynthesizeSpeech(ctx, &req)
 	if err != nil {
 		return nil, fmt.Errorf("SynthesizeSpeech: %v", err)
 	}
-	g.Logger.Sugar().Info("text to speech result audio bytes size: ", humanize.Bytes(uint64(len(resp.AudioContent))))
+	g.logger.Sugar().Info("text to speech result audio bytes size: ", humanize.Bytes(uint64(len(resp.AudioContent))))
 	return resp.AudioContent, nil
 }
 
-func (g *GoogleTTS) SetAbility(ctx context.Context, a *ability.TTSAblt) error {
+func (g *googleTTS) SetAbility(ctx context.Context, a *ability.TTSAblt) error {
 	voices, err := g.Voices(ctx)
 	if err != nil {
 		return err
@@ -112,25 +124,8 @@ func (g *GoogleTTS) SetAbility(ctx context.Context, a *ability.TTSAblt) error {
 // Support
 //
 // read ability.TTSOption to check if current provider support the option
-func (g *GoogleTTS) Support(o ability.TTSOption) bool {
+func (g *googleTTS) Support(o ability.TTSOption) bool {
 	return o.Google != nil
-}
-
-// googleVoiceToGeneralVoice convert texttospeechpb.Voice to client.Voice
-func googleVoiceToGeneralVoice(v *texttospeechpb.Voice) client.Voice {
-	// TaggedItem.LanguageCodes contains only one code; keep TaggedItem.Lang as string type for simplicity
-	langCode := ""
-	if len(v.LanguageCodes) > 0 {
-		langCode = v.LanguageCodes[0]
-	}
-	gender := convertGender(v.SsmlGender)
-	return client.Voice{
-		Id:     v.Name,
-		Name:   v.Name,
-		Lang:   langCode,
-		Accent: langCode,
-		Gender: gender,
-	}
 }
 
 // googleVoiceToAbVoice convert texttospeechpb.Voice to ability.TaggedItem

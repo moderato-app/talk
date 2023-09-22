@@ -12,7 +12,7 @@ RUN git clone --depth 1 --branch v1.0.0 --single-branch https://github.com/proxo
 RUN yarn install
 RUN yarn build
 
-FROM golang:1.20-alpine AS builder
+FROM golang:1.21-alpine AS builder
 
 COPY ${PWD} /app
 WORKDIR /app

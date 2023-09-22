@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"fmt"
 	"io/fs"
 
@@ -20,7 +19,7 @@ func StartServer() {
 	conf := config.MustLoadConfig(logger)
 
 	logger.Info("initialise talker...")
-	talker, err := NewTalker(context.Background(), *conf, logger)
+	talker, err := NewTalker(*conf, logger)
 	if err != nil {
 		logger.Sugar().Panic("failed to create a talker:", err)
 	}

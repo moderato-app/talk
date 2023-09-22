@@ -14,12 +14,22 @@ import (
 	"go.uber.org/zap"
 )
 
-type ChatGPT struct {
-	Client *openai.Client
-	Logger *zap.Logger
+type chatGPT struct {
+	client *openai.Client
+	logger *zap.Logger
 }
 
-func (c *ChatGPT) CheckHealth(ctx context.Context) {
+func NewChatGPT(apiKey string, logger *zap.Logger) client.LLM {
+	// by default, the underlying http.client utilizes the proxy from the environment.
+	c := openai.NewClient(apiKey)
+
+	return &chatGPT{
+		client: c,
+		logger: logger,
+	}
+}
+
+func (c *chatGPT) CheckHealth(ctx context.Context) {
 	m := client.Message{
 		Role:    "user",
 		Content: "Hello!",
@@ -27,21 +37,21 @@ func (c *ChatGPT) CheckHealth(ctx context.Context) {
 	o := ability.DefaultChatGPTOption()
 	content, err := c.Completion(ctx, []client.Message{m}, ability.LLMOption{ChatGPT: o})
 	if err != nil {
-		c.Logger.Sugar().Error("[ChatGPT] failed to get response from server: ", err)
+		c.logger.Sugar().Error("[ChatGPT] failed to get response from server: ", err)
 	} else if len(content) == 0 {
-		c.Logger.Warn(`[ChatGPT] bad smell: got empty content from ChatGPTAblt server`)
+		c.logger.Warn(`[ChatGPT] bad smell: got empty content from ChatGPTAblt server`)
 	} else {
-		c.Logger.Info("[ChatGPT]  is healthy")
+		c.logger.Info("[ChatGPT]  is healthy")
 	}
 }
 
-func (c *ChatGPT) Quota(_ context.Context) (used, total int, err error) {
-	// openai.Client doesn't support billing query
+func (c *chatGPT) Quota(_ context.Context) (used, total int, err error) {
+	// openai.client doesn't support billing query
 	return 0, 0, nil
 }
 
-func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t ability.LLMOption) (string, error) {
-	c.Logger.Info("completion...")
+func (c *chatGPT) Completion(ctx context.Context, ms []client.Message, t ability.LLMOption) (string, error) {
+	c.logger.Info("completion...")
 	if t.ChatGPT == nil {
 		return "", errors.New("client did not provide ChatGPT option")
 	}
@@ -58,14 +68,13 @@ func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t ability
 		FrequencyPenalty: t.ChatGPT.FrequencyPenalty,
 	}
 
-	resp, err := c.Client.CreateChatCompletion(ctx, req)
+	resp, err := c.client.CreateChatCompletion(ctx, req)
 	if err != nil {
-		return "", fmt.Errorf("CreateChatCompletion %+v: %v", t, err)
+		return "", fmt.Errorf("failed to CreateChatCompletion: %s", err)
 	}
 
-	c.Logger.Sugar().Debug("complete result", resp)
 	content := resp.Choices[0].Message.Content
-	c.Logger.Sugar().Info("content:", content)
+	c.logger.Sugar().Info("completion resp content length:", len(content))
 	return content, nil
 }
 
@@ -74,8 +83,8 @@ func (c *ChatGPT) Completion(ctx context.Context, ms []client.Message, t ability
 // Return only one chunk that contains the whole content if stream is not supported.
 // To make sure the chan closes eventually, caller should either read the last chunk from chan
 // or got a chunk whose Err != nil
-func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMOption) <-chan client.Chunk {
-	c.Logger.Sugar().Infow("completion stream...", "message list length", len(ms))
+func (c *chatGPT) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMOption) <-chan client.Chunk {
+	c.logger.Sugar().Infow("completion stream...", "message list length", len(ms))
 	ch := make(chan client.Chunk, 64)
 	if t.ChatGPT == nil {
 		ch <- client.Chunk{Text: "", Err: errors.New("client did not provide ChatGPT option")}
@@ -95,10 +104,10 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 	}
 	reqLog := req
 	reqLog.Messages = nil
-	c.Logger.Sugar().Info("completion stream req without messages:", reqLog)
+	c.logger.Sugar().Info("completion stream req without messages:", reqLog)
 
 	go func() {
-		stream, err := c.Client.CreateChatCompletionStream(ctx, req)
+		stream, err := c.client.CreateChatCompletionStream(ctx, req)
 		if err != nil {
 			ch <- client.Chunk{Text: "", Err: err}
 			return
@@ -116,14 +125,14 @@ func (c *ChatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 				ch <- client.Chunk{Text: "", Err: err}
 				break
 			}
-			ch <- client.Chunk{Text: response.Choices[0].Delta.Content, Err: nil}
+			ch <- client.Chunk{Text: response.Choices[0].Delta.Content}
 		}
 	}()
 	return ch
 }
 
 // SetAbility set `ChatGPTAblt` and `available` field of ability.LLMAblt
-func (c *ChatGPT) SetAbility(ctx context.Context, a *ability.LLMAblt) error {
+func (c *chatGPT) SetAbility(ctx context.Context, a *ability.LLMAblt) error {
 	models, err := c.getModels(ctx)
 	if err != nil {
 		return err
@@ -139,13 +148,13 @@ func (c *ChatGPT) SetAbility(ctx context.Context, a *ability.LLMAblt) error {
 // Support
 //
 // read ability.LLMOption to check if current provider support the option
-func (c *ChatGPT) Support(o ability.LLMOption) bool {
+func (c *chatGPT) Support(o ability.LLMOption) bool {
 	return o.ChatGPT != nil
 }
 
-func (c *ChatGPT) getModels(ctx context.Context) ([]string, error) {
-	c.Logger.Info("get models...")
-	ml, err := c.Client.ListModels(ctx)
+func (c *chatGPT) getModels(ctx context.Context) ([]string, error) {
+	c.logger.Info("get models...")
+	ml, err := c.client.ListModels(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +165,7 @@ func (c *ChatGPT) getModels(ctx context.Context) ([]string, error) {
 		}
 	}
 	sort.Strings(models)
-	c.Logger.Sugar().Debug("models count:", len(models))
+	c.logger.Sugar().Debug("models count:", len(models))
 	return models, err
 }
 

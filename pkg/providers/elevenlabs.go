@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/haguro/elevenlabs-go"
 	"github.com/proxoar/talk/pkg/ability"
+	"github.com/proxoar/talk/pkg/client"
 	"go.uber.org/zap"
 )
 
@@ -15,41 +17,49 @@ const (
 	defaultModelID = "eleven_multilingual_v1" // newer than "eleven_monolingual_v1"
 )
 
-type ElevenLabs struct {
-	Client    *elevenlabs.Client
-	VoiceId   *string
-	Stability float32
-	Clarity   float32
-	Logger    *zap.Logger
+type elevenLabs struct {
+	client *elevenlabs.Client
+	logger *zap.Logger
 }
 
-func (e *ElevenLabs) CheckHealth(_ context.Context) {
+func NewElevenLabs(apiKey string, logger *zap.Logger) client.TextToSpeech {
+	// elevenlabs.client create a new http.client everytime it makes a request
+	// by default, the underlying http.client utilizes the proxy from the environment.
+	c := elevenlabs.NewClient(context.Background(), apiKey, time.Minute)
+
+	return &elevenLabs{
+		client: c,
+		logger: logger,
+	}
+}
+
+func (e *elevenLabs) CheckHealth(_ context.Context) {
 	used, total, err := e.Quota(context.Background())
 	if err != nil {
-		e.Logger.Sugar().Error("[ElevenLabs] failed to get response from ElevenLabs server: %+v", err)
+		e.logger.Sugar().Error("[ElevenLabs] failed to get response from ElevenLabs server: %+v", err)
 	} else {
-		e.Logger.Sugar().Debugf("[ElevenLabs] quota: %d/%d used", used, total)
+		e.logger.Sugar().Debugf("[ElevenLabs] quota: %d/%d used", used, total)
 		if total == 0 || used >= total {
-			e.Logger.Warn(`[ElevenLabs] bad smell: ElevenLabs quota may has been exhausted`)
+			e.logger.Warn(`[ElevenLabs] bad smell: ElevenLabs quota may has been exhausted`)
 		} else {
-			e.Logger.Info("[ElevenLabs] is healthy")
+			e.logger.Info("[ElevenLabs] is healthy")
 		}
 	}
 }
 
-func (e *ElevenLabs) Quota(_ context.Context) (used, total int, err error) {
-	e.Logger.Info("get subscription...")
-	subscription, err := e.Client.GetSubscription()
+func (e *elevenLabs) Quota(_ context.Context) (used, total int, err error) {
+	e.logger.Info("get subscription...")
+	subscription, err := e.client.GetSubscription()
 	if err != nil {
 		return 0, 0, err
 	}
-	e.Logger.Sugar().Debug("get subscription result", subscription)
+	e.logger.Sugar().Debug("get subscription result", subscription)
 	return subscription.CharacterCount, subscription.CharacterLimit, nil
 }
 
-func (e *ElevenLabs) Voices(_ context.Context) ([]ability.TaggedItem, error) {
-	e.Logger.Info("get voices...")
-	voices, err := e.Client.GetVoices()
+func (e *elevenLabs) Voices(_ context.Context) ([]ability.TaggedItem, error) {
+	e.logger.Info("get voices...")
+	voices, err := e.client.GetVoices()
 	if err != nil {
 		return nil, err
 	}
@@ -57,12 +67,12 @@ func (e *ElevenLabs) Voices(_ context.Context) ([]ability.TaggedItem, error) {
 	for i, voice := range voices {
 		vs[i] = elevenlabsVoiceToAbilityVoice(voice)
 	}
-	e.Logger.Sugar().Debug("voices count:", len(vs))
+	e.logger.Sugar().Debug("voices count:", len(vs))
 	return vs, nil
 }
 
-func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
-	e.Logger.Info("text to speech...")
+func (e *elevenLabs) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
+	e.logger.Info("text to speech...")
 	req := elevenlabs.TextToSpeechRequest{
 		Text:    text,
 		ModelID: defaultModelID,
@@ -75,15 +85,15 @@ func (e *ElevenLabs) TextToSpeech(ctx context.Context, text string, o ability.TT
 	if err != nil {
 		return nil, fmt.Errorf("failed to choose a VoiceId %s: %v", o.Elevenlabs.VoiceId, err)
 	}
-	bytes, err := e.Client.TextToSpeech(id, req)
+	bytes, err := e.client.TextToSpeech(id, req)
 	if err != nil {
 		return nil, fmt.Errorf("TextToSpeech %s %v", id, err)
 	}
-	e.Logger.Sugar().Debug("text to speech result, audio bytes size:", humanize.Bytes(uint64(len(bytes))))
+	e.logger.Sugar().Debug("text to speech result, audio bytes size:", humanize.Bytes(uint64(len(bytes))))
 	return bytes, nil
 }
 
-func (e *ElevenLabs) SetAbility(ctx context.Context, a *ability.TTSAblt) error {
+func (e *elevenLabs) SetAbility(ctx context.Context, a *ability.TTSAblt) error {
 	voices, err := e.Voices(ctx)
 	if err != nil {
 		return err
@@ -99,28 +109,23 @@ func (e *ElevenLabs) SetAbility(ctx context.Context, a *ability.TTSAblt) error {
 // Support
 //
 // read ability.TTSOption to check if current provider support the option
-func (e *ElevenLabs) Support(o ability.TTSOption) bool {
+func (e *elevenLabs) Support(o ability.TTSOption) bool {
 	return o.Elevenlabs != nil
 }
 
-func (e *ElevenLabs) chooseVoiceId(ctx context.Context, voiceId string) (string, error) {
+func (e *elevenLabs) chooseVoiceId(ctx context.Context, voiceId string) (string, error) {
 	if voiceId != "" {
 		return voiceId, nil
-	}
-	if e.VoiceId != nil && *e.VoiceId != "" {
-		return *e.VoiceId, nil
 	}
 	voices, err := e.Voices(ctx)
 	if err != nil {
 		return "", err
 	}
 	if len(voices) == 0 {
-		return "", errors.New("user have no voice available on ElevenLabs")
+		return "", errors.New("found no voice from ElevenLabs")
 	}
 	// voices created by user are placed at the end of list
 	id := voices[len(voices)-1].Id
-	// ignore the risk of race at the moment, as `talk` project is for personal usage
-	e.VoiceId = &id
 	return id, nil
 }
 
