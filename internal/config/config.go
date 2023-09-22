@@ -14,6 +14,7 @@ type ServerConfig struct {
 	CheckHealthOnStartup bool     `mapstructure:"check-health-on-startup"`
 	Passwords            []string `mapstructure:"passwords"`
 	DemoMode             bool     `mapstructure:"demo-mode"`
+	Tls                  TLS      `mapstructure:"tls"`
 }
 
 type SpeechToTextConfig struct {
@@ -28,4 +29,9 @@ type TextToSpeechConfig struct {
 
 type LlmConfig struct {
 	ChatGPT string `mapstructure:"chat-gpt"`
+}
+
+type TLS struct {
+	AutoTlsDomains          []string `mapstructure:"auto-tls-domains"`
+	AutoTlsLetsEncryptEmail string   `mapstructure:"auto-tls-lets-encrypt-email"`
 }

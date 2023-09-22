@@ -5,6 +5,7 @@ import (
 	"io/fs"
 
 	"github.com/brpaz/echozap"
+	"github.com/caddyserver/certmagic"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
@@ -60,6 +61,19 @@ func StartServer() {
 	s.Use(middleware2.SinglePageApp(""))
 	s.StaticFS("/*", w)
 
-	addr := fmt.Sprintf(":%d", conf.Server.Port)
-	e.Logger.Fatal(e.Start(addr))
+	// Why choose CertMagic over Echo's AutoTLSManager?
+	// CertMagic provides more comprehensive information when issues arise, and is presently in a state of ongoing development
+	var tls = conf.Server.Tls
+	if len(tls.AutoTlsDomains) > 0 {
+		// read and agree to your CA's legal documents
+		certmagic.DefaultACME.Agreed = true
+		// provide an email address
+		certmagic.DefaultACME.Email = tls.AutoTlsLetsEncryptEmail
+		// use the staging endpoint while we're developing
+		certmagic.DefaultACME.CA = certmagic.LetsEncryptStagingCA
+		e.Logger.Fatal(certmagic.HTTPS(tls.AutoTlsDomains, e))
+	} else {
+		addr := fmt.Sprintf(":%d", conf.Server.Port)
+		e.Logger.Fatal(e.Start(addr))
+	}
 }
