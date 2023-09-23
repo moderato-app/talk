@@ -1,12 +1,10 @@
-<img src="./doc/greeting.jpg"  style="border-radius: 1rem" alt="greeting"/>
-
 # Talk
 
 Talk is a single-page application crafted to converse with AI using voice, replicating the user experience akin to a
-native app. 
+native app.
 
-## Interactive [Demo](https://talk.proxoar.com)
- (No Signup. No Login. Simply start conversing. For an optimal experience, open in Chrome)
+**[Demo](https://talk.proxoar.com)**  (No Signup. No Login. Simply start conversing. For an optimal
+experience, open in Chrome)
 
 ![figjam-talk-2023-09-22.png](doc/figjam-talk-2023-09-22.png)
 
@@ -98,20 +96,28 @@ docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \
 proxoar/talk
 ```
 
+### HTTPS
+
+##### Auto TLS
+
+This configuration example facilitates automatic certificate acquisition from LetsEncrypt: [talk.auto.tls.example.yaml](example/talk.auto.tls.example.yaml)
+
+Requirements: You should have your personal VPS and domain.
+
 # Troubleshooting
 
-### Why am I unable to initiate the recording?
+### Why can't I start the recording?
 
-Browsers keep HTTPS website from reading your microphone for security.
+Web browsers safeguard your microphone from being accessed by non-HTTPS websites for security reasons.
 
-Solutions:
-* Run Talk behind a reverse proxy like Nginx and setup TLS in Nginx.
-* Open `chrome://flags/` in Chrome, find `Insecure origins treated as secure` and enable it:
+Remedies:
+
+* [Auto TLS](#auto-tls)
+* Run Talk through a reverse proxy like Nginx and set up TLS within this service.
+* In Chrome, go to `chrome://flags/`, find `Insecure origins treated as secure`, and enable it:
   <br>
   <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="600">
   <br>
-
-Rest assured, HTTPS support is on its way and will be implemented shortly
 
 # Browser compatibility
 
