@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/proxoar/talk/pkg/ability"
+	"github.com/proxoar/talk/pkg/util"
 )
 
 type LLM interface {
@@ -12,15 +13,10 @@ type LLM interface {
 	// CompletionStream
 	//
 	// return a chunk that contains an error if stream is not supported
-	CompletionStream(ctx context.Context, ms []Message, t ability.LLMOption) <-chan Chunk
+	CompletionStream(ctx context.Context, ms []Message, t ability.LLMOption) *util.SmoothStream
 	SetAbility(ctx context.Context, a *ability.LLMAblt) error
 	// Support
 	//
 	// read ability.LLMOption to check if current provider support the option
 	Support(o ability.LLMOption) bool
-}
-
-type Chunk struct {
-	Text string
-	Err  error
 }

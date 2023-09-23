@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"sort"
 	"strings"
 
 	"github.com/proxoar/talk/pkg/ability"
 	"github.com/proxoar/talk/pkg/client"
+	"github.com/proxoar/talk/pkg/util"
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
 )
@@ -83,12 +83,12 @@ func (c *chatGPT) Completion(ctx context.Context, ms []client.Message, t ability
 // Return only one chunk that contains the whole content if stream is not supported.
 // To make sure the chan closes eventually, caller should either read the last chunk from chan
 // or got a chunk whose Err != nil
-func (c *chatGPT) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMOption) <-chan client.Chunk {
+func (c *chatGPT) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMOption) *util.SmoothStream {
 	c.logger.Sugar().Infow("completion stream...", "message list length", len(ms))
-	ch := make(chan client.Chunk, 64)
+	stream := util.NewSmoothStream()
 	if t.ChatGPT == nil {
-		ch <- client.Chunk{Text: "", Err: errors.New("client did not provide ChatGPT option")}
-		return ch
+		stream.WriteError(errors.New("client did not provide ChatGPT option"))
+		return stream
 	}
 
 	messages := messageOfComplete(ms)
@@ -107,28 +107,24 @@ func (c *chatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 	c.logger.Sugar().Info("completion stream req without messages:", reqLog)
 
 	go func() {
-		stream, err := c.client.CreateChatCompletionStream(ctx, req)
+		s, err := c.client.CreateChatCompletionStream(ctx, req)
 		if err != nil {
-			ch <- client.Chunk{Text: "", Err: err}
+			stream.WriteError(err)
 			return
 		}
-		defer stream.Close()
-		defer close(ch)
-
+		defer s.Close()
 		for {
-			response, err := stream.Recv()
-			if errors.Is(err, io.EOF) {
-				break
-			}
-
+			response, err := s.Recv()
 			if err != nil {
-				ch <- client.Chunk{Text: "", Err: err}
-				break
+				stream.WriteError(err)
+				return
 			}
-			ch <- client.Chunk{Text: response.Choices[0].Delta.Content}
+			for _, r := range response.Choices[0].Delta.Content {
+				stream.Write(r)
+			}
 		}
 	}()
-	return ch
+	return stream
 }
 
 // SetAbility set `ChatGPTAblt` and `available` field of ability.LLMAblt
