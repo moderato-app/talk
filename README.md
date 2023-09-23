@@ -2,7 +2,11 @@
 
 # Talk
 
-Talking with AI is a breeze
+Talk is a single-page application crafted to converse with AI using voice, replicating the user experience akin to a
+native app. 
+
+## Interactive [Demo](https://talk.proxoar.com)
+ (No Signup. No Login. Simply start conversing. For an optimal experience, open in Chrome)
 
 ![figjam-talk-2023-09-22.png](doc/figjam-talk-2023-09-22.png)
 
@@ -16,13 +20,16 @@ Figma
 # Highlighted Features
 
 - Focus on voice-driven dialogues
-- Broad range of service providers to choose from
+- Broad range of service providers to choose from: ChatGPT, Elevenlabs, Google Text-toSpeech, Whisper and Google
+  Speech-to-Text
 - Modern and stylish user interface
 - Unified, standalone binary
 
-## How to use
+# How to use
 
-Prepare a `talk.yaml` file. Here is a [simple example](example/talk.simple.example.yaml) utilising ChatGPT, Whisper and
+## 1. Prepare a `talk.yaml` file.
+
+Here is a [simple example](example/talk.simple.example.yaml) utilising ChatGPT, Whisper and
 Elevenlabs:
 
 ```yaml
@@ -41,10 +48,12 @@ creds:
   elevenlabs-01: "711sfpb9kk15sds8m4czuk5rozvp43a4"
 ```
 
-How about `Google Text-to-Speech` and `Google Speech-to-Text`? No problem.
-See [talk.google.example.yaml](example/talk.google.example.yaml)
+Looking to utilise Google Text-to-Speech and Google Speech-to-Text? Not to worry, we have that covered. Please refer
+to [talk.google.example.yaml](example/talk.google.example.yaml) for more information
 
-Full example: [talk.full.example.yaml](example/talk.full.example.yaml)
+The comprehensive example: [talk.full.example.yaml](example/talk.full.example.yaml)
+
+## 2. Start the application
 
 ### Docker
 
@@ -52,19 +61,9 @@ Full example: [talk.full.example.yaml](example/talk.full.example.yaml)
 docker run -it -v ./talk.yaml:/etc/talk/talk.yaml -p 8000:8000 proxoar/talk
 ```
 
-With proxy:
-
-```shell
-docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \ 
--e HTTPS_PROXY=http://localhost:7890 \ 
--e HTTP_PROXY=http://localhost:7890 \ 
--e ALL_PROXY=socks5://127.0.0.1:7891 \ 
--p 8000:8000 proxoar/talk
-```
-
 ### Terraform
 
-Refer to  [terraform](example%2Fterraform). The same applies to Kubernetes.
+Refer to [terraform](example/terraform). The same applies to Kubernetes.
 
 ### From scratch
 
@@ -85,14 +84,27 @@ cd ../talk && go build cmd/talk/talk.go
 ./talk
 ```
 
+# Advanced usage
+
+### Proxy
+
+We honour `HTTP_PROXY` and `HTTPS_PROXY`. Given that all communication between the Talk server and providers occurs via
+HTTPS, simply employ `HTTPS_PROXY`.
+
+```shell
+docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \ 
+-e HTTPS_PROXY=http://192.168.1.105:7890 \ 
+-p 8000:8000 \ 
+proxoar/talk
+```
+
 # Troubleshooting
 
-**Why am I unable to initiate the recording?**
+### Why am I unable to initiate the recording?
 
 Browsers keep HTTPS website from reading your microphone for security.
 
 Solutions:
-
 * Run Talk behind a reverse proxy like Nginx and setup TLS in Nginx.
 * Open `chrome://flags/` in Chrome, find `Insecure origins treated as secure` and enable it:
   <br>
@@ -100,8 +112,6 @@ Solutions:
   <br>
 
 Rest assured, HTTPS support is on its way and will be implemented shortly
-
-
 
 # Browser compatibility
 
@@ -150,7 +160,7 @@ Doc for contributing will be ready soon.
 
 # Credits
 
-#### Front-end
+### Front-end
 
 * [React](https://github.com/facebook/react): The library for web and native user interfaces
 * [vite](https://github.com/vitejs/vite): Next generation frontend tooling. It's fast!
@@ -159,7 +169,7 @@ Doc for contributing will be ready soon.
 * [granim.js](https://github.com/sarcadass/granim.js): Create fluid and interactive gradient animations with this small
   javascript library.
 
-#### Back-end
+### Back-end
 
 * This project draws inspiration from [Hugh](https://github.com/IgnoranceAI/hugh), a remarkable tool that enables
   seamless communication with AI using minimal code.
@@ -170,7 +180,7 @@ Doc for contributing will be ready soon.
 * [r3labs/sse](https://github.com/r3labs/sse/): Server Sent Events server and client for Golang
   platform.
 
-#### UI
+### UI
 
 * [wikiart.org](https://www.wikiart.org): Wikiart is a great place to find art online. Most wallpapers of Talk come
   from WikiArt.org
