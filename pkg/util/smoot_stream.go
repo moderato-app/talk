@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-const minSpeedBeforeDone = 10e-3
-const totalMsBeforeDone = 2000
+const minSpeedBeforeDone = 15e-3
+const totalMsBeforeDone = 1000
 const minSpeedWhenDone = 20e-3
-const totalMsWhenDone = 1000
+const totalMsWhenDone = 500
 
 // it's not a commercial project, and feel free to utilise ample capacity
 const chanCap = 1000

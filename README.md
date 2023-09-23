@@ -98,9 +98,27 @@ proxoar/talk
 
 ### HTTPS
 
+#### Generate self-signed cert on the fly
+
+Example: [talk.tls.self.signed.example.yaml](example/talk.tls.self.signed.example.yaml)
+
+```yaml
+server:
+  tls:
+    self-signed: true
+```
+
+This is handy if you're indifferent to a domain and unconcerned about security, simply desiring to enable
+microphone access on browsers.
+
+##### Provide you own TLS
+
+Example: [talk.tls.provided.example.yaml](example/talk.tls.provided.example.yaml)
+
 ##### Auto TLS
 
-This configuration example facilitates automatic certificate acquisition from LetsEncrypt: [talk.auto.tls.example.yaml](example/talk.auto.tls.example.yaml)
+This configuration example facilitates automatic certificate acquisition from
+LetsEncrypt: [talk.tls.auto.example.yaml](example/talk.tls.auto.example.yaml)
 
 Requirements: You should have your personal VPS and domain.
 
@@ -108,11 +126,12 @@ Requirements: You should have your personal VPS and domain.
 
 ### Why can't I start the recording?
 
-Web browsers safeguard your microphone from being accessed by non-HTTPS websites for security reasons.
+Web browsers safeguard your microphone from being accessed by non-HTTPS websites for security reasons, with the
+exceptions being `localhost` and `127.0.0.1`.
 
 Remedies:
 
-* [Auto TLS](#auto-tls)
+* Enable [HTTPS](#https). Particularly, you can [Generate self-signed cert on the fly](#generate-self-signed-cert-on-the-fly) in a mere second.
 * Run Talk through a reverse proxy like Nginx and set up TLS within this service.
 * In Chrome, go to `chrome://flags/`, find `Insecure origins treated as secure`, and enable it:
   <br>

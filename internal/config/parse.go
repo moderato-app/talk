@@ -15,8 +15,6 @@ const (
 
 func setDefaultValue() {
 	viper.SetDefault("server.port", DefaultServerPort)
-	viper.SetDefault("server.check-health-on-startup", false)
-	viper.SetDefault("server.demo-mode", false)
 }
 
 func readFile() error {
