@@ -70,7 +70,7 @@ func StartServer() {
 		// provide an email address
 		certmagic.DefaultACME.Email = tls.AutoTlsLetsEncryptEmail
 		// use the staging endpoint while we're developing
-		certmagic.DefaultACME.CA = certmagic.LetsEncryptStagingCA
+		certmagic.DefaultACME.CA = certmagic.LetsEncryptProductionCA
 		e.Logger.Fatal(certmagic.HTTPS(tls.AutoTlsDomains, e))
 	} else {
 		addr := fmt.Sprintf(":%d", conf.Server.Port)
