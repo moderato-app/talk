@@ -108,12 +108,7 @@ resource "kubernetes_config_map" "talk_env" {
 
   # Remove me if not you're using a proxy
   data = {
-    ALL_PROXY = "socks5://vpn-service.vpn-namespace.svc.cluster.local:7891"
-
     HTTPS_PROXY = "http://vpn-service.vpn-namespace.svc.cluster.local:7890"
-
-    HTTP_PROXY = "http://vpn-service.vpn-namespace.svc.cluster.local:7890"
-
     NO_PROXY = "127.0.0.1/8, 192.168.0.0/16, 0.0.0.0, 193.168.0.0/24, 10.0.0.0/8, 17.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, localhost, *.local"
   }
 }
