@@ -1,0 +1,34 @@
+server:
+  # Provide your own cert
+  # Port 443 will be used.
+  tls:
+    provided:
+      cert: |
+        -----BEGIN CERTIFICATE-----
+        MIIE9TCCAaf3dfadfPBYKIylXpBll96pytCTBMA0GCSqGSIb3DQEBCwUA
+        ................................................................
+        QT12CYUclmD+CyMGu2JTCmvS8hxTAhPDBMYXSKrPQY8vFDJBxzUZqyy38mVVD/k4
+        JDvycm4SycXoTiCPMhFfXZ7aqOH8LRrDUQ==
+        -----END CERTIFICATE-----
+
+        -----BEGIN CERTIFICATE-----
+        MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
+        ................................................................
+        MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
+        nLRbwHOoq7hHwg==
+        -----END CERTIFICATE-----
+
+        -----BEGIN CERTIFICATE-----
+        MIIFYDCCBEigAwIBAgIQQAF3ITfU6UK47naqPGQKtzANBgkqhkiG9w0BAQsFADA/
+        ................................................................
+        he8Y4IWS6wY7bCkjCWDcRQJMEhg76fsO3txE+FiYruq9RUWhiF1myv4Q6W+CyBFC
+        Dfvp7OOGAN6dEOM4+qR9sdjoSYKEBpsr6GtPAQw4dy753ec5
+        -----END CERTIFICATE-----
+
+      key: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDbryel2XXHVxgQ
+        ................................................................
+        QT12CYUclmD+CyMGu2JTCmvS8hxTAhPDBMYXSKrPQY8vFDJBxzUZqyy38mVVD/k4
+        nf8MwGpZXV4s3U9zAmO6z1nP
+        -----END PRIVATE KEY-----

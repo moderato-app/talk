@@ -31,7 +31,39 @@ type LlmConfig struct {
 	ChatGPT string `mapstructure:"chat-gpt"`
 }
 
+type TLSPolicy int
+
+const (
+	TLSPolicyNone            TLSPolicy = iota
+	TLSPolicyProvided        TLSPolicy = iota
+	TLSPolicySelfSignedOnFly TLSPolicy = iota
+	TLSPolicyAuto            TLSPolicy = iota
+)
+
+type Auto struct {
+	Domains []string `mapstructure:"domains"`
+	Email   string   `mapstructure:"email"`
+}
+
+type Provided struct {
+	Cert string `mapstructure:"cert"`
+	Key  string `mapstructure:"key"`
+}
+
 type TLS struct {
-	AutoTlsDomains          []string `mapstructure:"auto-tls-domains"`
-	AutoTlsLetsEncryptEmail string   `mapstructure:"auto-tls-lets-encrypt-email"`
+	Auto       Auto     `mapstructure:"auto"`
+	Provided   Provided `mapstructure:"provided"`
+	SelfSigned bool     `mapstructure:"self-signed"`
+}
+
+func WhichTLSPolicy(tls TLS) TLSPolicy {
+	if tls.SelfSigned {
+		return TLSPolicySelfSignedOnFly
+	} else if tls.Provided.Cert != "" {
+		return TLSPolicyProvided
+	} else if len(tls.Auto.Domains) > 0 {
+		return TLSPolicyAuto
+	} else {
+		return TLSPolicyNone
+	}
 }

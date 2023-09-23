@@ -1,0 +1,6 @@
+server:
+  # On server boot, a unique certificate is created. This certificate varies with each restart as it's not retained.
+  # This cert is not trusted by any browsers, users can ignore the warning on browsers and proceed.
+  # Port 443 will be used.
+  tls:
+    self-signed: true

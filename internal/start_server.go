@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"io/fs"
+	"time"
 
 	"github.com/brpaz/echozap"
 	"github.com/caddyserver/certmagic"
@@ -12,6 +13,7 @@ import (
 	talk "github.com/proxoar/talk"
 	"github.com/proxoar/talk/internal/config"
 	middleware2 "github.com/proxoar/talk/internal/middleware"
+	"github.com/suyashkumar/ssl-proxy/gen"
 )
 
 func StartServer() {
@@ -61,19 +63,30 @@ func StartServer() {
 	s.Use(middleware2.SinglePageApp(""))
 	s.StaticFS("/*", w)
 
-	// Why choose CertMagic over Echo's AutoTLSManager?
-	// CertMagic provides more comprehensive information when issues arise, and is presently in a state of ongoing development
-	var tls = conf.Server.Tls
-	if len(tls.AutoTlsDomains) > 0 {
+	var stopError error
+	var t = conf.Server.Tls
+	if t.SelfSigned {
+		cert, key, _, err := gen.Keys(time.Hour * 24 * 30)
+		if err != nil {
+			logger.Sugar().Panic("failed to create a cert:", err)
+		}
+		stopError = e.StartTLS(":443", cert.Bytes(), key.Bytes())
+	} else if t.Provided.Cert != "" {
+		stopError = e.StartTLS(":443", []byte(t.Provided.Cert), []byte(t.Provided.Key))
+	} else if len(t.Auto.Domains) > 0 {
+		// Why choose CertMagic over Echo's AutoTLSManager?
+		// CertMagic provides more comprehensive information when issues arise, and is presently in a state of ongoing development
+
 		// read and agree to your CA's legal documents
 		certmagic.DefaultACME.Agreed = true
 		// provide an email address
-		certmagic.DefaultACME.Email = tls.AutoTlsLetsEncryptEmail
+		certmagic.DefaultACME.Email = t.Auto.Email
 		// use the staging endpoint while we're developing
 		certmagic.DefaultACME.CA = certmagic.LetsEncryptProductionCA
-		e.Logger.Fatal(certmagic.HTTPS(tls.AutoTlsDomains, e))
+		stopError = certmagic.HTTPS(t.Auto.Domains, e)
 	} else {
 		addr := fmt.Sprintf(":%d", conf.Server.Port)
-		e.Logger.Fatal(e.Start(addr))
+		stopError = e.Start(addr)
 	}
+	e.Logger.Fatal(stopError)
 }
