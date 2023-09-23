@@ -2,7 +2,9 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 
 	. "github.com/proxoar/talk/internal/api"
 	"github.com/proxoar/talk/internal/util"
@@ -63,40 +65,34 @@ Start
 */
 func (c *ChatHandler) Start(ms []client.Message, ar *AudioReader) {
 	ctx := context.Background()
-	textCh := make(chan string, 1) // text in this channel is intended for completion purpose
 	if ar != nil {
 		if c.o.ToText {
-			go func() { c.toText(ctx, *ar, client.RoleUser, textCh) }()
-		}
-		text := <-textCh
-		if text == "" {
-			c.logger.Warn("got empty text, break pipeline")
-			return
-		}
-		ms = append(ms, client.Message{Role: client.RoleUser, Content: text})
-	}
-
-	if ar == nil {
-		// when transcribing text input by user, Role must be RoleUser
-		if c.o.ToSpeech {
-			if len(ms) == 0 || ms[len(ms)-1].Role != client.RoleUser {
-				c.logger.Warn("if audio is not uploaded, ms should not be empty and the last message should have Role==RoleUser")
+			text, err := c.toText(ctx, *ar, client.RoleUser)
+			if err != nil {
+				c.logger.Sugar().Error("got empty text, break pipeline", err)
 				return
 			}
+			ms = append(ms, client.Message{Role: client.RoleUser, Content: text})
+		}
+	} else if ar == nil {
+		if len(ms) == 0 || ms[len(ms)-1].Role != client.RoleUser {
+			c.logger.Warn("if audio is not uploaded, ms should not be empty and the last message should have Role==RoleUser")
+			return
+		}
+		if c.o.ToSpeech {
 			go func() { c.toSpeech(ctx, ms[len(ms)-1].Content, client.RoleUser) }()
 		}
 	}
 
 	if c.o.Completion {
-		cTextCh := make(chan string, 1) // text in this channel is intended for completion purpose
-
-		go func() { c.completion(ctx, ms, client.RoleAssistant, cTextCh) }()
+		text, err := c.completion(ctx, ms, client.RoleAssistant)
+		if err != nil {
+			c.logger.Sugar().Error("got empty text from completion", err)
+			return
+		}
 
 		if c.o.CompletionToSpeech {
-			cText := <-cTextCh
-			if cText != "" {
-				go func() { c.toSpeech(ctx, cText, client.RoleAssistant) }()
-			}
+			c.toSpeech(ctx, text, client.RoleAssistant)
 		}
 	}
 }
@@ -137,8 +133,7 @@ func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Rol
 	})
 }
 
-func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Role, textCh chan<- string) {
-	defer close(textCh)
+func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Role) (string, error) {
 	meta := MessageMeta{
 		ChatId:    c.chatId,
 		TicketId:  c.ticketId,
@@ -148,11 +143,13 @@ func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 
 	stt, ok := c.talker.SelectSTTProvider(c.o.STTOption)
 	if !ok {
+		eMsg := "No speech-to-text providers are available"
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			ErrMsg:      "No speech-to-text providers are available"},
+			ErrMsg:      eMsg},
 		)
-		return
+		//goland:noinspection GoErrorStringFormat
+		return "", errors.New(eMsg)
 	}
 
 	go func() { c.sse.PublishData(c.streamId, EventMessageThinking, meta) }()
@@ -165,27 +162,28 @@ func (c *ChatHandler) toText(ctx context.Context, ar AudioReader, role client.Ro
 			MessageMeta: meta,
 			ErrMsg:      errMsg},
 		)
-		return
+		return "", errors.New(errMsg)
 	}
 	if text == "" {
+		eMsg := "Empty content from speech-to-text sever"
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			ErrMsg:      "Empty content from speech-to-text sever"},
+			ErrMsg:      eMsg},
 		)
-		return
+		//goland:noinspection GoErrorStringFormat
+		return "", errors.New(eMsg)
 	}
 
-	// should not block
-	textCh <- text
-
-	c.sse.PublishData(c.streamId, EventMessageTextEOF, Text{
-		MessageMeta: meta,
-		Text:        text,
-	})
+	go func() {
+		c.sse.PublishData(c.streamId, EventMessageTextEOF, Text{
+			MessageMeta: meta,
+			Text:        text,
+		})
+	}()
+	return text, nil
 }
 
-func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message, assistant client.Role, textCh chan<- string) {
-	defer close(textCh)
+func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message, assistant client.Role) (string, error) {
 	meta := MessageMeta{
 		ChatId:    c.chatId,
 		TicketId:  c.ticketId,
@@ -195,38 +193,40 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 
 	llm, ok := c.talker.SelectLLMProvider(c.o.LLMOption)
 	if !ok {
+		eMsg := "No Large Language Model providers are available"
 		c.sse.PublishData(c.streamId, EventMessageError, Error{
 			MessageMeta: meta,
-			ErrMsg:      "No Large Language Model providers are available"},
+			ErrMsg:      eMsg},
 		)
-		return
+		//goland:noinspection GoErrorStringFormat
+		return "", errors.New(eMsg)
 	}
 
 	go func() { c.sse.PublishData(c.streamId, EventMessageThinking, meta) }()
 
-	ch := llm.CompletionStream(ctx, latestMs, *c.o.LLMOption)
+	stream := llm.CompletionStream(ctx, latestMs, *c.o.LLMOption)
+	defer stream.Close()
 	text := ""
 	for {
-		chunk, ok := <-ch
-		if ok {
-			if chunk.Err != nil {
+
+		data, err := stream.Recv()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				c.sse.PublishData(c.streamId, EventMessageTextEOF, meta)
+				break
+			} else {
 				c.sse.PublishData(c.streamId, EventMessageError,
-					Error{MessageMeta: meta, ErrMsg: chunk.Err.Error()})
-				return
+					Error{MessageMeta: meta, ErrMsg: err.Error()})
+				return text, err
 			}
-			c.sse.PublishData(c.streamId, EventMessageTextTyping,
-				Text{MessageMeta: meta, Text: chunk.Text})
-			text += chunk.Text
-		} else {
-			// if ch is closed
-			c.sse.PublishData(c.streamId, EventMessageTextEOF, meta)
-			break
 		}
+		c.sse.PublishData(c.streamId, EventMessageTextTyping,
+			Text{MessageMeta: meta, Text: string(data)})
+		text += string(data)
 	}
 	if text == "" {
-		c.logger.Sugar().Error("text should not be empty")
-		return
+		return text, errors.New("text should not be empty")
 	}
-	// should not block
-	textCh <- text
+
+	return text, nil
 }

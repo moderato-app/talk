@@ -3,12 +3,13 @@ package providers
 import (
 	"context"
 	"errors"
-	"fmt"
+	"math/rand"
 	"time"
 
 	demo "github.com/proxoar/talk-demo-resource/v2"
 	"github.com/proxoar/talk/pkg/ability"
 	"github.com/proxoar/talk/pkg/client"
+	"github.com/proxoar/talk/pkg/util"
 	"go.uber.org/zap"
 )
 
@@ -57,25 +58,27 @@ func (c *chatGPTDemo) Completion(_ context.Context, _ []client.Message, t abilit
 // Return only one chunk that contains the whole content if stream is not supported.
 // To make sure the chan closes eventually, caller should either read the last chunk from chan
 // or got a chunk whose Err != nil
-func (c *chatGPTDemo) CompletionStream(_ context.Context, ms []client.Message, t ability.LLMOption) <-chan client.Chunk {
+func (c *chatGPTDemo) CompletionStream(_ context.Context, ms []client.Message, t ability.LLMOption) *util.SmoothStream {
 	c.logger.Sugar().Infow("completion stream...", "message list length", len(ms))
-	ch := make(chan client.Chunk, 64)
+	stream := util.NewSmoothStream()
 	if t.ChatGPT == nil {
-		ch <- client.Chunk{Text: "", Err: errors.New("client did not provide ChatGPT option")}
-		return ch
+		stream.WriteError(errors.New("client did not provide ChatGPT option"))
+		return stream
 	}
 	go func() {
-		defer close(ch)
-		r := c.pool.RandomResource()
-		// type speed: 50 chars/sec
-		sleepMilli := 1000 / 50
-		for _, c := range r.Text {
-			ch <- client.Chunk{Text: fmt.Sprintf("%c", c)}
-			time.Sleep(time.Duration(sleepMilli) * time.Millisecond)
-		}
-	}()
+		resource := c.pool.RandomResource()
+		time.Sleep(500 * time.Millisecond)
 
-	return ch
+		// mock the act of random typing
+		for _, r := range resource.Text {
+			stream.Write(r)
+			if rand.Float64() < 0.2 {
+				time.Sleep(time.Duration(rand.Intn(200)) * time.Millisecond)
+			}
+		}
+		stream.DoneWrite()
+	}()
+	return stream
 }
 
 // SetAbility set `ChatGPTAblt` and `available` field of ability.LLMAblt
