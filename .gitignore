@@ -17,9 +17,6 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-# Do not touch this lines
-talk.yaml
-
 # Go workspace file
 go.work
 .idea
@@ -30,3 +27,9 @@ build+push.sh
 #macOS
 **/.DS_Store
 web/html
+
+# Project
+build
+## Do not touch this lines
+talk.yaml
+
