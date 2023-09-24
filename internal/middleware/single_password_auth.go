@@ -26,9 +26,10 @@ type (
 )
 
 const (
-	expiration = 30 * 27 * time.Hour
-	bearer     = "Bearer"
-	hashLength = 64
+	expiration   = 30 * 27 * time.Hour
+	bearer       = "Bearer"
+	passwordHash = "passwordHash"
+	hashLength   = 64
 )
 
 var (
@@ -81,26 +82,29 @@ func SPAuthWithConfig(config SPAuthConfig) echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			auth := c.Request().Header.Get(echo.HeaderAuthorization)
-			l := len(bearer)
-
-			if len(auth) > l+1 && strings.EqualFold(auth[:l], bearer) {
-				// Invalid base64 shouldn't be treated as error
-				// instead should be treated as invalid client input
-				hash := auth[l+1:]
-				if len(hash) != hashLength {
-					return echo.NewHTTPError(http.StatusUnauthorized, "single-password-auth hash is incorrect")
-				}
-
-				password, ok := passMap[hash]
-				if ok {
-					c.Logger().Debug(maskPassword(password) + " has passed single-password-auth")
-					return next(c)
+			// SSE request pass has through query params, because EventSource in js doesn't support custom headers.
+			hash := c.QueryParam(passwordHash)
+			if hash == "" {
+				auth := c.Request().Header.Get(echo.HeaderAuthorization)
+				l := len(bearer)
+				if len(auth) > l+1 && strings.EqualFold(auth[:l], bearer) {
+					// Invalid base64 shouldn't be treated as error
+					// instead should be treated as invalid client input
+					hash = auth[l+1:]
 				} else {
-					return echo.NewHTTPError(http.StatusUnauthorized, "wrong password")
+					return echo.NewHTTPError(http.StatusUnauthorized, "single-password-auth malformed")
 				}
 			}
-			return echo.NewHTTPError(http.StatusUnauthorized, "single-password-auth malformed")
+			if len(hash) != hashLength {
+				return echo.NewHTTPError(http.StatusUnauthorized, "single-password-auth hash is incorrect")
+			}
+			password, ok := passMap[hash]
+			if ok {
+				c.Logger().Debug(maskPassword(password) + " has passed single-password-auth")
+				return next(c)
+			} else {
+				return echo.NewHTTPError(http.StatusUnauthorized, "wrong password")
+			}
 		}
 	}
 }
