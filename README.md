@@ -129,11 +129,11 @@ Requirements: You should have your personal VPS and domain.
 Web browsers safeguard your microphone from being accessed by non-HTTPS websites for security reasons, with the
 exceptions being `localhost` and `127.0.0.1`.
 
-Remedies:
+Here are some possible solutions:
 
-* Enable [HTTPS](#https). Particularly, you can [Generate self-signed cert on the fly](#generate-self-signed-cert-on-the-fly) in a mere second.
-* Run Talk through a reverse proxy like Nginx and set up TLS within this service.
-* In Chrome, go to `chrome://flags/`, find `Insecure origins treated as secure`, and enable it:
+1. Enable [HTTPS](#https). Particularly, you can [Generate self-signed cert on the fly](#generate-self-signed-cert-on-the-fly) in a mere second.
+2. Run Talk through a reverse proxy like Nginx and set up TLS within this service.
+3. In Chrome, go to `chrome://flags/`, find `Insecure origins treated as secure`, and enable it:
   <br>
   <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="600">
   <br>

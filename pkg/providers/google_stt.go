@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -21,9 +22,12 @@ import (
 )
 
 type googleSTT struct {
-	speechClient  *speech.Client
-	projectClient *resourcemanager.ProjectsClient
-	logger        *zap.Logger
+	accountJson        string
+	globalSpeechClient *speech.Client
+	projectClient      *resourcemanager.ProjectsClient
+	locToClient        sync.Map
+	mu                 sync.Mutex
+	logger             *zap.Logger
 }
 
 func NewGoogleSTT(accountJson string, logger *zap.Logger) (client.SpeechToText, error) {
@@ -38,9 +42,10 @@ func NewGoogleSTT(accountJson string, logger *zap.Logger) (client.SpeechToText, 
 	}
 
 	return &googleSTT{
-		speechClient:  speechClient,
-		projectClient: projectClient,
-		logger:        logger,
+		accountJson:        accountJson,
+		globalSpeechClient: speechClient,
+		projectClient:      projectClient,
+		logger:             logger,
 	}, nil
 }
 
@@ -58,6 +63,16 @@ func (g *googleSTT) CheckHealth(ctx context.Context) {
 func (g *googleSTT) SpeechToText(ctx context.Context, audio io.Reader, fileName string, option ability.STTOption) (string, error) {
 	g.logger.Sugar().Infow("transcribe...", "fileName", fileName, "option", option)
 
+	rec := option.Google.Recognizer
+	if rec == "" {
+		//goland:noinspection GoErrorStringFormat
+		return "", errors.New("Recognizer mustn't be empty")
+	}
+	c, err := g.clientForRecognizer(rec)
+	if err != nil {
+		return "", err
+	}
+
 	bytes, err := io.ReadAll(audio)
 	if err != nil {
 		return "", err
@@ -67,7 +82,7 @@ func (g *googleSTT) SpeechToText(ctx context.Context, audio io.Reader, fileName 
 		lang = append(lang, option.Google.Language)
 	}
 	req := &speechpb.RecognizeRequest{
-		Recognizer: option.Google.Recognizer,
+		Recognizer: rec,
 		Config: &speechpb.RecognitionConfig{
 			Model:         option.Google.Model,
 			LanguageCodes: lang,
@@ -77,14 +92,14 @@ func (g *googleSTT) SpeechToText(ctx context.Context, audio io.Reader, fileName 
 		},
 		AudioSource: &speechpb.RecognizeRequest_Content{Content: bytes},
 	}
-	resp, err := g.speechClient.Recognize(ctx, req)
+	resp, err := c.Recognize(ctx, req)
 	if err != nil {
 		return "", err
 	}
 	g.logger.Sugar().Info("transcribe result alternatives: ", len(resp.Results))
 	if len(resp.Results) == 0 {
 		return "", errors.New("google speech-to-text service did not provide any alternative results," +
-			" which typically occurs when the audio quality is poor or language doesn't match your voice")
+			" which typically occurs when the audio quality is poor or the chosen language doesn't match your voice")
 	}
 	text := resp.Results[0].Alternatives[0].Transcript
 	g.logger.Sugar().Info("transcribe result text length:", len(text))
@@ -165,21 +180,19 @@ func (g *googleSTT) getAllRecognizers(ctx context.Context) ([]error, []ability.T
 
 func (g *googleSTT) getRecognizers(ctx context.Context, location string) ([]ability.TaggedItem, error) {
 	g.logger.Sugar().Infof("get recognizers of location %s ...", location)
-	iter := g.speechClient.ListRecognizers(ctx, &speechpb.ListRecognizersRequest{
+	c, err := g.clientForLocation(location)
+	if err != nil {
+		return nil, err
+	}
+	iter := c.ListRecognizers(ctx, &speechpb.ListRecognizersRequest{
 		Parent:   location,
 		PageSize: 100, // max
 	})
 	recs := make([]ability.TaggedItem, 0, 10)
 	for {
 		next, err := iter.Next()
-		if errors.Is(err, iterator.Done) {
-			break
-		} else if err != nil {
-			// rpc error: code = InvalidArgument desc = Expected resource location to be global, but found europe-west2 in resource name.
-			if strings.Contains(err.Error(), "Expected resource location to be global") {
-				// It appears that there is a bug in the Google Speech-to-Text API, which limits users to
-				// only querying recognizers for the global location.
-				// The issue is here: https://github.com/googleapis/google-cloud-go/issues/8593
+		if err != nil {
+			if errors.Is(err, iterator.Done) {
 				break
 			}
 			return nil, err
@@ -205,7 +218,7 @@ func (g *googleSTT) getRecognizers(ctx context.Context, location string) ([]abil
 
 func (g *googleSTT) getLocations(ctx context.Context, projectName string) ([]string, error) {
 	g.logger.Sugar().Infof("get locations of project %s ...", projectName)
-	iter := g.speechClient.ListLocations(ctx, &location.ListLocationsRequest{
+	iter := g.globalSpeechClient.ListLocations(ctx, &location.ListLocationsRequest{
 		PageSize: 100, // max
 		Name:     projectName,
 	})
@@ -241,4 +254,45 @@ func (g *googleSTT) getProjects(ctx context.Context) ([]string, error) {
 		}
 		projects = append(projects, next.Name)
 	}
+}
+
+// clientForLocation
+// creates a Client for a specific location, and cache it for future usage
+// format of rec: `projects/123456789/locations/us-west1`
+// https://github.com/googleapis/google-cloud-go/issues/8593
+func (g *googleSTT) clientForLocation(location string) (*speech.Client, error) {
+	loc := filepath.Base(location)
+	if loc == "global" {
+		return g.globalSpeechClient, nil
+	}
+	c, ok := g.locToClient.Load(loc)
+
+	if ok {
+		return c.(*speech.Client), nil
+	}
+
+	endpoint := loc + "-speech.googleapis.com"
+
+	// by default, the underlying http.client utilizes the proxy from the environment.
+	newC, err := speech.NewClient(context.Background(),
+		option.WithCredentialsJSON([]byte(g.accountJson)),
+		option.WithEndpoint(endpoint),
+	)
+	if err != nil {
+		return nil, err
+	}
+	actualC, loaded := g.locToClient.LoadOrStore(loc, newC)
+	if loaded {
+		// close current client if there exists one in the map
+		_ = newC.Close()
+	}
+
+	return actualC.(*speech.Client), nil
+}
+
+// format of rec: `projects/123456789/locations/us-west1/recognizers/us-west`
+func (g *googleSTT) clientForRecognizer(rec string) (*speech.Client, error) {
+	loc := filepath.Dir(rec)
+	loc = filepath.Dir(loc)
+	return g.clientForLocation(loc)
 }
