@@ -6,7 +6,7 @@ RUN apk update && apk add --no-cache git
 
 # Clone the repository
 WORKDIR /app
-RUN git clone --depth 1 --branch v1.0.3 --single-branch https://github.com/proxoar/talk-web .
+RUN git clone --depth 1 --branch v1.1.0 --single-branch https://github.com/proxoar/talk-web .
 
 # Install dependencies and build
 RUN yarn install
