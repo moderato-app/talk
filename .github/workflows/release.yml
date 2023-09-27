@@ -33,7 +33,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'build/talk-*.*'
+          args: 'build/*.(gz|zip)'
 
   amd64:
     name: amd64
