@@ -1,4 +1,4 @@
-name: publish release image
+name: Release
 
 on:
   release:
@@ -10,6 +10,28 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  generate:
+    name: Create release-artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Build binaries
+        run: make release
+
+      - name: Upload the artifacts
+        uses: skx/github-action-publish-binaries@release-2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: 'build/talk-*.*'
+
   amd64:
     name: amd64
     runs-on: ubuntu-latest

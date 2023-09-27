@@ -33,3 +33,6 @@ build
 ## Do not touch this lines
 talk.yaml
 
+## emacs
+talk.yaml~
+
