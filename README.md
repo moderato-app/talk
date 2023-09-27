@@ -131,12 +131,13 @@ exceptions being `localhost` and `127.0.0.1`.
 
 Here are some possible solutions:
 
-1. Enable [HTTPS](#https). Particularly, you can [Generate self-signed cert on the fly](#generate-self-signed-cert-on-the-fly) in a mere second.
+1. Enable [HTTPS](#https). Particularly, you
+   can [Generate self-signed cert on the fly](#generate-self-signed-cert-on-the-fly) in a mere second.
 2. Run Talk through a reverse proxy like Nginx and set up TLS within this service.
 3. In Chrome, go to `chrome://flags/`, find `Insecure origins treated as secure`, and enable it:
-  <br>
-  <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="600">
-  <br>
+   <br>
+   <img src="./doc/image/chrome-microphone-access.jpg" alt="Markdownify" width="600">
+   <br>
 
 # Browser compatibility
 
@@ -193,6 +194,8 @@ Doc for contributing will be ready soon.
 * [wavesurfer.js](https://github.com/katspaugh/wavesurfer.js): Audio waveform player
 * [granim.js](https://github.com/sarcadass/granim.js): Create fluid and interactive gradient animations with this small
   javascript library.
+* [virtual](https://github.com/tanstack/virtual): Headless UI for Virtualizing Large Element Lists in JS/TS, React,
+  Solid, Vue and Svelte
 
 ### Back-end
 
@@ -200,6 +203,8 @@ Doc for contributing will be ready soon.
   seamless communication with AI using minimal code.
 * [go-openai](https://github.com/sashabaranov/go-openai): OpenAI ChatGPT, GPT-3, GPT-4, DALL·E, Whisper API wrapper for
   Go.
+* [google-cloud-go](https://github.com/googleapis/google-cloud-go): Google Cloud Client Libraries for Go. Thanks to
+  [googleapis](https://github.com/googleapis) for the prompt response to our concern.
 * [echo](https://github.com/labstack/echo): High performance, minimalist Go web framework
 * [elevenlabs-go](https://github.com/haguro/elevenlabs-go): A Go API client library for the ElevenLabs speech synthesis
 * [r3labs/sse](https://github.com/r3labs/sse/): Server Sent Events server and client for Golang
