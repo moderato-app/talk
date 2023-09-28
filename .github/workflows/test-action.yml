@@ -2,11 +2,6 @@ name: Test Action
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "*" ]
-
-permissions:
-  contents: write
 
 jobs:
   test-action:
@@ -35,10 +30,10 @@ jobs:
       - name: ls web/html
         run: ls web/html
 
-#      - name: Set up Go
-#        uses: actions/setup-go@v4
-#        with:
-#          go-version: '1.21'
-#
-#      - name: Build binaries
-#        run: make release
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Build binaries
+        run: make release
