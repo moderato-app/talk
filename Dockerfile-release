@@ -4,12 +4,15 @@ ARG RELEASE_VERSION
 
 RUN if [ -z "RELEASE_VERSION" ]; then exit 1; fi
 
+ENV RELEASE_VERSION=${RELEASE_VERSION}
+
 COPY ${PWD} /app
 WORKDIR /app
 
 RUN apk update && apk add curl tar
 
 RUN curl -LO https://github.com/proxoar/talk-web/releases/download/$RELEASE_VERSION/dist.tar.gz && \
+          mkdir temp && \
           tar -C temp -xzf dist.tar.gz && \
           mv temp/* web/html && \
           rm -r temp && \

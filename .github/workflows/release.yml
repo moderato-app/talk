@@ -15,7 +15,7 @@ env:
 
 jobs:
   generate:
-    name: Create release-artifacts
+    name: build and upload binaries
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
