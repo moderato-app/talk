@@ -48,9 +48,9 @@ func LoadConfig(logger *zap.Logger) (*TalkConfig, error) {
 		logger.Sugar().Info("searching config file")
 		err := readFile()
 		if err != nil {
-			if strings.Contains(err.Error(), "While parsing config: yaml: invalid trailing UTF-8 octet") {
+			if strings.Contains(err.Error(), "While parsing config: yaml") {
 				// viper takes our talk binary as config file
-				return nil, errors.New(" Config File \"talk\" Not Found in \"[/etc/talk /Users/clement/.config/talk /Users/clement/.talk /Users/clement /Users/clement/projects/talk]\"")
+				return nil, errors.New(err.Error() + ", Or Maybe Config File \"talk\" Not Found in \"[/etc/talk $HOME/.config/talk $HOME/.talk $HOME $HOME/projects/talk]\"")
 			}
 			return nil, err
 		}

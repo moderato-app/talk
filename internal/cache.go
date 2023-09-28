@@ -16,6 +16,7 @@ const (
 const (
 	abilityKey        = "ability"
 	abilityExpireTime = time.Hour
+	abilityShortLived = time.Minute
 )
 
 var TalkCache talkCache
@@ -38,6 +39,11 @@ func newTalkCache() talkCache {
 
 func (s *talkCache) PutAbility(data ability.Ability) {
 	s.cache.Set(abilityKey, data, abilityExpireTime)
+	s.logger.Sugar().Debug("put ability into cache")
+}
+
+func (s *talkCache) PutShortLivedAbility(data ability.Ability) {
+	s.cache.Set(abilityKey, data, abilityShortLived)
 	s.logger.Sugar().Debug("put ability into cache")
 }
 

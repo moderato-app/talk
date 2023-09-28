@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/proxoar/talk/internal/api"
@@ -36,7 +37,9 @@ func (s *SSE) HandleEcho(c echo.Context) error {
 
 // emit an Ability to on client subscription
 func (s *SSE) sendAbilityEvent(streamID string, _ *sse.Subscriber) {
-	errs, ab := s.talker.Ability(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	errs, ab := s.talker.Ability(ctx)
 	for i, v := range errs {
 		s.logger.Sugar().Errorf("error-%d when getting Ability: %s", i, v)
 	}
