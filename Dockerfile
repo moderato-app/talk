@@ -1,12 +1,17 @@
 # Use Node.js official image as base
 FROM node:20-alpine AS webBuilder
 
+# Name of a branch or a tag of proxoar/talk-web
+ARG TALK_WEB_VERSION=main
+
+ENV TALK_WEB_VERSION=${TALK_WEB_VERSION}
+
 # Install git
 RUN apk update && apk add --no-cache git
 
 # Clone the repository
 WORKDIR /app
-RUN git clone --depth 1 --branch v1.1.1 --single-branch https://github.com/proxoar/talk-web .
+RUN git clone --depth 1 --branch $TALK_WEB_VERSION --single-branch https://github.com/proxoar/talk-web .
 
 # Install dependencies and build
 RUN yarn install

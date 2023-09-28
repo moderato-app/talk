@@ -1,0 +1,36 @@
+FROM golang:1.21-alpine AS builder
+
+ARG RELEASE_VERSION
+
+RUN if [ -z "RELEASE_VERSION" ]; then exit 1; fi
+
+COPY ${PWD} /app
+WORKDIR /app
+
+RUN apk update && apk add curl tar
+
+RUN curl -LO https://github.com/proxoar/talk-web/releases/download/$RELEASE_VERSION/dist.tar.gz && \
+          tar -C temp -xzf dist.tar.gz && \
+          mv temp/* web/html && \
+          rm -r temp && \
+          rm dist.tar.gz
+
+RUN go build -o appbin cmd/talk/talk.go
+
+# Final step
+FROM alpine
+
+# Following commands are for installing CA certs (for proper functioning of HTTPS and other TLS)
+RUN apk --update add ca-certificates && \
+    rm -rf /var/cache/apk/*
+
+RUN adduser -D appuser
+USER appuser
+
+COPY --from=builder /app /home/appuser/app
+
+WORKDIR /home/appuser/app
+
+EXPOSE 8000
+
+CMD ["./appbin"]

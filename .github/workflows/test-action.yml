@@ -1,11 +1,12 @@
-name: Release
+name: Test Action
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ "*" ]
 
-env:
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
+permissions:
+  contents: write
 
 jobs:
   test-action:
@@ -17,30 +18,22 @@ jobs:
 
       - uses: robinraju/release-downloader@v1.8
         with:
-          # The source repository path.
-          # Expected format {owner}/{repo}
-          # Default: ${{ github.repository }}
           repository: "proxoar/talk-web"
-
-          # The github tag. e.g: v1.0.1
-          # Download assets from a specific tag/version
-          tag: $GITHUB_REF_NAME
-
-          # Download the attached tarball (*.tar.gz)
-          tarBall: true
-
-          # Relative path under $GITHUB_WORKSPACE to place the downloaded file(s)
-          # It will create the target directory automatically if not present
-          # eg: out-file-path: "my-downloads" => It will create directory $GITHUB_WORKSPACE/my-downloads
-          out-file-path: ""
-
-          # A flag to set if the downloaded assets are archives and should be extracted
-          # Checks all downloaded files if they end with zip, tar or tar.gz and extracts them, if true.
-          # Prints a warning if enabled but file is not an archive - but does not fail.
-          extract: false
+          tag: v1.1.3
+          fileName: dist.tar.gz
 
       - name: ls
         run: ls
+
+      - name: untar
+        run: |
+          mkdir -p temp
+          tar -C temp -xzf dist.tar.gz
+          mv temp/* web/html
+          rm -r temp
+
+      - name: ls web/html
+        run: ls web/html
 
 #      - name: Set up Go
 #        uses: actions/setup-go@v4

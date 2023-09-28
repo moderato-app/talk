@@ -4,9 +4,8 @@ The Talk project has been split into two repositories: [talk](https://github.com
 
 ## Clone projects
 ```shell
-mkdir talk-project && cd talk-project
-git clone https://github.com/proxoar/talk.git
-git clone https://github.com/proxoar/talk-web.git
+git clone https://github.com/proxoar/talk.git proxoar/talk
+git clone https://github.com/proxoar/talk-web.git proxoar/talk-web
 ```
 
 ## Run
@@ -15,7 +14,7 @@ I. Install [Go](https://go.dev/dl/) v1.21 or higher
 
 II. Start the backend server
 ```shell
-# in talk-project/talk
+# in proxoar/talk
 make run
 ```
 The backend server listens on `localhost:8000` 
@@ -29,20 +28,20 @@ npm install --global yarn
 ```
 III. Start the WEB
 ```shell
-# in talk-project/talk-web
+# in proxoar/talk-web
 yarn dev
 ```
 Open http://localhost:5173 in browser, you should see the home page.
 
 ## Build a single binary
-I. Build the static site and copy it to `talk-project/talk`
+I. Build the static site and copy it to `proxoar/talk`
 ```shell
-# in talk-project/talk-web
-./script/build-and-copy-to-backend.sh
+# in proxoar/talk-web
+make copy
 ```
-II. Build  
+II. Build backend
 ```shell
-# in talk-project/talk
+# in proxoar/talk
 make build
 ``` 
 An executive binary `talk` will be created

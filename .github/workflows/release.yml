@@ -11,6 +11,7 @@ permissions:
 env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  RELEASE_VERSION: ${{ github.ref_name }}
 
 jobs:
   generate:
@@ -19,6 +20,21 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
+
+      - name: Download dist
+        uses: robinraju/release-downloader@v1.8
+        with:
+          repository: proxoar/talk-web
+          tag: ${{ env.RELEASE_VERSION }}
+          fileName: dist.tar.gz
+
+      - name: Untar dist
+        run: |
+          mkdir -p temp
+          tar -C temp -xzf dist.tar.gz
+          mv temp/* web/html
+          rm -r temp
+          ls web/html
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -33,7 +49,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'build/*.(gz|zip)'
+          args: 'build/*.tar.gz build/*.zip'
 
   amd64:
     name: amd64
@@ -64,6 +80,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          file: Dockerfile-release
+          build-args: RELEASE_VERSION=${{ env.RELEASE_VERSION }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -100,6 +118,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          file: Dockerfile-release
+          build-args: RELEASE_VERSION=${{ env.RELEASE_VERSION }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
