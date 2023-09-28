@@ -181,7 +181,7 @@ Engine, with certain limitations on browsers such as Safari.
 
 We're in the midst of a dynamic development stage for this project and warmly invite new contributors.
 
-Doc for contributing will be ready soon.
+[CONTRIBUTING.md](CONTRIBUTING.md)
 
 # Credits
 
