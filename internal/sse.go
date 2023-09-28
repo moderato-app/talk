@@ -37,7 +37,7 @@ func (s *SSE) HandleEcho(c echo.Context) error {
 
 // emit an Ability to on client subscription
 func (s *SSE) sendAbilityEvent(streamID string, _ *sse.Subscriber) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	errs, ab := s.talker.Ability(ctx)
 	for i, v := range errs {
