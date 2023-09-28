@@ -232,7 +232,7 @@ func (g *googleSTT) getLocations(ctx context.Context, projectName string) ([]str
 		}
 		locs = append(locs, next.Name)
 	}
-	g.logger.Sugar().Infof("count of locations of  %s: %d", projectName, len(locs))
+	g.logger.Sugar().Infof("count of locations of %s: %d", projectName, len(locs))
 
 	return locs, nil
 }

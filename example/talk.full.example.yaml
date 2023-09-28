@@ -10,11 +10,13 @@ server:
     - "password"
   # When utilising TLS, server.port will be ignored, 80 and 443 will be used. Request to HTTP(80) will be redirected to HTTPS(443)
   # By default, CertMagic stores assets on the local file system in $HOME/.local/share/certmagic (and honors $XDG_DATA_HOME if set). CertMagic will create the directory if it does not exist. If writes are denied, things will not be happy, so make sure CertMagic can write to it!
+  # How to persist cache of certs? Example: docker run -v /opt/certmagic:/home/appuser/.local/share/certmagic
   tls:
-    auto-tls-domains:
-      - "a.example.com"
-      - "b.example.com"
-    auto-tls-lets-encrypt-email: "you@yours.com"
+    auto:
+      email: "you@yours.com"
+      domains:
+        - "a.example.com"
+        - "b.example.com"
 
 speech-to-text:
   whisper: open-ai-01

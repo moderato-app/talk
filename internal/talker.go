@@ -165,7 +165,12 @@ func (t *Talker) Ability(ctx context.Context) ([]error, ability.Ability) {
 		}(p)
 	}
 	wg.Wait()
-	TalkCache.PutAbility(ab)
+	if len(errs) == 0 {
+		TalkCache.PutAbility(ab)
+	} else {
+		// try again in a minute
+		TalkCache.PutShortLivedAbility(ab)
+	}
 	return errs, ab
 }
 

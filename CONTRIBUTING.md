@@ -12,7 +12,7 @@ git clone https://github.com/proxoar/talk-web.git proxoar/talk-web
 ### Backend
 I. Install [Go](https://go.dev/dl/) v1.21 or higher 
 
-II. Start the backend server
+II. Start the backend server(prepare your [`talk.yaml`](README.md/#how-to-use) before starting)
 ```shell
 # in proxoar/talk
 make run

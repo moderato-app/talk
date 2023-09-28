@@ -64,17 +64,16 @@ docker run -it -v ./talk.yaml:/etc/talk/talk.yaml -p 8000:8000 proxoar/talk
 Refer to [terraform](example/terraform). The same applies to Kubernetes.
 
 ### From scratch
-
 ```shell
 # clone projects
-mkdir talk-projects && cd talk-projects
-git clone https://github.com/proxoar/talk.git
-git clone https://github.com/proxoar/talk-web.git
+git clone https://github.com/proxoar/talk.git proxoar/talk
+git clone https://github.com/proxoar/talk-web.git proxoar/talk-web
 
-# build web with yarn; currently using node v20.3.0 
-cd talk-web && ./script/build-and-copy-to-backend.sh 
+# build web with yarn and copy; currently using node v20.3.0 
+cd proxoar/talk-web && make copy
 
-cd ../talk && go build cmd/talk/talk.go
+# build backend
+cd ../talk && make build
 
 # run
 ./talk --config ./talk.yaml
@@ -90,9 +89,9 @@ We honour `HTTP_PROXY` and `HTTPS_PROXY`. Given that all communication between t
 HTTPS, simply employ `HTTPS_PROXY`.
 
 ```shell
-docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \ 
--e HTTPS_PROXY=http://192.168.1.105:7890 \ 
--p 8000:8000 \ 
+docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \
+-e HTTPS_PROXY=http://192.168.1.105:7890 \
+-p 8000:8000 \
 proxoar/talk
 ```
 
