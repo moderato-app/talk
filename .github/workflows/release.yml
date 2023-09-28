@@ -11,7 +11,8 @@ permissions:
 env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  RELEASE_VERSION: ${{ github.ref_name }}
+  # make sure that WEB_VERSION <= release version
+  WEB_VERSION: v1.1.4
 
 jobs:
   generate:
@@ -25,7 +26,7 @@ jobs:
         uses: robinraju/release-downloader@v1.8
         with:
           repository: proxoar/talk-web
-          tag: ${{ env.RELEASE_VERSION }}
+          tag: ${{ env.WEB_VERSION }}
           fileName: dist.tar.gz
 
       - name: Untar dist
@@ -81,7 +82,7 @@ jobs:
         with:
           context: .
           file: Dockerfile-release
-          build-args: RELEASE_VERSION=${{ env.RELEASE_VERSION }}
+          build-args: WEB_VERSION=${{ env.WEB_VERSION }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -119,7 +120,7 @@ jobs:
         with:
           context: .
           file: Dockerfile-release
-          build-args: RELEASE_VERSION=${{ env.RELEASE_VERSION }}
+          build-args: WEB_VERSION=${{ env.WEB_VERSION }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

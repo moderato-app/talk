@@ -1,17 +1,17 @@
 FROM golang:1.21-alpine AS builder
 
-ARG RELEASE_VERSION
+ARG WEB_VERSION
 
-RUN if [ -z "RELEASE_VERSION" ]; then exit 1; fi
+RUN if [ -z "WEB_VERSION" ]; then exit 1; fi
 
-ENV RELEASE_VERSION=${RELEASE_VERSION}
+ENV WEB_VERSION=${WEB_VERSION}
 
 COPY ${PWD} /app
 WORKDIR /app
 
 RUN apk update && apk add curl tar
 
-RUN curl -LO https://github.com/proxoar/talk-web/releases/download/$RELEASE_VERSION/dist.tar.gz && \
+RUN curl -LO https://github.com/proxoar/talk-web/releases/download/$WEB_VERSION/dist.tar.gz && \
           mkdir temp && \
           tar -C temp -xzf dist.tar.gz && \
           mv temp/* web/html && \
