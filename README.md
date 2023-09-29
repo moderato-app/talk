@@ -9,9 +9,9 @@ experience, open in Chrome)
 ![figjam-talk-2023-09-22.png](doc/figjam-talk-2023-09-22.png)
 
 <div align="center">
-View on 
+
 <a  href="https://www.figma.com/file/4Uhzr87YVN1KR5ayz7WDYm/Talk?type=whiteboard&t=OGwMZMSKsWZIwG0T-1" target="_blank">
-Figma
+More details
 </a>
 </div>
 
