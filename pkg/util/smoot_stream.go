@@ -8,9 +8,9 @@ import (
 )
 
 const minSpeedBeforeDone = 15e-3
-const totalMsBeforeDone = 1000
+const totalMsBeforeDone = 500
 const minSpeedWhenDone = 20e-3
-const totalMsWhenDone = 500
+const totalMsWhenDone = 250
 
 // it's not a commercial project, and feel free to utilise ample capacity
 const chanCap = 1000
@@ -28,11 +28,11 @@ type SmoothStream struct {
 	remaining atomic.Int32
 	// Although one might question the necessity of 'done' when 'io.EOF' already signals the consumer to cease,
 	// it's actually responsible for managing the pace of typing. If the producer has finished its task,
-	// the consumer should process all data within totalMsWhenDone, maintaining a minimum rate of 5 characters per second.
+	// the consumer should process all data within totalMsWhenDone, maintaining a minimum rate of minSpeedWhenDone.
 	//
 	// However, if the producer is stuck but hasn't ceased, the consumer should make every effort
 	// to delay the typing speed. In this case, it should process all data within totalMsBeforeDone, maintaining a minimum
-	// rate of 20 characters per second.
+	// rate of minSpeedBeforeDone.
 	done              atomic.Bool
 	remainingWhenDone atomic.Int32
 	lastRead          time.Time
