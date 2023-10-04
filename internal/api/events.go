@@ -10,6 +10,7 @@ const (
 	EventMessageError       = "message/error"
 	EventSystemAbility      = "system/ability"
 	EventSystemNotification = "system/notification"
+	EventSystemKeepAlive    = ""
 )
 
 type ContentCmd string

@@ -19,7 +19,7 @@ RUN make build
 FROM golang:1.21-alpine AS builder
 
 # Install git, make
-RUN apk update && apk add --no-cache git make
+RUN apk update && apk add --no-cache make
 
 COPY ${PWD} /app
 WORKDIR /app
