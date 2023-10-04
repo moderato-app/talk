@@ -105,12 +105,17 @@ func serve(t config.TLS, e *echo.Echo, port int, logger *zap.Logger) {
 			logger.Sugar().Fatal("failed to create a cert:", err)
 		}
 		httpsServer := &http.Server{
-			Addr:    ":443",
-			Handler: e,
+			Addr:      ":443",
+			Handler:   e,
+			TLSConfig: tlsConfig,
 		}
-		httpsServer.TLSConfig = tlsConfig
 		go serveRedirect()
-		stopError = httpsServer.ListenAndServe()
+
+		// print [::]:443 in green color
+		green := "\033[32m"
+		reset := "\033[0m"
+		fmt.Printf("⇨ http server started on %s[::]:443%s\n", green, reset)
+		stopError = httpsServer.ListenAndServeTLS("", "")
 	} else {
 		addr := fmt.Sprintf(":%d", port)
 		stopError = e.Start(addr)
