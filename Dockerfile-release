@@ -9,7 +9,7 @@ ENV WEB_VERSION=${WEB_VERSION}
 COPY ${PWD} /app
 WORKDIR /app
 
-RUN apk update && apk add curl tar
+RUN apk update && apk add curl tar make
 
 RUN curl -LO https://github.com/proxoar/talk-web/releases/download/$WEB_VERSION/dist.tar.gz && \
           mkdir temp && \
@@ -18,7 +18,7 @@ RUN curl -LO https://github.com/proxoar/talk-web/releases/download/$WEB_VERSION/
           rm -r temp && \
           rm dist.tar.gz
 
-RUN go build -o appbin cmd/talk/talk.go
+RUN make build
 
 # Final step
 FROM alpine
@@ -30,9 +30,9 @@ RUN apk --update add ca-certificates && \
 RUN adduser -D appuser
 USER appuser
 
-COPY --from=builder /app /home/appuser/app
-
 WORKDIR /home/appuser/app
+
+COPY --from=builder /app/talk /home/appuser/app/appbin
 
 EXPOSE 8000
 
