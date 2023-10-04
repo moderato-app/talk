@@ -64,6 +64,7 @@ docker run -it -v ./talk.yaml:/etc/talk/talk.yaml -p 8000:8000 proxoar/talk
 Refer to [terraform](example/terraform). The same applies to Kubernetes.
 
 ### From scratch
+
 ```shell
 # clone projects
 git clone https://github.com/proxoar/talk.git proxoar/talk
@@ -175,7 +176,7 @@ Engine, with certain limitations on browsers such as Safari.
 - [ ] More LLMs other than ChatGPT
 - [ ] Download and import text history
 - [x] Download chat MP3
-- [ ] Prompt template
+- [x] Prompt template
 
 # Contributing
 
@@ -195,6 +196,10 @@ We're in the midst of a dynamic development stage for this project and warmly in
   javascript library.
 * [virtual](https://github.com/tanstack/virtual): Headless UI for Virtualizing Large Element Lists in JS/TS, React,
   Solid, Vue and Svelte
+* [markdown-it](https://github.com/markdown-it/markdown-it): Markdown parser, done right. 100% CommonMark support,
+  extensions, syntax plugins & high speed
+* [highlight.js](https://github.com/highlightjs/highlight.js): JavaScript syntax highlighter with language
+  auto-detection and zero dependencies.
 
 ### Back-end
 
@@ -206,10 +211,9 @@ We're in the midst of a dynamic development stage for this project and warmly in
   [googleapis](https://github.com/googleapis) for the prompt response to our concern.
 * [echo](https://github.com/labstack/echo): High performance, minimalist Go web framework
 * [elevenlabs-go](https://github.com/haguro/elevenlabs-go): A Go API client library for the ElevenLabs speech synthesis
-* [r3labs/sse](https://github.com/r3labs/sse/): Server Sent Events server and client for Golang
-  platform.
+* [r3labs/sse](https://github.com/r3labs/sse/): Server Sent Events server and client for Golang platform.
 
-### UI
+### Design
 
 * [wikiart.org](https://www.wikiart.org): Wikiart is a great place to find art online. Most wallpapers of Talk come
   from WikiArt.org
