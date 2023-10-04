@@ -6,25 +6,27 @@ ARG TALK_WEB_VERSION=main
 
 ENV TALK_WEB_VERSION=${TALK_WEB_VERSION}
 
-# Install git
-RUN apk update && apk add --no-cache git
+# Install git, make
+RUN apk update && apk add --no-cache git make
 
 # Clone the repository
 WORKDIR /app
 RUN git clone --depth 1 --branch $TALK_WEB_VERSION --single-branch https://github.com/proxoar/talk-web .
 
 # Install dependencies and build
-RUN yarn install
-RUN yarn build
+RUN make build
 
 FROM golang:1.21-alpine AS builder
+
+# Install git, make
+RUN apk update && apk add --no-cache git make
 
 COPY ${PWD} /app
 WORKDIR /app
 
-COPY --from=webBuilder /app/dist web/html
+COPY --from=webBuilder /app/build/dist web/html
 
-RUN go build -o appbin cmd/talk/talk.go
+RUN make build
 
 # Final step
 FROM alpine
@@ -36,9 +38,9 @@ RUN apk --update add ca-certificates && \
 RUN adduser -D appuser
 USER appuser
 
-COPY --from=builder /app /home/appuser/app
-
 WORKDIR /home/appuser/app
+
+COPY --from=builder /app/talk /home/appuser/app/appbin
 
 EXPOSE 8000
 
