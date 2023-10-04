@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"io/fs"
+	"net/http"
 	"time"
 
 	"github.com/brpaz/echozap"
@@ -14,6 +15,7 @@ import (
 	"github.com/proxoar/talk/internal/config"
 	middleware2 "github.com/proxoar/talk/internal/middleware"
 	"github.com/suyashkumar/ssl-proxy/gen"
+	"go.uber.org/zap"
 )
 
 func StartServer() {
@@ -63,15 +65,27 @@ func StartServer() {
 	s.Use(middleware2.SinglePageApp(""))
 	s.StaticFS("/*", w)
 
+	serve(conf.Server.Tls, e, conf.Server.Port, logger)
+}
+
+func serve(t config.TLS, e *echo.Echo, port int, logger *zap.Logger) {
+	serveRedirect := func() {
+		e := echo.New()
+		e.HideBanner = true
+		e.Use(middleware.HTTPSRedirectWithConfig(middleware.RedirectConfig{Code: http.StatusTemporaryRedirect}))
+		logger.Sugar().Fatal(e.Start(":80"))
+	}
+
 	var stopError error
-	var t = conf.Server.Tls
 	if t.SelfSigned {
 		cert, key, _, err := gen.Keys(time.Hour * 24 * 30)
 		if err != nil {
-			logger.Sugar().Panic("failed to create a cert:", err)
+			logger.Sugar().Fatal("failed to create a cert:", err)
 		}
+		go serveRedirect()
 		stopError = e.StartTLS(":443", cert.Bytes(), key.Bytes())
 	} else if t.Provided.Cert != "" {
+		go serveRedirect()
 		stopError = e.StartTLS(":443", []byte(t.Provided.Cert), []byte(t.Provided.Key))
 	} else if len(t.Auto.Domains) > 0 {
 		// Why choose CertMagic over Echo's AutoTLSManager?
@@ -83,10 +97,23 @@ func StartServer() {
 		certmagic.DefaultACME.Email = t.Auto.Email
 		// use the staging endpoint while we're developing
 		certmagic.DefaultACME.CA = certmagic.LetsEncryptProductionCA
-		stopError = certmagic.HTTPS(t.Auto.Domains, e)
+
+		// Obtain the TLS configuration
+		tlsConfig, err := certmagic.TLS(t.Auto.Domains)
+
+		if err != nil {
+			logger.Sugar().Fatal("failed to create a cert:", err)
+		}
+		httpsServer := &http.Server{
+			Addr:    ":443",
+			Handler: e,
+		}
+		httpsServer.TLSConfig = tlsConfig
+		go serveRedirect()
+		stopError = httpsServer.ListenAndServe()
 	} else {
-		addr := fmt.Sprintf(":%d", conf.Server.Port)
+		addr := fmt.Sprintf(":%d", port)
 		stopError = e.Start(addr)
 	}
-	e.Logger.Fatal(stopError)
+	logger.Sugar().Fatal(stopError)
 }

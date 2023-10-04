@@ -1,6 +1,6 @@
 server:
   # Provide your own cert
-  # Port 443 will be used.
+  # Port 80 and 443 will be used. Request to HTTP(80) will be redirected to HTTPS(443)
   tls:
     provided:
       cert: |
