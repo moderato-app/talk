@@ -73,7 +73,7 @@ func (c *chatGPTDemo) CompletionStream(_ context.Context, ms []client.Message, t
 		for _, r := range resource.Text {
 			stream.Write(r)
 			if rand.Float64() < 0.1 {
-				time.Sleep(time.Duration(rand.Intn(300)) * time.Millisecond)
+				time.Sleep(time.Duration(rand.Intn(150)) * time.Millisecond)
 			}
 		}
 		stream.DoneWrite()
