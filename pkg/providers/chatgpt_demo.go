@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math/rand"
+	"strings"
 	"time"
 
 	demo "github.com/proxoar/talk-demo-resource/v2"
@@ -79,6 +80,18 @@ func (c *chatGPTDemo) CompletionStream(_ context.Context, ms []client.Message, t
 		stream.DoneWrite()
 	}()
 	return stream
+}
+
+// use this to observe UI style for code block
+func codeExample(c *chatGPTDemo) *demo.Resource {
+	resource := c.pool.RandomResource()
+	for _, v := range c.pool.List() {
+		if strings.Contains(v.Text, "Highlight.js is a powerful library") {
+			resource = &v
+			break
+		}
+	}
+	return resource
 }
 
 // SetAbility set `ChatGPTAblt` and `available` field of ability.LLMAblt
