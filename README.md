@@ -111,7 +111,7 @@ server:
 This is handy if you're indifferent to a domain and unconcerned about security, simply desiring to enable
 microphone access on browsers.
 
-##### Provide you own TLS
+##### Provide your own TLS
 
 Example: [talk.tls.provided.example.yaml](example/talk.tls.provided.example.yaml)
 
