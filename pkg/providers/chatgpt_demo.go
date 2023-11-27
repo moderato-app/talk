@@ -20,12 +20,16 @@ var chatGPTDemoModels = []string{
 	"gpt-4-32k[demo]",
 	"gpt-4-0613[demo]",
 	"gpt-4-0314[demo]",
+	"gpt-4-1106-preview[demo]",
+	"gpt-4-vision-preview[demo]",
 	"gpt-4[demo]",
+	"gpt-3.5-turbo-1106[demo]",
 	"gpt-3.5-turbo-0613[demo]",
 	"gpt-3.5-turbo-0301[demo]",
 	"gpt-3.5-turbo-16k[demo]",
 	"gpt-3.5-turbo-16k-0613[demo]",
 	"gpt-3.5-turbo[demo]",
+	"gpt-3.5-turbo-instruct[demo]",
 }
 
 type chatGPTDemo struct {

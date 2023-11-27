@@ -2,9 +2,10 @@ package ability
 
 // Ability guide clients in adjusting all parameters.
 type Ability struct {
-	LLM LLMAblt `json:"llm"`
-	TTS TTSAblt `json:"tts"`
-	STT STTAblt `json:"stt"`
+	Demo bool    `json:"demo"`
+	LLM  LLMAblt `json:"llm"`
+	TTS  TTSAblt `json:"tts"`
+	STT  STTAblt `json:"stt"`
 }
 
 // TTSAblt text to speech

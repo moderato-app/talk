@@ -17,6 +17,7 @@ type Talker struct {
 	llmProviders []client.LLM
 	sstProviders []client.SpeechToText
 	ttsProviders []client.TextToSpeech
+	demo         bool
 	logger       *zap.Logger
 }
 
@@ -69,7 +70,7 @@ func NewTalker(tc config.TalkConfig, logger *zap.Logger) (*Talker, error) {
 		}
 	}
 
-	talker := Talker{llms, stts, ttss, logger}
+	talker := Talker{llms, stts, ttss, tc.Server.DemoMode, logger}
 	if tc.Server.CheckHealthOnStartup {
 		go func() { talker.checkProvidersHealth() }()
 	}
@@ -121,7 +122,7 @@ func (t *Talker) Ability(ctx context.Context) ([]error, ability.Ability) {
 	if ok {
 		return nil, ab
 	}
-	ab = ability.Ability{}
+	ab = ability.Ability{Demo: t.demo}
 	var errs []error
 	var errsMu sync.Mutex
 	var wg sync.WaitGroup
