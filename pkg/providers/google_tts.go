@@ -41,7 +41,7 @@ func (g *googleTTS) CheckHealth(ctx context.Context) {
 			VolumeGainDb: 0,
 		},
 	}
-	audio, err := g.TextToSpeech(ctx, "Hello!", o)
+	audio, err := g.TextToSpeech(ctx, "Hello!", "Hello!", o)
 	if err != nil {
 		g.logger.Sugar().Errorf("[Google text-to-speech] failed to get response from server: %+v", err)
 	} else if len(audio) < 100 || len(audio) > 10000 {
@@ -81,7 +81,7 @@ func (g *googleTTS) Voices(ctx context.Context) ([]ability.TaggedItem, error) {
 	return vs, nil
 }
 
-func (g *googleTTS) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
+func (g *googleTTS) TextToSpeech(ctx context.Context, text string, _ string, o ability.TTSOption) ([]byte, error) {
 	g.logger.Sugar().Infow("text to speech...", "option", o)
 	req := texttospeechpb.SynthesizeSpeechRequest{
 		Input: &texttospeechpb.SynthesisInput{

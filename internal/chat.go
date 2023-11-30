@@ -116,8 +116,7 @@ func (c *ChatHandler) toSpeech(ctx context.Context, text string, role client.Rol
 
 	go func() { c.sse.PublishData(c.streamId, EventMessageThinking, meta) }()
 
-	text = util.RemoveCodeFromText(text)
-	audio, err := tts.TextToSpeech(ctx, text, *c.o.TTSOption)
+	audio, err := tts.TextToSpeech(ctx, util.RemoveCodeFromText(text), text, *c.o.TTSOption)
 	if err != nil {
 		c.logger.Sugar().Error(err)
 		c.sse.PublishData(c.streamId, EventMessageError, Error{

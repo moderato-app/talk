@@ -71,7 +71,7 @@ func (e *elevenLabs) Voices(_ context.Context) ([]ability.TaggedItem, error) {
 	return vs, nil
 }
 
-func (e *elevenLabs) TextToSpeech(ctx context.Context, text string, o ability.TTSOption) ([]byte, error) {
+func (e *elevenLabs) TextToSpeech(ctx context.Context, text string, _ string, o ability.TTSOption) ([]byte, error) {
 	e.logger.Info("text to speech...")
 	req := elevenlabs.TextToSpeechRequest{
 		Text:    text,
