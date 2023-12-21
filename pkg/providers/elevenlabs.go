@@ -72,7 +72,7 @@ func (e *elevenLabs) Voices(_ context.Context) ([]ability.TaggedItem, error) {
 }
 
 func (e *elevenLabs) TextToSpeech(ctx context.Context, text string, _ string, o ability.TTSOption) ([]byte, error) {
-	e.logger.Info("text to speech...")
+	e.logger.Debug("text to speech...")
 	req := elevenlabs.TextToSpeechRequest{
 		Text:    text,
 		ModelID: defaultModelID,

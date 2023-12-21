@@ -48,13 +48,13 @@ func (c *chatGPTDemo) CheckHealth(_ context.Context) {
 }
 
 func (c *chatGPTDemo) Completion(_ context.Context, _ []client.Message, t ability.LLMOption) (string, error) {
-	c.logger.Info("completion...")
+	c.logger.Debug("completion...")
 	if t.ChatGPT == nil {
 		return "", errors.New("client did not provide ChatGPT option")
 	}
 
 	r := c.pool.RandomResource()
-	c.logger.Sugar().Info("completion resp content length:", len(r.Text))
+	c.logger.Sugar().Debug("completion resp content length:", len(r.Text))
 	return r.Text, nil
 }
 
@@ -64,7 +64,7 @@ func (c *chatGPTDemo) Completion(_ context.Context, _ []client.Message, t abilit
 // To make sure the chan closes eventually, caller should either read the last chunk from chan
 // or got a chunk whose Err != nil
 func (c *chatGPTDemo) CompletionStream(_ context.Context, ms []client.Message, t ability.LLMOption) *util.SmoothStream {
-	c.logger.Sugar().Infow("completion stream...", "message list length", len(ms))
+	c.logger.Sugar().Debugw("completion stream...", "message list length", len(ms))
 	stream := util.NewSmoothStream()
 	if t.ChatGPT == nil {
 		stream.WriteError(errors.New("client did not provide ChatGPT option"))

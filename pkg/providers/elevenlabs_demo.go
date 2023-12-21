@@ -62,7 +62,7 @@ func (e *elevenLabsDemo) Voices(_ context.Context) ([]ability.TaggedItem, error)
 }
 
 func (e *elevenLabsDemo) TextToSpeech(_ context.Context, _ string, originalText string, _ ability.TTSOption) ([]byte, error) {
-	e.logger.Info("text to speech...")
+	e.logger.Debug("text to speech...")
 	time.Sleep(2 * time.Second)
 	r := e.pool.FindAudioByTextOrRandom(originalText)
 	e.logger.Sugar().Debug("text to speech result, audio bytes size:", humanize.Bytes(uint64(len(r.Audio))))

@@ -74,7 +74,7 @@ func (c *chatGPT) Completion(ctx context.Context, ms []client.Message, t ability
 	}
 
 	content := resp.Choices[0].Message.Content
-	c.logger.Sugar().Info("completion resp content length:", len(content))
+	c.logger.Sugar().Debug("completion resp content length:", len(content))
 	return content, nil
 }
 
@@ -84,7 +84,7 @@ func (c *chatGPT) Completion(ctx context.Context, ms []client.Message, t ability
 // To make sure the chan closes eventually, caller should either read the last chunk from chan
 // or got a chunk whose Err != nil
 func (c *chatGPT) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMOption) *util.SmoothStream {
-	c.logger.Sugar().Infow("completion stream...", "message list length", len(ms))
+	c.logger.Sugar().Debugw("completion stream...", "message list length", len(ms))
 	stream := util.NewSmoothStream()
 	if t.ChatGPT == nil {
 		stream.WriteError(errors.New("client did not provide ChatGPT option"))
@@ -104,7 +104,7 @@ func (c *chatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 	}
 	reqLog := req
 	reqLog.Messages = nil
-	c.logger.Sugar().Info("completion stream req without messages:", reqLog)
+	c.logger.Sugar().Debugw("completion stream req without messages:", reqLog)
 
 	go func() {
 		s, err := c.client.CreateChatCompletionStream(ctx, req)

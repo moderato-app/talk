@@ -19,7 +19,7 @@ import (
 )
 
 func StartServer() {
-	logger := defaultLogger()
+	logger := mustDefaultLogger()
 
 	conf := config.MustLoadConfig(logger)
 

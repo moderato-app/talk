@@ -26,7 +26,7 @@ func (w *whisperDemo) CheckHealth(_ context.Context) {
 }
 
 func (w *whisperDemo) SpeechToText(_ context.Context, _ io.Reader, fileName string, option ability.STTOption) (string, error) {
-	w.logger.Sugar().Infow("transcribe...", "fileName", fileName, "option", option)
+	w.logger.Sugar().Debugw("transcribe...", "fileName", fileName, "option", option)
 	time.Sleep(1 * time.Second)
 	return "Greetings! Please share with me any arbitrary subject.", nil
 }

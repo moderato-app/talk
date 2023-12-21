@@ -32,7 +32,7 @@ type talkCache struct {
 func newTalkCache() talkCache {
 	return talkCache{
 		cache:  cache.New(defaultExpireTime, cleanupInterval),
-		logger: defaultLogger(),
+		logger: mustDefaultLogger(),
 	}
 }
 

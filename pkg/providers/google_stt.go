@@ -96,13 +96,13 @@ func (g *googleSTT) SpeechToText(ctx context.Context, audio io.Reader, fileName 
 	if err != nil {
 		return "", err
 	}
-	g.logger.Sugar().Info("transcribe result alternatives: ", len(resp.Results))
+	g.logger.Sugar().Debug("transcribe result alternatives: ", len(resp.Results))
 	if len(resp.Results) == 0 {
 		return "", errors.New("google speech-to-text service did not provide any alternative results," +
 			" which typically occurs when the audio quality is poor or the chosen language doesn't match your voice")
 	}
 	text := resp.Results[0].Alternatives[0].Transcript
-	g.logger.Sugar().Info("transcribe result text length:", len(text))
+	g.logger.Sugar().Debug("transcribe result text length:", len(text))
 	if len(text) == 0 {
 		return "", errors.New("content of transcription is empty: " + err.Error())
 	}
