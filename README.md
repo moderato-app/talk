@@ -78,7 +78,7 @@ cd ../talk && make build
 
 # run
 ./talk --config ./talk.yaml
-# or simply `./talk` as it automatically locates talk.yaml in `/etc/talk/` and `./talk.yaml`
+# or simply `./talk` as it automatically lookup talk.yaml in `/etc/talk/talk.yaml` and `./talk.yaml`
 ./talk
 ```
 
@@ -94,6 +94,15 @@ docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \
 -e HTTPS_PROXY=http://192.168.1.105:7890 \
 -p 8000:8000 \
 proxoar/talk
+```
+
+### Log level
+
+Default log level is `info`, Use env `LOG_LEVEL` to change log level: "debug", "info", "warn", "error", "dpanic", "
+panic", and "fatal". e.g.,
+
+```shell
+LOG_LEVEL=debug ./talk
 ```
 
 ### HTTPS
@@ -174,7 +183,7 @@ Engine, with certain limitations on browsers such as Safari.
 - [x] Docker image
 - [x] Server Side Events(SSE)
 - [ ] More LLMs other than ChatGPT
-- [ ] Download and import text history
+- [x] Download and import text history
 - [x] Download chat MP3
 - [x] Prompt template
 
