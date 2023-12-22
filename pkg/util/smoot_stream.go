@@ -1,7 +1,6 @@
 package util
 
 import (
-	"io"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -64,16 +63,12 @@ func (stream *SmoothStream) WriteError(err error) {
 	}
 	stream.done.Store(true)
 	stream.remainingWhenDone.Store(stream.remaining.Load())
-}
-
-func (stream *SmoothStream) DoneWrite() {
-	stream.WriteError(io.EOF)
+	stream.Close()
 }
 
 // Recv
 // is not safe for concurrent read.
 // Recv returns io.EOF or other errors
-// Its callers' responsibility to close SmoothStream
 func (stream *SmoothStream) Recv() (rune, error) {
 	chunk := <-stream.ch
 	if chunk.Err != nil {

@@ -81,8 +81,6 @@ func (c *chatGPT) Completion(ctx context.Context, ms []client.Message, t ability
 // CompletionStream
 //
 // Return only one chunk that contains the whole content if stream is not supported.
-// To make sure the chan closes eventually, caller should either read the last chunk from chan
-// or got a chunk whose Err != nil
 func (c *chatGPT) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMOption) *util.SmoothStream {
 	c.logger.Sugar().Debugw("completion stream...", "message list length", len(ms))
 	stream := util.NewSmoothStream()
@@ -104,7 +102,7 @@ func (c *chatGPT) CompletionStream(ctx context.Context, ms []client.Message, t a
 	}
 	reqLog := req
 	reqLog.Messages = nil
-	c.logger.Sugar().Debugw("completion stream req without messages:", reqLog)
+	c.logger.Sugar().Debug("completion stream req without messages:", reqLog)
 
 	go func() {
 		s, err := c.client.CreateChatCompletionStream(ctx, req)
@@ -148,7 +146,7 @@ func (c *chatGPT) Support(o ability.LLMOption) bool {
 	return o.ChatGPT != nil
 }
 
-func (c *chatGPT) getModels(ctx context.Context) ([]string, error) {
+func (c *chatGPT) getModels(ctx context.Context) ([]ability.Model, error) {
 	c.logger.Info("get models...")
 	ml, err := c.client.ListModels(ctx)
 	if err != nil {
@@ -162,7 +160,12 @@ func (c *chatGPT) getModels(ctx context.Context) ([]string, error) {
 	}
 	sort.Strings(models)
 	c.logger.Sugar().Debug("models count:", len(models))
-	return models, err
+	ms := make([]ability.Model, len(models))
+	for i, model := range models {
+		ms[i].Name = model
+		ms[i].DisplayName = model
+	}
+	return ms, err
 }
 
 func messageOfComplete(ms []client.Message) []openai.ChatCompletionMessage {

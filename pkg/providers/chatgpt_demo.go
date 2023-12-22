@@ -3,6 +3,7 @@ package providers
 import (
 	"context"
 	"errors"
+	"io"
 	"math/rand"
 	"strings"
 	"time"
@@ -14,22 +15,22 @@ import (
 	"go.uber.org/zap"
 )
 
-var chatGPTDemoModels = []string{
-	"gpt-4-32k-0613[demo]",
-	"gpt-4-32k-0314[demo]",
-	"gpt-4-32k[demo]",
-	"gpt-4-0613[demo]",
-	"gpt-4-0314[demo]",
-	"gpt-4-1106-preview[demo]",
-	"gpt-4-vision-preview[demo]",
-	"gpt-4[demo]",
-	"gpt-3.5-turbo-1106[demo]",
-	"gpt-3.5-turbo-0613[demo]",
-	"gpt-3.5-turbo-0301[demo]",
-	"gpt-3.5-turbo-16k[demo]",
-	"gpt-3.5-turbo-16k-0613[demo]",
-	"gpt-3.5-turbo[demo]",
-	"gpt-3.5-turbo-instruct[demo]",
+var chatGPTDemoModels = []ability.Model{
+	{Name: "gpt-4-32k-0613[demo]", DisplayName: "gpt-4-32k-0613[demo]"},
+	{Name: "gpt-4-32k-0314[demo]", DisplayName: "gpt-4-32k-0314[demo]"},
+	{Name: "gpt-4-32k[demo]", DisplayName: "gpt-4-32k[demo]"},
+	{Name: "gpt-4-0613[demo]", DisplayName: "gpt-4-0613[demo]"},
+	{Name: "gpt-4-0314[demo]", DisplayName: "gpt-4-0314[demo]"},
+	{Name: "gpt-4-1106-preview[demo]", DisplayName: "gpt-4-1106-preview[demo]"},
+	{Name: "gpt-4-vision-preview[demo]", DisplayName: "gpt-4-vision-preview[demo]"},
+	{Name: "gpt-4[demo]", DisplayName: "gpt-4[demo]"},
+	{Name: "gpt-3.5-turbo-1106[demo]", DisplayName: "gpt-3.5-turbo-1106[demo]"},
+	{Name: "gpt-3.5-turbo-0613[demo]", DisplayName: "gpt-3.5-turbo-0613[demo]"},
+	{Name: "gpt-3.5-turbo-0301[demo]", DisplayName: "gpt-3.5-turbo-0301[demo]"},
+	{Name: "gpt-3.5-turbo-16k[demo]", DisplayName: "gpt-3.5-turbo-16k[demo]"},
+	{Name: "gpt-3.5-turbo-16k-0613[demo]", DisplayName: "gpt-3.5-turbo-16k-0613[demo]"},
+	{Name: "gpt-3.5-turbo[demo]", DisplayName: "gpt-3.5-turbo[demo]"},
+	{Name: "gpt-3.5-turbo-instruct[demo]", DisplayName: "gpt-3.5-turbo-instruct[demo]"},
 }
 
 type chatGPTDemo struct {
@@ -61,8 +62,6 @@ func (c *chatGPTDemo) Completion(_ context.Context, _ []client.Message, t abilit
 // CompletionStream
 //
 // Return only one chunk that contains the whole content if stream is not supported.
-// To make sure the chan closes eventually, caller should either read the last chunk from chan
-// or got a chunk whose Err != nil
 func (c *chatGPTDemo) CompletionStream(_ context.Context, ms []client.Message, t ability.LLMOption) *util.SmoothStream {
 	c.logger.Sugar().Debugw("completion stream...", "message list length", len(ms))
 	stream := util.NewSmoothStream()
@@ -81,7 +80,7 @@ func (c *chatGPTDemo) CompletionStream(_ context.Context, ms []client.Message, t
 				time.Sleep(time.Duration(rand.Intn(150)) * time.Millisecond)
 			}
 		}
-		stream.DoneWrite()
+		stream.WriteError(io.EOF)
 	}()
 	return stream
 }
@@ -115,7 +114,7 @@ func (c *chatGPTDemo) Support(o ability.LLMOption) bool {
 	return o.ChatGPT != nil
 }
 
-func (c *chatGPTDemo) getModels(_ context.Context) ([]string, error) {
+func (c *chatGPTDemo) getModels(_ context.Context) ([]ability.Model, error) {
 	c.logger.Info("get models...")
 
 	c.logger.Sugar().Debug("models count:", len(chatGPTDemoModels))
