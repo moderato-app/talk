@@ -3,7 +3,7 @@
 Talk is a single-page application crafted to converse with AI using voice, replicating the user experience akin to a
 native app.
 
-**[Demo](https://talk.proxoar.com)**  (No Signup. No Login. Simply start conversing. For an optimal
+**[Demo](https://talk.proxoar.com)**  (No registration or login needed. Simply start conversing. For an optimal
 experience, open in Chrome)
 
 ![figjam-talk-2023-09-22.png](doc/figjam-talk-2023-09-22.png)
@@ -17,9 +17,10 @@ More details
 
 # Highlighted Features
 
-- Focus on voice-driven dialogues
-- Broad range of service providers to choose from: ChatGPT, Elevenlabs, Google Text-toSpeech, Whisper and Google
+- Broad range of service providers to choose from: ChatGPT, Google Gemini, Elevenlabs, Google Text-toSpeech, Whisper and
+  Google
   Speech-to-Text
+- Enable voice-driven dialogues
 - Modern and stylish user interface
 - Unified, standalone binary
 
@@ -46,10 +47,19 @@ creds:
   elevenlabs-01: "711sfpb9kk15sds8m4czuk5rozvp43a4"
 ```
 
-Looking to utilise Google Text-to-Speech and Google Speech-to-Text? Not to worry, we have that covered. Please refer
+* Not interested in Voice? Give this a try:
+```yaml
+llm:
+  chat-gpt: open-ai-01
+creds:
+  open-ai-01: "sk-2dwY1IAeEysbnDNuAKJDXofX1IAeEysbnDNuAKJDXofXF5"
+```
+
+* Looking to utilise Google Gemini, Google Text-to-Speech and Google Speech-to-Text? Not to worry, we have that covered.
+Please refer
 to [talk.google.example.yaml](example/talk.google.example.yaml) for more information
 
-The comprehensive example: [talk.full.example.yaml](example/talk.full.example.yaml)
+* The comprehensive example: [talk.full.example.yaml](example/talk.full.example.yaml)
 
 ## 2. Start the application
 
@@ -86,8 +96,8 @@ cd ../talk && make build
 
 ### Proxy
 
-We honour `HTTP_PROXY` and `HTTPS_PROXY`. Given that all communication between the Talk server and providers occurs via
-HTTPS, simply employ `HTTPS_PROXY`.
+We honour `HTTP_PROXY` and `HTTPS_PROXY` env variables. Given that all communication between the Talk server and
+service providers occurs via HTTPS, simply employ `HTTPS_PROXY`.
 
 ```shell
 docker run -it -v ./talk.yaml:/etc/talk/talk.yaml \
@@ -107,7 +117,9 @@ LOG_LEVEL=debug ./talk
 
 ### HTTPS
 
-#### Generate self-signed cert on the fly
+`proxoar/talk` offers three methods for enabling HTTPS.
+
+#### 1. Generate self-signed cert on the fly
 
 Example: [talk.tls.self.signed.example.yaml](example/talk.tls.self.signed.example.yaml)
 
@@ -120,11 +132,11 @@ server:
 This is handy if you're indifferent to a domain and unconcerned about security, simply desiring to enable
 microphone access on browsers.
 
-##### Provide your own TLS
+##### 2. Provide your own TLS
 
 Example: [talk.tls.provided.example.yaml](example/talk.tls.provided.example.yaml)
 
-##### Auto TLS
+##### 3. Auto TLS
 
 This configuration example facilitates automatic certificate acquisition from
 LetsEncrypt: [talk.tls.auto.example.yaml](example/talk.tls.auto.example.yaml)
@@ -182,7 +194,7 @@ Engine, with certain limitations on browsers such as Safari.
 - [x] Choose voice
 - [x] Docker image
 - [x] Server Side Events(SSE)
-- [ ] More LLMs other than ChatGPT
+- [x] More LLMs other than ChatGPT
 - [x] Download and import text history
 - [x] Download chat MP3
 - [x] Prompt template

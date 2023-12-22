@@ -27,6 +27,7 @@ speech-to-text:
 
 llm:
   chat-gpt: open-ai-02
+  gemini: gemini-01
 
 text-to-speech:
   elevenlabs: elevenlabs-01
@@ -38,6 +39,7 @@ creds:
   open-ai-01: "sk-2dwY1IAeEysbnDNuAKJDXofX1IAeEysbnDNuAKJDXofXF5"
   open-ai-02: "sk-5jhJGy48GBj49gj45hUg4j0J4548GB58H4994jlax3Ki3H"
   elevenlabs-01: "711sfpb9kk15sds8m4czuk5rozvp43a4"
+  gemini-01: "AIjh8hfY-sadf8hDFGYSxxMO_bdf4Gsdfi1A"
   # create a service account at https://console.cloud.google.com/iam-admin/serviceaccounts/create
   # and download the json file follow this tutorial: https://cloud.google.com/iam/docs/keys-list-get#get-key
   google-01: |

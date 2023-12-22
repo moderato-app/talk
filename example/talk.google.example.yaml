@@ -5,7 +5,7 @@ speech-to-text:
   google: google-01
 
 llm:
-  chat-gpt: open-ai-01
+  gemini: gemini-01
 
 text-to-speech:
   # must enable Text-to-Speech API, see https://console.cloud.google.com/apis/api/texttospeech.googleapis.com
@@ -13,7 +13,7 @@ text-to-speech:
 
 # provide your confidential information below.
 creds:
-  open-ai-01: "sk-2dwY1IAeEysbnDNuAKJDXofX1IAeEysbnDNuAKJDXofXF5"
+  gemini-01: "AIjh8hfY-sadf8hDFGYSxxMO_bdf4Gsdfi1A"
   # create a service account at https://console.cloud.google.com/iam-admin/serviceaccounts/create
   # and download the json file follow this tutorial: https://cloud.google.com/iam/docs/keys-list-get#get-key
   google-01: |
