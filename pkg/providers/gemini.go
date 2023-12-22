@@ -70,9 +70,9 @@ func (c *gemini) Completion(ctx context.Context, ms []client.Message, t ability.
 	model.TopK = &t.Gemini.TopK
 
 	cs := model.StartChat()
-	cs.History = messageOfGenaiHistory(ms[:len(ms)-1], c.logger)
-
-	resp, err := cs.SendMessage(ctx, genai.Text(ms[len(ms)-1].Content))
+	history, question := messageOfGenaiHistory(ms, c.logger)
+	cs.History = history
+	resp, err := cs.SendMessage(ctx, question.Parts...)
 
 	if err != nil {
 		return "", errors.Join(errors.New("failed to SendMessage"), err)
@@ -103,10 +103,11 @@ func (c *gemini) CompletionStream(ctx context.Context, ms []client.Message, t ab
 	model.TopK = &t.Gemini.TopK
 
 	cs := model.StartChat()
-	cs.History = messageOfGenaiHistory(ms[:len(ms)-1], c.logger)
+	history, question := messageOfGenaiHistory(ms, c.logger)
+	cs.History = history
 
 	go func() {
-		iter := cs.SendMessageStream(ctx, genai.Text(ms[len(ms)-1].Content))
+		iter := cs.SendMessageStream(ctx, question.Parts...)
 		for {
 			response, err := iter.Next()
 			if err != nil {
@@ -169,8 +170,10 @@ func (c *gemini) getModels(ctx context.Context) ([]ability.Model, error) {
 	return models, nil
 }
 
-func messageOfGenaiHistory(ms []client.Message, logger *zap.Logger) []*genai.Content {
-
+func messageOfGenaiHistory(ms []client.Message, logger *zap.Logger) (history []*genai.Content, question *genai.Content) {
+	if len(ms) == 0 {
+		logger.Fatal("ms must contain at least one message")
+	}
 	// To suppress the error: "Please ensure that multiturn requests alternate between user and model."
 	var res []client.Message
 	var prev *client.Message
@@ -184,9 +187,7 @@ func messageOfGenaiHistory(ms []client.Message, logger *zap.Logger) []*genai.Con
 		ms[i].Role = role
 
 		if prev == nil {
-			if role == "model" {
-				prev = &ms[i]
-			}
+			prev = &ms[i]
 			continue
 		}
 		if role == prev.Role {
@@ -196,13 +197,22 @@ func messageOfGenaiHistory(ms []client.Message, logger *zap.Logger) []*genai.Con
 			prev = &ms[i]
 		}
 	}
-	if prev != nil && prev.Role == "user" {
+
+	// conversation must start with a message that role==user
+	if prev != nil {
 		res = append(res, *prev)
+		if prev.Role == "model" {
+			res = append(res, client.Message{Role: client.RoleUser, Content: ""})
+		}
+	}
+
+	if len(res) == 0 {
+		logger.Fatal("res must contain at least one message")
 	}
 
 	slices.Reverse(res)
 
-	logger.Sugar().Debug("res: ")
+	logger.Sugar().Debug("history: ")
 	for _, v := range res {
 		logger.Sugar().Debug(v.Role, ": ", v.Content)
 	}
@@ -215,7 +225,7 @@ func messageOfGenaiHistory(ms []client.Message, logger *zap.Logger) []*genai.Con
 		})
 	}
 
-	return messages
+	return messages[:len(messages)-1], messages[len(messages)-1]
 }
 
 func responseString(resp *genai.GenerateContentResponse) string {
