@@ -29,6 +29,7 @@ type TextToSpeechConfig struct {
 
 type LlmConfig struct {
 	ChatGPT string `mapstructure:"chat-gpt"`
+	Gemini  string `mapstructure:"gemini"`
 }
 
 type TLSPolicy int

@@ -87,7 +87,7 @@ func (c *ChatHandler) Start(ms []client.Message, ar *AudioReader) {
 	if c.o.Completion {
 		text, err := c.completion(ctx, ms, client.RoleAssistant)
 		if err != nil {
-			c.logger.Sugar().Error("got empty text from completion", err)
+			c.logger.Sugar().Error("got empty text from completion, ", err)
 			return
 		}
 
@@ -204,10 +204,9 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 	go func() { c.sse.PublishData(c.streamId, EventMessageThinking, meta) }()
 
 	stream := llm.CompletionStream(ctx, latestMs, *c.o.LLMOption)
-	defer stream.Close()
+
 	text := ""
 	for {
-
 		data, err := stream.Recv()
 		if err != nil {
 			if errors.Is(err, io.EOF) {

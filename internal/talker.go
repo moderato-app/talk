@@ -43,6 +43,11 @@ func NewTalker(tc config.TalkConfig, logger *zap.Logger) (*Talker, error) {
 			llms = append(llms, llm)
 		}
 
+		if apiKey, ok := tc.Creds[tc.Llm.Gemini]; ok {
+			llm := providers.NewGemini(apiKey, logger)
+			llms = append(llms, llm)
+		}
+
 		if apiKey, ok := tc.Creds[tc.TextToSpeech.ElevenLabs]; ok {
 			tts := providers.NewElevenLabs(apiKey, logger)
 			ttss = append(ttss, tts)

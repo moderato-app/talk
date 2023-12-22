@@ -5,6 +5,7 @@ import "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 // LLMOption clients use TalkOption to guide LLMAblt in generating text
 type LLMOption struct {
 	ChatGPT *ChatGPTOption `json:"chatGPT"`
+	Gemini  *GeminiOption  `json:"gemini"`
 }
 
 type ChatGPTOption struct {
@@ -14,6 +15,15 @@ type ChatGPTOption struct {
 	TopP             float32 `json:"topP"`
 	PresencePenalty  float32 `json:"presencePenalty"`
 	FrequencyPenalty float32 `json:"frequencyPenalty"`
+}
+
+type GeminiOption struct {
+	Model           string   `json:"model"`
+	StopSequences   []string `json:"stopSequences"`
+	MaxOutputTokens int32    `json:"maxOutputTokens"`
+	Temperature     float32  `json:"temperature"`
+	TopP            float32  `json:"topP"`
+	TopK            int32    `json:"topK"`
 }
 
 type STTOption struct {

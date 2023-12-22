@@ -49,11 +49,17 @@ type GoogleSTTAb struct {
 type LLMAblt struct {
 	Available bool        `json:"available"`
 	ChatGPT   ChatGPTAblt `json:"chatGPT"`
+	Gemini    GeminiAblt  `json:"gemini"`
 }
 
 type ChatGPTAblt struct {
-	Available bool     `json:"available"`
-	Models    []string `json:"models"`
+	Available bool    `json:"available"`
+	Models    []Model `json:"models"`
+}
+
+type GeminiAblt struct {
+	Available bool    `json:"available"`
+	Models    []Model `json:"models"`
 }
 
 // other
