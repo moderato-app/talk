@@ -161,7 +161,9 @@ func (c *gemini) getModels(ctx context.Context) ([]ability.Model, error) {
 		if err != nil {
 			return nil, err
 		}
-		models = append(models, ability.Model{Name: m.Name, DisplayName: m.DisplayName})
+		if strings.Contains(strings.ToLower(m.Name), "gemini") {
+			models = append(models, ability.Model{Name: m.Name, DisplayName: m.DisplayName})
+		}
 	}
 	c.logger.Sugar().Debug("models count:", len(models))
 	return models, nil
