@@ -56,6 +56,7 @@ func (c *gemini) Quota(_ context.Context) (used, total int, err error) {
 }
 
 func (c *gemini) Completion(ctx context.Context, ms []client.Message, t ability.LLMOption) (string, error) {
+	c.logger.Sugar().Debugw("completion...", "message list: ", ms)
 	c.logger.Sugar().Debugw("completion...", "message list length", len(ms))
 	if t.Gemini == nil {
 		return "", errors.New("client did not provide Gemini option")
@@ -73,20 +74,23 @@ func (c *gemini) Completion(ctx context.Context, ms []client.Message, t ability.
 	history, question := messageOfGenaiHistory(ms, c.logger)
 	cs.History = history
 	resp, err := cs.SendMessage(ctx, question.Parts...)
+	c.logger.Sugar().Debug("resp: ", resp)
 
 	if err != nil {
-		return "", errors.Join(errors.New("failed to SendMessage"), err)
+		return "", errors.Unwrap(err)
 	}
 
-	content := responseString(resp)
-	c.logger.Sugar().Debug("completion resp content length:", len(content))
-	return content, nil
+	extracted := responseString(resp)
+	c.logger.Sugar().Debug("completion resp extracted: ", extracted)
+	c.logger.Sugar().Debug("completion resp extracted length:", len(extracted))
+	return extracted, nil
 }
 
 // CompletionStream
 //
 // Return only one chunk that contains the whole content if stream is not supported.
 func (c *gemini) CompletionStream(ctx context.Context, ms []client.Message, t ability.LLMOption) *util.SmoothStream {
+	c.logger.Sugar().Debugw("completion stream...", "message list: ", ms)
 	c.logger.Sugar().Debugw("completion stream...", "message list length", len(ms))
 	stream := util.NewSmoothStream()
 	if t.Gemini == nil {
@@ -109,7 +113,7 @@ func (c *gemini) CompletionStream(ctx context.Context, ms []client.Message, t ab
 	go func() {
 		iter := cs.SendMessageStream(ctx, question.Parts...)
 		for {
-			response, err := iter.Next()
+			resp, err := iter.Next()
 			if err != nil {
 				if errors.Is(err, iterator.Done) {
 					err = io.EOF
@@ -119,9 +123,12 @@ func (c *gemini) CompletionStream(ctx context.Context, ms []client.Message, t ab
 				stream.WriteError(err)
 				return
 			}
-			content := responseString(response)
+			c.logger.Sugar().Debug("resp: ", resp)
+			extracted := responseString(resp)
+			c.logger.Sugar().Debug("completion resp extracted: ", extracted)
+			c.logger.Sugar().Debug("completion resp extracted length:", len(extracted))
 
-			for _, r := range content {
+			for _, r := range extracted {
 				stream.Write(r)
 			}
 		}

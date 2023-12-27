@@ -211,20 +211,15 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 		if err != nil {
 			if errors.Is(err, io.EOF) {
 				c.sse.PublishData(c.streamId, EventMessageTextEOF, meta)
-				break
+				return "", nil
 			} else {
 				c.sse.PublishData(c.streamId, EventMessageError,
 					Error{MessageMeta: meta, ErrMsg: err.Error()})
-				return text, err
+				return "", err
 			}
 		}
 		c.sse.PublishData(c.streamId, EventMessageTextTyping,
 			Text{MessageMeta: meta, Text: string(data)})
 		text += string(data)
 	}
-	if text == "" {
-		return text, errors.New("text should not be empty")
-	}
-
-	return text, nil
 }
