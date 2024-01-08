@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	etag "github.com/pablor21/echo-etag/v4"
 	"io/fs"
 	"net/http"
 	"time"
@@ -61,7 +62,9 @@ func StartServer() {
 		logger.Sugar().Panic(err)
 	}
 	s := e.Group("/*")
-	s.Use(middleware2.ConstantEtag())
+	s.Use(middleware.Gzip())
+	s.Use(etag.Etag())
+	s.Use(middleware2.StaticCacheControl())
 	s.Use(middleware2.SinglePageApp(""))
 	s.StaticFS("/*", w)
 
