@@ -9,7 +9,7 @@ require (
 	cloud.google.com/go/speech v1.21.0
 	cloud.google.com/go/texttospeech v1.7.4
 	github.com/brpaz/echozap v1.1.3
-	github.com/caddyserver/certmagic v0.19.2
+	github.com/caddyserver/certmagic v0.20.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/google/generative-ai-go v0.5.0
