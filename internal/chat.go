@@ -211,7 +211,7 @@ func (c *ChatHandler) completion(ctx context.Context, latestMs []client.Message,
 		if err != nil {
 			if errors.Is(err, io.EOF) {
 				c.sse.PublishData(c.streamId, EventMessageTextEOF, meta)
-				return "", nil
+				return text, nil
 			} else {
 				c.sse.PublishData(c.streamId, EventMessageError,
 					Error{MessageMeta: meta, ErrMsg: err.Error()})
