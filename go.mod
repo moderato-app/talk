@@ -15,8 +15,8 @@ require (
 	github.com/google/generative-ai-go v0.5.0
 	github.com/google/uuid v1.4.0
 	github.com/haguro/elevenlabs-go v0.2.2
-	github.com/labstack/echo/v4 v4.11.3
-	github.com/labstack/gommon v0.4.1
+	github.com/labstack/echo/v4 v4.11.4
+	github.com/labstack/gommon v0.4.2
 	github.com/pablor21/echo-etag/v4 v4.0.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/proxoar/talk-demo-resource/v2 v2.0.4
