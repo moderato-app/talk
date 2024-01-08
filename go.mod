@@ -17,16 +17,17 @@ require (
 	github.com/haguro/elevenlabs-go v0.2.2
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/labstack/gommon v0.4.1
+	github.com/pablor21/echo-etag/v4 v4.0.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/proxoar/talk-demo-resource/v2 v2.0.4
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sashabaranov/go-openai v1.17.9
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.17.0
+	github.com/spf13/viper v1.18.2
 	github.com/suyashkumar/ssl-proxy v0.2.7
 	github.com/tidwall/pretty v1.2.1
 	go.uber.org/zap v1.26.0
-	google.golang.org/api v0.152.0
+	google.golang.org/api v0.153.0
 	google.golang.org/genproto v0.0.0-20231127180814-3a041ad873d4
 )
 
@@ -57,7 +58,6 @@ require (
 	github.com/mholt/acmez v1.2.0 // indirect
 	github.com/miekg/dns v1.1.57 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/pablor21/echo-etag/v4 v4.0.3 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
