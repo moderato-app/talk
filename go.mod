@@ -11,7 +11,7 @@ require (
 	github.com/brpaz/echozap v1.1.3
 	github.com/caddyserver/certmagic v0.20.0
 	github.com/dustin/go-humanize v1.0.1
-	github.com/go-playground/validator/v10 v10.16.0
+	github.com/go-playground/validator/v10 v10.17.0
 	github.com/google/generative-ai-go v0.5.0
 	github.com/google/uuid v1.5.0
 	github.com/haguro/elevenlabs-go v0.2.2
