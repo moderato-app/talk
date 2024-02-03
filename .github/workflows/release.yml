@@ -12,7 +12,7 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
   # make sure that WEB_VERSION <= release version
-  WEB_VERSION: v2.0.1
+  WEB_VERSION: v2.0.2
 
 jobs:
   generate:
