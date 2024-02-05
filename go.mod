@@ -27,7 +27,7 @@ require (
 	github.com/suyashkumar/ssl-proxy v0.2.7
 	github.com/tidwall/pretty v1.2.1
 	go.uber.org/zap v1.26.0
-	google.golang.org/api v0.159.0
+	google.golang.org/api v0.161.0
 	google.golang.org/genproto v0.0.0-20240102182953-50ed04b92917
 )
 
