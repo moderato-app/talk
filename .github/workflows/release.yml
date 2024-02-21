@@ -11,7 +11,7 @@ permissions:
 env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  # make sure that WEB_VERSION <= release version
+  # make sure that WEB_VERSION <= the release version
   WEB_VERSION: v2.0.3
 
 jobs:
