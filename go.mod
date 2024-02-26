@@ -14,7 +14,7 @@ require (
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/google/generative-ai-go v0.8.0
 	github.com/google/uuid v1.6.0
-	github.com/haguro/elevenlabs-go v0.2.2
+	github.com/haguro/elevenlabs-go v0.2.4
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/labstack/gommon v0.4.2
 	github.com/pablor21/echo-etag/v4 v4.0.3
