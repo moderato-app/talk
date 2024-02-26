@@ -26,7 +26,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/suyashkumar/ssl-proxy v0.2.7
 	github.com/tidwall/pretty v1.2.1
-	go.uber.org/zap v1.26.0
+	go.uber.org/zap v1.27.0
 	google.golang.org/api v0.167.0
 	google.golang.org/genproto v0.0.0-20240205150955-31a09d347014
 )
