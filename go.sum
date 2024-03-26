@@ -79,6 +79,8 @@ github.com/golang/protobuf v1.5.3 h1:KhyjKVUg7Usr/dYsdSqoFveMYd5ko72D+zANwlG1mmg
 github.com/golang/protobuf v1.5.3/go.mod h1:XVQd3VNwM+JqD3oG2Ue2ip4fOMUkwXdXDdiuN0vRsmY=
 github.com/google/generative-ai-go v0.8.0 h1:sbpEC4rdjby19jehqmQ5pF0eXDTGHmNhXuNN+elfC5I=
 github.com/google/generative-ai-go v0.8.0/go.mod h1:8fXQk4w+eyTzFokGGJrBFL0/xwXqm3QNhTqOWyX11zs=
+github.com/google/generative-ai-go v0.10.0 h1:r7LAhVtl+57x70Ub/XmV6T54db8e2sVp9vhRn+RvX3M=
+github.com/google/generative-ai-go v0.10.0/go.mod h1:uxrCJXjAIjJS8rGOU4Ifv1WfOmQYZyEGcMld+cjkd6Q=
 github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5aqRK0M=
 github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
