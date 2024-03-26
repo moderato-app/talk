@@ -13,8 +13,8 @@ cloud.google.com/go/longrunning v0.5.5 h1:GOE6pZFdSrTb4KAiKnXsJBtlE6mEyaW44oKyMI
 cloud.google.com/go/longrunning v0.5.5/go.mod h1:WV2LAxD8/rg5Z1cNW6FJ/ZpX4E4VnDnoTk0yawPBB7s=
 cloud.google.com/go/resourcemanager v1.9.5 h1:AZWr1vWVDKGwfLsVhcN+vcwOz3xqqYxtmMa0aABCMms=
 cloud.google.com/go/resourcemanager v1.9.5/go.mod h1:hep6KjelHA+ToEjOfO3garMKi/CLYwTqeAw7YiEI9x8=
-cloud.google.com/go/speech v1.22.0 h1:AWpbl2POalAOvO5uudJoaknkFNhATuBVODozDXyTD1Q=
-cloud.google.com/go/speech v1.22.0/go.mod h1:d7pmrSKyrD12c7dRrjqgA/U0eeyZs0i4VpvOlpJXEBA=
+cloud.google.com/go/speech v1.22.1 h1:xo/cmhBtqoqqNg/5I8m0ECXPiqYg2fS2ioOccH+qbKE=
+cloud.google.com/go/speech v1.22.1/go.mod h1:s8C9OLTemdGb4FHX3imHIp5AanwKR4IhdSno0Cg1s7k=
 cloud.google.com/go/texttospeech v1.7.5 h1:dxY2Q5mHCbrGa3oPR2O3PCicdnvKa1JmwGQK36EFLOw=
 cloud.google.com/go/texttospeech v1.7.5/go.mod h1:tzpCuNWPwrNJnEa4Pu5taALuZL4QRRLcb+K9pbhXT6M=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
