@@ -198,6 +198,7 @@ Engine, with certain limitations on browsers such as Safari.
 - [x] Download and import text history
 - [x] Download chat MP3
 - [x] Prompt template
+- [ ] Dark mode
 
 # Contributing
 
