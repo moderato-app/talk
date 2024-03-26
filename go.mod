@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.0
 
 require (
-	cloud.google.com/go/resourcemanager v1.9.5
+	cloud.google.com/go/resourcemanager v1.9.6
 	cloud.google.com/go/speech v1.22.1
 	cloud.google.com/go/texttospeech v1.7.5
 	github.com/brpaz/echozap v1.1.3
