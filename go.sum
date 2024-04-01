@@ -15,8 +15,8 @@ cloud.google.com/go/resourcemanager v1.9.6 h1:VPfJFbWxrTYQzEXCDbJNpcvSB8eZhTSM0Y
 cloud.google.com/go/resourcemanager v1.9.6/go.mod h1:d+XUOGbxg6Aka3lmC4fDiserslux3d15uX08C6a0MBg=
 cloud.google.com/go/speech v1.22.1 h1:xo/cmhBtqoqqNg/5I8m0ECXPiqYg2fS2ioOccH+qbKE=
 cloud.google.com/go/speech v1.22.1/go.mod h1:s8C9OLTemdGb4FHX3imHIp5AanwKR4IhdSno0Cg1s7k=
-cloud.google.com/go/texttospeech v1.7.5 h1:dxY2Q5mHCbrGa3oPR2O3PCicdnvKa1JmwGQK36EFLOw=
-cloud.google.com/go/texttospeech v1.7.5/go.mod h1:tzpCuNWPwrNJnEa4Pu5taALuZL4QRRLcb+K9pbhXT6M=
+cloud.google.com/go/texttospeech v1.7.6 h1:gLEyDoJeFGdoX7jSKbf+nJy7CTgjsSbCZXwzzkXgH9w=
+cloud.google.com/go/texttospeech v1.7.6/go.mod h1:nhRJledkoE6/6VvEq/d0CX7nPnDwc/uzfaqePlmiPVE=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/brpaz/echozap v1.1.3 h1:6cmi4m8/XwUckFH+cfsvX9eRomVOOs01AWDakEcDRCk=
 github.com/brpaz/echozap v1.1.3/go.mod h1:5NJmhB1VsJbB8cyks5qft57uvgJwgls3t5tJbThIM4Y=

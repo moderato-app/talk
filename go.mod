@@ -7,7 +7,7 @@ toolchain go1.21.0
 require (
 	cloud.google.com/go/resourcemanager v1.9.6
 	cloud.google.com/go/speech v1.22.1
-	cloud.google.com/go/texttospeech v1.7.5
+	cloud.google.com/go/texttospeech v1.7.6
 	github.com/brpaz/echozap v1.1.3
 	github.com/caddyserver/certmagic v0.20.0
 	github.com/dustin/go-humanize v1.0.1
