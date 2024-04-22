@@ -12,7 +12,7 @@ require (
 	github.com/caddyserver/certmagic v0.20.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-playground/validator/v10 v10.19.0
-	github.com/google/generative-ai-go v0.10.0
+	github.com/google/generative-ai-go v0.11.0
 	github.com/google/uuid v1.6.0
 	github.com/haguro/elevenlabs-go v0.2.4
 	github.com/labstack/echo/v4 v4.11.4
@@ -33,7 +33,7 @@ require (
 
 require (
 	cloud.google.com/go v0.112.1 // indirect
-	cloud.google.com/go/ai v0.3.0 // indirect
+	cloud.google.com/go/ai v0.3.5-0.20240409161017-ce55ad694f21 // indirect
 	cloud.google.com/go/compute v1.24.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.6 // indirect
