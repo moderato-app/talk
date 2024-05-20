@@ -15,7 +15,7 @@ require (
 	github.com/google/generative-ai-go v0.10.0
 	github.com/google/uuid v1.6.0
 	github.com/haguro/elevenlabs-go v0.2.4
-	github.com/labstack/echo/v4 v4.11.4
+	github.com/labstack/echo/v4 v4.12.0
 	github.com/labstack/gommon v0.4.2
 	github.com/pablor21/echo-etag/v4 v4.0.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
